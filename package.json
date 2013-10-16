@@ -20,10 +20,12 @@
     "passport-github": "~0.1.5"
   },
   "devDependencies": {
-    "vows": "~0.7.0"
+    "mocha": "~1.13.0",
+    "should": "~2.0.1",
+    "supertest": "~0.8.0"
   },
   "scripts": {
-    "test": "vows --spec"
+    "test": "make basic-test"
   },
   "engines": {
     "node": ">= 0.6"

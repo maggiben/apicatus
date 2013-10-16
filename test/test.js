@@ -1,13 +1,23 @@
-var assert = require('assert'),
-    vows = require('vows'),
-    seriousCalculations = require('../');
+var should = require('should');
+var assert = require('assert');
+var request = require('supertest');
+var mongoose = require('mongoose');
 
-vows.describe('serious-calculations').addBatch({
-  'When performing serious calculations': {
-    topic: seriousCalculations.performSeriousCalculations(4),
-    'result should be valid': function (result) {
-      assert.isNumber(result);
-      assert.equal(result, 8);
-    }
-  }
-}).export(module);
+
+require('should');
+
+describe('Array and String', function(){
+    describe('#index Of', function(){
+        it('should return -1 when the value is not present', function(){
+            [1,2,3].indexOf(5).should.equal(-1);
+            [1,2,3].indexOf(0).should.equal(-1);
+        });
+    });
+
+    describe('#position Of', function(){
+        it("should return position of char in a string 'cool'", function(){
+          'cool'.indexOf('c').should.equal(0);
+          'cool'.indexOf('l').should.equal(3);
+        });
+    });
+});

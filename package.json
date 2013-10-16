@@ -3,6 +3,11 @@
   "version": "0.0.1",
   "description": "Apicatus api test suite",
   "main": "app.js",
+  "homepage": "http://apicat.us",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/maggiben/apicatus.git"
+  },
   "dependencies": {
     "express": "~3.4.0",
     "socket.io": "~0.9.16",
@@ -14,12 +19,19 @@
     "request": "~2.27.0",
     "passport-github": "~0.1.5"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "vows": "~0.7.0"
+  },
   "scripts": {
-    "test": "test"
+    "test": "vows --spec"
+  },
+  "engines": {
+    "node": ">= 0.6"
   },
   "keywords": [
-    "api", "mock", "testing"
+    "api",
+    "mock",
+    "testing"
   ],
   "author": "Benjamin Maggi",
   "license": "BSD"

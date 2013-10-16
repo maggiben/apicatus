@@ -43,7 +43,7 @@ var generate_mongo_url = function(obj){
         return "mongodb://" + obj.hostname + ":" + obj.port + "/" + obj.db;
     }
 };
-var mongourl = generate_mongo_url(conf.mongo_local);
+var mongourl = generate_mongo_url(conf.mongohq);
 console.log("mongourl: " + mongourl)
 
 ////////////////////////////////////////////////////////////////////////////
@@ -222,6 +222,10 @@ app.configure('production', function() {
 passport.use(new LocalStrategy(Account.authenticate()));
 passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
+
+///////////////////////////////////////////////////////////////////////////////
+// MongoDB Connection setup                                                  //
+///////////////////////////////////////////////////////////////////////////////
 // Connect mongoose
 mongoose.connect(mongourl);
 // Check if connected
@@ -235,14 +239,6 @@ mongoose.connection.on("open", function(){
 // Collections CURD
 app.post('/digestors', DigestorCtl.create);
 app.put('/digestors/:id', DigestorCtl.update);
-/*
-app.put('/digestors', function(request, response, next) {
-    response.contentType('application/json');
-    console.log(request.body);
-    response.status(403);
-    response.send(request.body);
-});
-*/
 app.get('/digestors', DigestorCtl.getAll);
 app.get('/digestors/:id', DigestorCtl.getById);
 //app.delete('/digestors', DigestorCtl.removeAll);
@@ -254,7 +250,7 @@ app.get('/digestors/:id', DigestorCtl.getById);
 // Application rutes                                                         //
 ///////////////////////////////////////////////////////////////////////////////
 app.get('/', function(request, response) {
-    response.sendfile(__dirname + '/public/miapi.html');
+    response.sendfile(__dirname + '/public/index.html');
 });
 
 ///////////////////////////////////////////////////////////////////////////////

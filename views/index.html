@@ -1,0 +1,71 @@
+<div class="container">
+
+    <!-- ul>
+        <li ng-repeat="item in apis | startFrom:currentPage*pageSize | limitTo:pageSize">
+            {{item.name}}
+        </li>
+    </ul>
+    <button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1">
+        Previous
+    </button>
+    {{currentPage+1}}/{{numberOfPages()}}
+    <button ng-disabled="currentPage >= data.length/pageSize - 1" ng-click="currentPage=currentPage+1">
+        Next
+    </button -->
+
+  <div class="row">
+    <div class="col-md-2">
+        <ul class="nav nav-pills nav-stacked">
+        <li class="active">
+          <a href="#">
+            <span class="badge pull-right">{{apis.length}}</span>
+            APIS
+          </a>
+        </li>
+        <li><a href="#">Profile</a></li>
+        <li>
+          <a href="#">
+            <span class="badge pull-right">3</span>
+            Messages
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="col-md-10">
+        <div class="panel panel-default">
+            <div class="panel-heading ">
+                <h3 class="panel-title"><i class="glyphicon glyphicon-th-large"></i> My Applications </h3>
+            </div>
+            <div class="panel-body dot-pattern border">
+                <div class="row">
+                    <div class="col-md-1">
+                    </div>
+                    <div class="col-md-10">
+                        <div class="applications">
+                            <ul class="applist">
+                                <li ng-repeat="api in apis | startFrom:currentPage*pageSize | limitTo:pageSize">
+                                    <a href="#/resource/{{api._id}}">
+                                        <img src="./images/compas.svg" alt="Compas">
+                                        <span>{{api.name}}</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                    </div>
+                </div>
+
+                <ul class="pagination" ng-show="numberOfPages() > 0">
+                    <li><a ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1">&laquo;</a></li>
+                    <li class="active" ng-repeat="i in getPages(numberOfPages())"><a ng-click="currentPage=currentPage+1">{{$index+1}}</a></li>
+                    <li><a ng-disabled="currentPage >= apis.length/pageSize - 1" ng-click="currentPage=currentPage+1">&raquo;</a></li>
+                </ul>
+            </div>
+            <div class="panel-footer">
+                <i class="glyphicon glyphicon-refresh"></i>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>

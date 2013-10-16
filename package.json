@@ -27,7 +27,7 @@
     "istanbul": "~0.1.44"
   },
   "scripts": {
-    "test": "make test-cov"
+    "test": "make test"
   },
   "engines": {
     "node": ">= 0.6"

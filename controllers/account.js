@@ -49,7 +49,6 @@ var account_schema = require('../models/account')
 ///////////////////////////////////////////////////////////////////////////////
 exports.signIn = function(request, response, next) {
 
-    console.log(request.headers)
     response.contentType('application/json');
     passport.authenticate('local', function(error, user, info) {
         if (error) {
@@ -69,7 +68,7 @@ exports.signIn = function(request, response, next) {
         var accountJSON = JSON.stringify(request.user);
         return response.send(accountJSON);
     })(request, response, next);
-}
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // Route to get specific Account by its _id                                  //

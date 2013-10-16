@@ -83,7 +83,7 @@ exports.getById = function (request, response, next) {
         }
         if(!digestor) {
             response.statusCode = 404;
-            errJSON = JSON.stringify({"title": "error", "message":"Not Found","status":"fail"});
+            var errJSON = JSON.stringify({"title": "error", "message":"Not Found","status":"fail"});
             return response.send(errJSON);
         }
         var digestorJSON = JSON.stringify(digestor);
@@ -103,9 +103,9 @@ exports.getDigestorByName = function (name, callback) {
         }
         console.log("getDigestorByName: " + digestor._id);
         return digestor;
-        //return callback(digestor);
     }
 };
+
 ///////////////////////////////////////////////////////////////////////////////
 // Route to add a Digestor                                                   //
 //                                                                           //
@@ -141,12 +141,6 @@ exports.create = function (request, response, next) {
     }
 };
 
-exports.test = function (request, response, next) {
-    response.contentType('application/json');
-    console.log(request.body);
-    response.status(403);
-    response.send(request.body);
-};
 ///////////////////////////////////////////////////////////////////////////////
 // Route to update a Digestor                                                //
 //                                                                           //
@@ -238,7 +232,6 @@ exports.removeAll = function (request, response, next) {
 
     function gotDigestors(error, digestors) {
         if (error) {
-            console.log(error)
             return next();
         }
         if (!digestors || !Array.isArray(digestors) || digestors.length === 0)

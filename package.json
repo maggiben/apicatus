@@ -1,0 +1,26 @@
+{
+  "name": "apicatus",
+  "version": "0.0.1",
+  "description": "Apicatus api test suite",
+  "main": "app.js",
+  "dependencies": {
+    "express": "~3.4.0",
+    "socket.io": "~0.9.16",
+    "passport": "~0.1.17",
+    "passport-local-mongoose": "~0.2.4",
+    "mongoose": "~3.6.19",
+    "passport-facebook": "~1.0.1",
+    "passport-local": "~0.1.6",
+    "request": "~2.27.0",
+    "passport-github": "~0.1.5"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [
+    "api", "mock", "testing"
+  ],
+  "author": "Benjamin Maggi",
+  "license": "BSD"
+}

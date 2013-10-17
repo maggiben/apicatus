@@ -136,7 +136,7 @@ function digestRequest(request, response, next) {
     var host = request.headers.host.split(':')[0];
     var subdomain = host.split( "." )[ 0 ];
     var path = subdomain;
-    var filename = "./digestors/" + subdomain + ".js";
+    var filename = "./digestors/deedee.js";
     var url_parts = url.parse(request.url, true);
     var query = url_parts.query;
 

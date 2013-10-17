@@ -9,7 +9,6 @@
         </ul>
     </div>
     <div class="col-md-10 resource-group">
-
         <!-- API EMPTY WELCOME -->
         <div class="panel panel-default" ng-show="!api.entries.length">
             <div class="panel-heading">
@@ -23,9 +22,6 @@
             <div class="panel-footer"><span class="label label-info">Empty</span></div>
         </div>
         <!-- API EMPTY WELCOME -->
-        <ul>
-            <li ng-show="!api.entries.length">No events</li>
-        </li>
         <!-- API RESOURCES PANELS -->
         <div class="panel panel-default" ng-repeat="entry in api.entries">
             <div class="panel-heading">
@@ -38,9 +34,8 @@
                             <div class="input-group">
                                 <div class="input-group-btn">
                                     <label class="label-select">
-                                        <select ng-model="entry.method.id" ng-options="method.id as method.label group by method.group for method in headers.methods">
-                                        </select>
-                                    <label>
+                                        <select ng-model="entry.method.id" ng-options="method.id as method.label group by method.group for method in headers.methods"></select>
+                                    </label>
                                 </div><!-- /btn-group -->
                                 <input type="text" class="form-control" ng-model="entry.route" value="{{entry.route}}" ng-disabled="!entry.isEditing" placeholder="route">
                             </div>
@@ -188,7 +183,6 @@
             <div class="panel-footer"><span class="label label-warning">{{entry.hits}}</span></div>
         </div>
         <!-- API RESOURCES PANELS -->
-
         <!-- API RESOURCES ACTIONS -->
         <div class="row actions">
             <div class="col-md-12">

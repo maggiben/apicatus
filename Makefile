@@ -18,6 +18,7 @@ istanbul2:
 	istanbul cover _mocha --report lcovonly -- -R spec $(TESTS)
 
 coveralls:
+	istanbul cover _mocha -- -u exports -R spec $(TESTS)
 	cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 
 clean:

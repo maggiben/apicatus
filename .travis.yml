@@ -13,3 +13,5 @@ branches:
 only:
     - dev
     - master
+after_success:
+    - make coveralls

@@ -12,7 +12,7 @@ test:
 test-cov: istanbul
 
 istanbul:
-	istanbul cover _mocha -- -u exports -R spec $(TESTS)
+	istanbul cover _mocha -- -u exports -R spec $(TESTS) && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 
 istanbul2:
 	istanbul cover _mocha --report lcovonly -- -R spec $(TESTS)

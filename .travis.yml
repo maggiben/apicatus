@@ -17,4 +17,5 @@ before_script:
     - npm install -g istanbul
     - npm install -g mocha
 after_success:
+    - make test-cov
     - make coveralls

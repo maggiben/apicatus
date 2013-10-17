@@ -23,4 +23,4 @@ coveralls:
 clean:
 	rm -rf ./coverage
 
-.PHONY: test test-cov coveralls clean
+.PHONY: test test-cov 

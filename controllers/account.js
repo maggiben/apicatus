@@ -134,11 +134,9 @@ exports.createAccount = function(request, response, next) {
 
     response.contentType('application/json');
     var username = request.body.username;
-    console.log("registering: user: %s pass: %s", request.body.username, request.body.password);
 
     Account.findOne({username : username}, function(error, existingUser) {
         if (error || existingUser) {
-            console.log("existingUser");
             response.status(503);
             var message = JSON.stringify({error: "existingUser", message: 'User already exists'});
             return response.send(message);

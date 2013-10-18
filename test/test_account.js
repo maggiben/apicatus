@@ -43,7 +43,7 @@ describe('Account', function () {
 
     describe('User management', function() {
         it('should crete a new user', function() {
-            var url = 'http://' + process.env.IP + ':' + process.env.PORT;
+            var url = 'http://' + conf.ip + ':' + conf.listenPort;
             var profile = {
                 username: 'admin',
                 password: 'admin'
@@ -58,7 +58,7 @@ describe('Account', function () {
                 });
         });
         it('should not allow registering en existing with same id as existing one', function() {
-            var url = 'http://' + process.env.IP + ':' + process.env.PORT;
+            var url = 'http://' + conf.ip + ':' + conf.listenPort;
             var profile = {
                 username: 'admin',
                 password: 'admin'
@@ -73,7 +73,7 @@ describe('Account', function () {
                 });
         });
         it('should be able to login', function() {
-            var url = 'http://' + process.env.IP + ':' + process.env.PORT;
+            var url = 'http://' + conf.ip + ':' + conf.listenPort;
             var profile = {
                 username: 'admin',
                 password: 'admin'

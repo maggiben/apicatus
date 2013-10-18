@@ -139,6 +139,7 @@ exports.createAccount = function(request, response, next) {
     Account.findOne({username : username}, function(error, existingUser) {
         if (error || existingUser) {
             console.log("existingUser");
+            response.status(503);
             var message = JSON.stringify({error: "existingUser", message: 'User already exists'});
             return response.send(message);
         }
@@ -152,6 +153,7 @@ exports.createAccount = function(request, response, next) {
                     var message = JSON.stringify({error: "faultSave", message: 'Cannot save user'});
                     return response.send(message);
                 }
+                response.status(201);
                 var message = JSON.stringify(account);
                 return response.send(message);
             });

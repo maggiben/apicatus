@@ -5,7 +5,7 @@ HTML_FILE = reports/coverage.html
 
 test:
 	@NODE_ENV=test mocha \
-	    --timeout 200 \
+	    --timeout 20000 \
 		--reporter $(REPORTER) \
 		$(TESTS)
 

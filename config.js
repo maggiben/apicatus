@@ -15,12 +15,12 @@ var conf = {
         "db": "apicatus"
     },
     "mongohq": {
-        "hostname": "paulo.mongohq.com",
-        "port": 10040,
-        "username": "admin",
-        "password": "admin",
-        "name": "",
-        "db": "apicatus"
+        hostname: "alex.mongohq.com",
+        port: 10062,
+        username: "admin",
+        password: "12345",
+        name: "",
+        db: "cloud-db"
     }
 };
 

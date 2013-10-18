@@ -5,7 +5,7 @@ var express = require('express'),
     mongoose = require('mongoose'),
     conf = require('./config'),
     Account = require('./models/account'),
-    Account_controller = require('./controllers/account'),
+    AccountCtl = require('./controllers/account'),
     DigestorMdl = require('./models/digestor')
     DigestorCtl = require('./controllers/digestor'),
     passport = require('passport'),
@@ -13,6 +13,7 @@ var express = require('express'),
     util = require('util'),
     vm = require('vm'),
     url = require('url'),
+    SocketIo = require('socket.io'),
     LocalStrategy = require('passport-local').Strategy;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -65,41 +66,7 @@ function extend(object) {
 ///////////////////////////////////////////////////////////////////////////////
 // Run app                                                                   //
 ///////////////////////////////////////////////////////////////////////////////
-var app = express();
-
-var statics = function(request, response, next) {
-    var start = new Date;
-
-    if (response._responseTime) return next();
-    response._responseTime = true;
-
-
-    request.on('end', function() {
-        //console.log('end');
-    });
-    response.on('header', function(){
-      var duration = new Date - start;
-      response.setHeader('X-Response-Time', duration + 'ms');
-        //console.log(response.getHeader('Content-Length'));
-        console.log('X-Response-Time: ' + duration + 'ms');
-    });
-    next();
-}
-
-
-var extend = function(object) {
-    // Takes an unlimited number of extenders.
-    var args = Array.prototype.slice.call(arguments, 1);
-
-    // For each extender, copy their properties on our object.
-    for (var i = 0, source; source = args[i]; i++) {
-        if (!source) continue;
-        for (var property in source) {
-            object[property] = source[property];
-        }
-    }
-    return object;
-}
+var app = exports.app = express();
 
 ///////////////////////////////////////////////////////////////////////////////
 // CORS middleware (only to test on cloud9)                                  //
@@ -197,13 +164,12 @@ app.configure(function(){
     app.use(express.bodyParser());
     app.use(express.methodOverride());
     app.use(express.cookieParser());
-    app.use(statics);
     app.use(express.session({ secret: conf.sessionSecret }));
     app.use(passport.initialize());
     app.use(passport.session());
     app.use(allowCrossDomain);
     app.use(app.router);
-    app.use(digestRequest);
+    //app.use(digestRequest);
     //app.use(express.vhost('*.miapi.com', require('./test/test').test));
     app.use(express.static(__dirname + '/public'));
 });
@@ -227,7 +193,7 @@ passport.deserializeUser(Account.deserializeUser());
 // MongoDB Connection setup                                                  //
 ///////////////////////////////////////////////////////////////////////////////
 // Connect mongoose
-mongoose.connect(mongourl);
+//mongoose.connect(mongourl);
 // Check if connected
 mongoose.connection.on("open", function(){
     console.log("mongodb connected at: %s", mongourl);
@@ -261,6 +227,7 @@ app.get('/', function(request, response) {
 // @forgot
 // @password                                                                 //
 ///////////////////////////////////////////////////////////////////////////////
+/*
 app.post('/signup', function(req, res) {
 
         var username = req.body.username;
@@ -269,36 +236,44 @@ app.post('/signup', function(req, res) {
         Account.findOne({username : username }, function(err, existingUser) {
             if (err || existingUser) {
                 console.log("existingUser");
-                return res.render('signup', { account : account });
+                response.status(409);
+                //return res.render('signup', { account : account });
             }
             var account = new Account({ username : req.body.username, email: req.body.username});
             account.setPassword(req.body.password, function(err) {
                 if (err) {
-                    return res.render('signup', { account : account });
+                    response.status(503);
+                    //return res.render('signup', { account : account });
                 }
                 account.save(function(err) {
                     if (err) {
+                        response.status(503);
                         return res.render('signup', { account : account });
                     }
-                    return res.redirect('/');
+                    response.status(201);
+                    //return res.redirect('/');
                 });
             });
         });
 });
+*/
+app.post('/signup', AccountCtl.createAccount);
 app.post('/signin', function(request, response, next) {
     response.contentType('application/json');
     passport.authenticate('local', function(err, user, info) {
         if (err) {
+            response.status(503);
             return next(err);
         }
         if (!user) {
             console.log("unauthorized");
-            response.status(403);
+            response.status(401);
             return response.send({error: 'unauthorized'});
             //return response.render('signin', { title: 'bad login', locale: 'en_US', user: req.user });
         }
         request.logIn(user, function(err) {
             if (err) {
+                response.status(503);
                 return next(err);
             }
         });
@@ -347,60 +322,62 @@ app.post('/forgot', function(req, res) {
 ///////////////////////////////////////////////////////////////////////////////
 // socket.io                                                                 //
 ///////////////////////////////////////////////////////////////////////////////
-var server = require('http').createServer(app)
-var io = require('socket.io').listen(server);
+//var server = require('http').createServer(app)
+//var io = require('socket.io').listen(server);
 
-server.listen(conf.listenPort);
+//server.listen(conf.listenPort);
+
+//module.exports = app;
 
 ///////////////////////////////////////////////////////////////////////////////
 // socket.io event listeners                                                 //
 ///////////////////////////////////////////////////////////////////////////////
-io.sockets.on('connection', function (socket) {
+var socketIoHandler = function(io) {
+    io.sockets.on('connection', function (socket) {
+        io.sockets.emit('this', { will: 'be received by everyone'});
+        socket.on('message', function (message) {
+            console.log("Got message: " + message);
+            ip = socket.handshake.address.address;
+            url = message;
+            io.sockets.emit('news', { 'connections': Object.keys(io.connected).length, 'ip': '***.***.***.' + ip.substring(ip.lastIndexOf('.') + 1), 'url': url, 'xdomain': socket.handshake.xdomain, 'timestamp': new Date()});
+        });
+        socket.on('my other event', function (data) {
+            console.log('my other event' + data);
+        });
+        socket.on('consoleio', function (data) {
+            console.log('consoleio' + JSON.stringify(data));
+            data.message = data.message || {};
+            switch(data.message)
+            {
+                case 'exec':
 
-    io.sockets.emit('this', { will: 'be received by everyone'});
+                    var spawn = require('child_process').spawn;
+                    var exec = spawn(data.command, data.arguments); //spawn(data.command, data.arguments);
+                    exec.stdout.setEncoding('ascii');
+                    exec.stderr.setEncoding('ascii');
 
-    socket.on('message', function (message) {
-        console.log("Got message: " + message);
-        ip = socket.handshake.address.address;
-        url = message;
-        io.sockets.emit('news', { 'connections': Object.keys(io.connected).length, 'ip': '***.***.***.' + ip.substring(ip.lastIndexOf('.') + 1), 'url': url, 'xdomain': socket.handshake.xdomain, 'timestamp': new Date()});
+                    exec.stdout.on('data', function (data) {
+                      console.log('stdout: ' + data);
+                      io.sockets.emit('consoleio', { message: 'exec', io: 'stdout', command: data.command, result: data });
+                    });
+
+                    exec.stderr.on('data', function (data) {
+                        console.log('stderr: ' + data);
+                        io.sockets.emit('consoleio', { message: 'exec', io: 'stderr', command: data.command, result: data });
+                    });
+
+                    exec.on('exit', function (code) {
+                        console.log('child process exited with code ' + code);
+                        io.sockets.emit('consoleio', { message: 'exec', command: data.command, result: 'exit' });
+                    });
+                    break;
+
+            }
+            io.sockets.emit('consoleio', { event: 'message received', data: data});
+        });
+        socket.on('disconnect', function () {
+            console.log("Socket disconnected");
+            io.sockets.emit('pageview', { 'connections': Object.keys(io.connected).length });
+        });
     });
-    socket.on('my other event', function (data) {
-        console.log('my other event' + data);
-    });
-    socket.on('consoleio', function (data) {
-        console.log('consoleio' + JSON.stringify(data));
-        data.message = data.message || {};
-        switch(data.message)
-        {
-            case 'exec':
-
-                var spawn = require('child_process').spawn;
-                var exec = spawn(data.command, data.arguments); //spawn(data.command, data.arguments);
-                exec.stdout.setEncoding('ascii');
-                exec.stderr.setEncoding('ascii');
-
-                exec.stdout.on('data', function (data) {
-                  console.log('stdout: ' + data);
-                  io.sockets.emit('consoleio', { message: 'exec', io: 'stdout', command: data.command, result: data });
-                });
-
-                exec.stderr.on('data', function (data) {
-                    console.log('stderr: ' + data);
-                    io.sockets.emit('consoleio', { message: 'exec', io: 'stderr', command: data.command, result: data });
-                });
-
-                exec.on('exit', function (code) {
-                    console.log('child process exited with code ' + code);
-                    io.sockets.emit('consoleio', { message: 'exec', command: data.command, result: 'exit' });
-                });
-                break;
-
-        }
-        io.sockets.emit('consoleio', { event: 'message received', data: data});
-    });
-    socket.on('disconnect', function () {
-        console.log("Socket disconnected");
-        io.sockets.emit('pageview', { 'connections': Object.keys(io.connected).length });
-    });
-});
+}

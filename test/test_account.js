@@ -29,7 +29,7 @@ describe('User account management', function () {
         mongoose.connect('mongodb://admin:admin@alex.mongohq.com:10062/cloud-db');
         mongoose.connection.on("open", function() {
             clearCollections();
-            //startServer();
+            startServer();
             done();
         });
     })
@@ -45,63 +45,100 @@ describe('User account management', function () {
     });
 
     describe('User management', function() {
-        it('should crete a new user', function() {
+        it('should crete a new user', function(done) {
             var url = 'http://' + conf.ip + ':' + conf.listenPort;
             var profile = {
                 username: 'admin',
                 password: 'admin'
             };
             request(url)
-                .post('/signup')
+                .post('/user')
+                .set('Content-Type', 'application/json')
                 .send(profile)
                 .expect('Content-Type', /json/)
-                .expect(201)
                 .end(function(err, res) {
                     if (err) throw err;
+                    res.body.username.should.equal('admin')
+                    return done();
                 });
         });
-        it('should not allow registering en existing with same id as existing one', function() {
+        it('should not allow registering en existing with same id as existing one', function(done) {
             var url = 'http://' + conf.ip + ':' + conf.listenPort;
             var profile = {
                 username: 'admin',
                 password: 'admin'
             };
             request(url)
-                .post('/signup')
+                .post('/user')
                 .send(profile)
                 .expect('Content-Type', /json/)
-                .expect(503)
+                .expect(409)
                 .end(function(err, res) {
                     if (err) throw err;
+                    res.statusCode.should.equal(409)
+                    return done();
                 });
         });
-        it('should be able to login', function() {
+        it('should be able to login', function(done) {
             var url = 'http://' + conf.ip + ':' + conf.listenPort;
             var profile = {
                 username: 'admin',
                 password: 'admin'
             };
             request(url)
-                .post('/signin')
+                .post('/user/signin')
                 .send(profile)
                 .expect('Content-Type', /json/)
                 .expect(200)
                 .end(function(err, res) {
                     if (err) throw err;
+                    res.body.username.should.equal('admin')
+                    return done();
                 });
         });
-        it('should be able to signout', function() {
+        it('should be able to signout', function(done) {
             var url = 'http://' + conf.ip + ':' + conf.listenPort;
             request(url)
-                .get('/signout')
+                .get('/user/signout')
+                .expect(204)
+                .end(function(err, res) {
+                    if (err) throw err;
+                    res.statusCode.should.equal(204)
+                    return done();
+                });
+        });
+        it('should be able to delete a user account', function(done) {
+            var url = 'http://' + conf.ip + ':' + conf.listenPort;
+            var profile = {
+                username: 'admin',
+                password: 'admin'
+            };
+            request(url)
+                .post('/user/signin')
+                .send(profile)
                 .expect('Content-Type', /json/)
                 .expect(200)
                 .end(function(err, res) {
                     if (err) throw err;
+                    res.body.username.should.equal('admin')
+                    request(url)
+                        .del('/user')
+                        .expect(203)
+                        .end(function(err, res) {
+                            if (err) throw err;
+                            res.statusCode.should.equal(202)
+                            return done();
+                        });
                 });
-        });
-        it('should be able to delete a user account', function() {
 
+            /*request(url)
+                .del('/user')
+                .expect(203)
+                .end(function(err, res) {
+                    if (err) throw err;
+                    res.statusCode.should.equal(202)
+                    return done();
+                });*/
         });
     })
 });

@@ -43,12 +43,32 @@ var generate_mongo_url = function(obj){
         return "mongodb://" + obj.hostname + ":" + obj.port + "/" + obj.db;
     }
 };
-var mongourl = generate_mongo_url(conf.mongohq);
-console.log("mongourl: " + mongourl)
 
-////////////////////////////////////////////////////////////////////////////
-// Extend an object with another object's properties.                     //
-////////////////////////////////////////////////////////////////////////////
+var init = function(options) {
+    if(conf.autoStart) {
+        console.log("autostarting app")
+        var mongoUrl = generate_mongo_url(conf.mongoUrl);
+        console.log("mongodb connet to", mongoUrl);
+        ///////////////////////////////////////////////////////////////////////////
+        // MongoDB Connection setup                                              //
+        ///////////////////////////////////////////////////////////////////////////
+        // Connect mongoose
+        mongoose.connect(mongoUrl);
+        //mongoose.connect('mongodb://admin:admin@alex.mongohq.com:10062/cloud-db');
+        // Check if connected
+        mongoose.connection.on("open", function(){
+            console.log("mongodb connected to: %s", mongoUrl);
+        });
+        var server = require('http').createServer(app)
+        var io = require('socket.io').listen(server);
+        server.listen(conf.listenPort);
+    }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Extend an object with another object's properties.                        //
+///////////////////////////////////////////////////////////////////////////////
 function extend(object) {
     // Takes an unlimited number of extenders.
     var args = Array.prototype.slice.call(arguments, 1);
@@ -83,11 +103,10 @@ var allowCrossDomain = function(request, response, next) {
         next();
     }
 };
-
 // reusable middleware to test authenticated sessions
 function ensureAuthenticated(request, response, next) {
-    console.log("ensureAuthenticated");
-    console.log(request.isAuthenticated());
+    //console.log("ensureAuthenticated");
+    //console.log(request.isAuthenticated());
     if(request.isAuthenticated()) {
         return next();
     }
@@ -96,6 +115,10 @@ function ensureAuthenticated(request, response, next) {
     response.send({error: 'unauthorized'}); // if failed...
     //response.redirect('/signin'); // if failed...
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// APICATUS Digestors logic                                                  //
+///////////////////////////////////////////////////////////////////////////////
 function digestRequest(request, response, next) {
     if (!request.headers.host) {
         return next();
@@ -161,7 +184,6 @@ function digestRequest(request, response, next) {
 app.configure(function(){
     app.set('view engine', 'html');
     app.set('views', __dirname + '/views');
-    app.use(express.logger());
     app.use(express.bodyParser());
     app.use(express.methodOverride());
     app.use(express.cookieParser());
@@ -176,11 +198,16 @@ app.configure(function(){
 });
 
 app.configure('development', function() {
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+    app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+    app.use(express.logger());
+});
+app.configure('testing', function() {
+    app.use(express.errorHandler());
 });
 app.configure('production', function() {
-  app.use(express.errorHandler());
+    app.use(express.errorHandler());
 });
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -191,25 +218,25 @@ passport.use(AccountMdl.createStrategy());
 passport.serializeUser(AccountMdl.serializeUser());
 passport.deserializeUser(AccountMdl.deserializeUser());
 
-
-///////////////////////////////////////////////////////////////////////////////
-// MongoDB Connection setup                                                  //
-///////////////////////////////////////////////////////////////////////////////
-// Connect mongoose
-mongoose.connect(mongourl);
-// Check if connected
-mongoose.connection.on("open", function(){
-    console.log("mongodb connected at: %s", mongourl);
-});
-
 ///////////////////////////////////////////////////////////////////////////////
 // Digestors Resource Management                                             //
 ///////////////////////////////////////////////////////////////////////////////
-// Collections CURD
+// Collections
 app.post('/digestors', DigestorCtl.create);
-app.put('/digestors/:id', DigestorCtl.update);
-app.get('/digestors', DigestorCtl.getAll);
+app.get('/digestors', ensureAuthenticated, DigestorCtl.readAll);
+//app.put('/digestors', DigestorCtl.updateAll);
+app.delete('/digestors', DigestorCtl.deleteAll);
+// Entities
+app.get('/digestors/:id', DigestorCtl.readOne);
+app.put('/digestors/:id', DigestorCtl.updateOne);
+app.delete('/digestors/:id', DigestorCtl.deleteOne);
+
+/*
+app.put('/digestors/:id', DigestorCtl.updateOne);
+app.get('/digestors', DigestorCtl.getOne);
 app.get('/digestors/:id', DigestorCtl.getById);
+*/
+
 //app.delete('/digestors', DigestorCtl.removeAll);
 // Elements
 //app.get('/digestors/:id', DigestorCtl.getById);
@@ -223,15 +250,10 @@ app.get('/', function(request, response) {
 });
 
 ///////////////////////////////////////////////////////////////////////////////
-// USER API                                                                  //
-// @signup
-// @signin
-// @signout
-// @forgot
-// @password                                                                 //
+// User CRUD Methods & Servi                                                 //
 ///////////////////////////////////////////////////////////////////////////////
-app.post('/signup', AccountCtl.createAccount);
-app.post('/signin', function(request, response, next) {
+app.post('/user/signin', function(request, response, next) {
+        console.log("user signIn")
     response.contentType('application/json');
     passport.authenticate('local', function(error, user, info) {
         if (error) {
@@ -249,18 +271,19 @@ app.post('/signin', function(request, response, next) {
                 response.status(503);
                 return next(err);
             }
-            console.log("auth okay");
-            console.log(JSON.stringify({username: request.user.username}));
+            // User has authenticated
+            return response.send(JSON.stringify({username: request.user.username}));
         });
-        return response.send(JSON.stringify({username: request.user.username}));
     })(request, response, next);
 });
-app.get('/signout', function(request, response, next) {
+app.get('/user/signout', function(request, response, next) {
+    response.contentType('application/json');
     request.logout();
-    response.status(200);
-    return response.send({success: 'signout'});
+    response.status(204);
+    var message = JSON.stringify({});
+    return response.send(message);
 });
-app.post('/forgot', function(req, res) {
+app.post('/user/forgot', function(req, res) {
 
     var email = req.body.email;
     //res.writeHead(401, {"Content-Type": "application/json"});
@@ -286,43 +309,23 @@ app.post('/forgot', function(req, res) {
             }
     });
 });
-app.delete('/users', AccountCtl.delete);
+app.post('/user', AccountCtl.create);
+app.get('/user', ensureAuthenticated, AccountCtl.read);
+app.put('/user', ensureAuthenticated, AccountCtl.update);
+app.del('/user', AccountCtl.delete);
 
 app.post('/xxx', ensureAuthenticated, function(request, response, next) {
     response.contentType('application/json');
     response.status(200);
     var message = JSON.stringify({message: 'return'});
     return response.send(message);
-})
-
-app.delete('/users', ensureAuthenticated, delete);
-
-/*
-function(request, response, next) {
-    response.contentType('application/json');
-    if(request.isAuthenticated()) {
-        console.log('will delete 200');
-        var account = JSON.stringify(request.user);
-        return response.send(account);
-    }
-    console.log('cant delete not auth 403');
-    response.status(403);
-    var message = JSON.stringify({error: 'youre not logged in'});
-    return response.send(message);
-})
-*/
-///////////////////////////////////////////////////////////////////////////////
-// TEST API                                                                  //
-///////////////////////////////////////////////////////////////////////////////
+});
 
 ///////////////////////////////////////////////////////////////////////////////
 // socket.io                                                                 //
 ///////////////////////////////////////////////////////////////////////////////
-var server = require('http').createServer(app)
-var io = require('socket.io').listen(server);
 
-server.listen(conf.listenPort);
-
+init();
 exports.app = app;
 //module.exports = app;
 

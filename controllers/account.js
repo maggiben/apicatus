@@ -48,7 +48,6 @@ var account_schema = require('../models/account')
 // @url GET /account/signin                                                  //
 ///////////////////////////////////////////////////////////////////////////////
 exports.signIn = function(request, response, next) {
-
     response.contentType('application/json');
     passport.authenticate('local', function(error, user, info) {
         if (error) {
@@ -203,11 +202,14 @@ exports.update = function (request, response, next) {
 exports.delete = function (request, response, next) {
 
     response.contentType('application/json');
+    console.log("going to delete the user")
+    console.log(request.user)
     Account.findByIdAndRemove(request.user._id, deleteAccount);
     function deleteAccount (error, account) {
         if (error) {
             return next(error);
         }
+        request.logout();
         // The request was processed successfully, but no response body is needed.
         response.status(204);
         var message = JSON.stringify({});

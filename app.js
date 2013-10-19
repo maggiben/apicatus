@@ -8,14 +8,14 @@ var express = require('express'),
     AccountCtl = require('./controllers/account'),
     DigestorMdl = require('./models/digestor')
     DigestorCtl = require('./controllers/digestor'),
-    DigestCtl = require('./controllers/digest'),
     FileSystem = require('fs'),
     util = require('util'),
     vm = require('vm'),
     url = require('url'),
     SocketIo = require('socket.io'),
     passport = require('passport'),
-    LocalStrategy = require('passport-local').Strategy;
+    LocalStrategy = require('passport-local').Strategy,
+    DigestCtl = require('./controllers/digest');
 
 ///////////////////////////////////////////////////////////////////////////////
 // Mongo setup middleware                                                    //
@@ -93,6 +93,7 @@ function ensureAuthenticated(request, response, next) {
         return next();
     }
     response.status(403);
+    return next();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -109,7 +110,7 @@ app.configure(function(){
     app.use(passport.session());
     app.use(allowCrossDomain);
     app.use(app.router);
-    //app.use(digestRequest);
+    //app.use(DigestCtl.digestRequest);
     //app.use(express.vhost('*.miapi.com', require('./test/test').test));
     app.use(express.static(__dirname + '/public'));
 });
@@ -159,7 +160,7 @@ app.get('/', function(request, response) {
 // User CRUD Methods & Servi                                                 //
 ///////////////////////////////////////////////////////////////////////////////
 app.post('/user/signin', AccountCtl.signIn);
-app.get('/user/signout', function(request, response, next) {
+app.get('/user/signout', ensureAuthenticated, function(request, response, next) {
     response.contentType('application/json');
     request.logout();
     response.status(204);
@@ -192,7 +193,7 @@ app.post('/user/forgot', function(req, res) {
             }
     });
 });
-app.post('/user', AccountCtl.create);
+app.post('/user', ensureAuthenticated, AccountCtl.create);
 app.get('/user', ensureAuthenticated, AccountCtl.read);
 app.put('/user', ensureAuthenticated, AccountCtl.update);
 app.del('/user', ensureAuthenticated, AccountCtl.delete);

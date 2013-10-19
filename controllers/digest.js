@@ -1,11 +1,21 @@
-var FileSystem = require('fs'),
+var express = require('express'),
+    conf = require('../config'),
+    AccountMdl = require('../models/account'),
+    AccountCtl = require('../controllers/account'),
+    DigestorMdl = require('../models/digestor')
+    DigestorCtl = require('../controllers/digestor'),
+    FileSystem = require('fs'),
     util = require('util'),
     vm = require('vm'),
-    url = require('url');
+    url = require('url'),
+    SocketIo = require('socket.io');
 ///////////////////////////////////////////////////////////////////////////////
 // APICATUS Digestors logic                                                  //
 ///////////////////////////////////////////////////////////////////////////////
 exports.digestRequest = function(request, response, next) {
+    console.log("digest")
+    return next();
+    /*
     if (!request.headers.host) {
         return next();
     }
@@ -63,4 +73,5 @@ exports.digestRequest = function(request, response, next) {
             return result;
         });
     }
+    */
 }

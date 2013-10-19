@@ -55,8 +55,6 @@ exports.signIn = function(request, response, next) {
             return next(err);
         }
         if (!user) {
-            //request.session.messages =  [info.message];
-            console.log("unauthorized");
             response.status(401);
             return response.send({error: 'unauthorized'});
         }
@@ -89,6 +87,7 @@ exports.read = function(request, response, next) {
         var account = JSON.stringify(request.user);
         return response.send(account);
     }
+    response.status(401);
     var message = JSON.stringify({error: 'youre not logged in'});
     return response.send(message);
 };
@@ -106,7 +105,6 @@ exports.read = function(request, response, next) {
 // @url GET /account/createAccount                                           //
 ///////////////////////////////////////////////////////////////////////////////
 exports.create = function(request, response, next) {
-
     response.contentType('application/json');
     var username = request.body.username;
     Account.findOne({username: username}, function(error, existingUser) {
@@ -146,7 +144,6 @@ exports.create = function(request, response, next) {
 // @url POST /account/update/:id                                             //
 ///////////////////////////////////////////////////////////////////////////////
 exports.update = function (request, response, next) {
-
     response.contentType('application/json');
     Account.findByIdAndUpdate(request.user._id, request.body, onUpdate);
 
@@ -176,7 +173,6 @@ exports.update = function (request, response, next) {
 // @url DELETE /users                                                        //
 ///////////////////////////////////////////////////////////////////////////////
 exports.delete = function (request, response, next) {
-
     response.contentType('application/json');
     Account.findByIdAndRemove(request.user._id, onDelete);
     function onDelete (error, account) {

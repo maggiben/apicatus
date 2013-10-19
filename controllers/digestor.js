@@ -46,7 +46,6 @@ var digestor_schema = require('../models/digestor')
 // @url GET /digestor/getall                                                 //
 ///////////////////////////////////////////////////////////////////////////////
 exports.readAll = function (request, response, next) {
-
     response.contentType('application/json');
     Digestor.find(gotDigestors).limit(10);
 
@@ -54,6 +53,11 @@ exports.readAll = function (request, response, next) {
         if (err) {
             console.log(err);
             return next();
+        }
+        if(!digestors) {
+            response.statusCode = 404;
+            var errJSON = JSON.stringify({"title": "error", "message":"Not Found", "status":"fail"});
+            return response.send(errJSON);
         }
         var digestorsJSON = JSON.stringify(digestors);
         return response.send(digestorsJSON);
@@ -73,7 +77,6 @@ exports.readAll = function (request, response, next) {
 // @url GET /digestor/getbyid                                                //
 ///////////////////////////////////////////////////////////////////////////////
 exports.readOne = function (request, response, next) {
-
     response.contentType('application/json');
     Digestor.findOne({name: request.params.name}, onRead);
 
@@ -91,21 +94,6 @@ exports.readOne = function (request, response, next) {
     }
 };
 
-exports.getDigestorByName = function (name, callback) {
-
-    Digestor.findOne({name: name}, gotDigestor);
-    function gotDigestor(error, digestor) {
-        if (error) {
-            return error;
-        }
-        if(!digestor) {
-            return new Error("Not found");
-        }
-        console.log("getDigestorByName: " + digestor._id);
-        return digestor;
-    }
-};
-
 ///////////////////////////////////////////////////////////////////////////////
 // Route to add a Digestor                                                   //
 //                                                                           //
@@ -119,7 +107,6 @@ exports.getDigestorByName = function (name, callback) {
 // @url POST /digestors                                                      //
 ///////////////////////////////////////////////////////////////////////////////
 exports.create = function (request, response, next) {
-
     response.contentType('application/json');
     // Fail if digestor name is already created
     Digestor.findOne({name: request.body.name}, function(error, digestor) {
@@ -128,7 +115,7 @@ exports.create = function (request, response, next) {
             var message = JSON.stringify({error: "existingDigestor", message: 'Digestor already exists'});
             return response.send(message);
         }
-            var digestor = new Digestor({
+        var digestor = new Digestor({
             name: request.body.name,
             created: new Date(),
             lastUpdate: new Date(),
@@ -162,7 +149,6 @@ exports.create = function (request, response, next) {
 // @url PUT /digestors/:id                                                   //
 ///////////////////////////////////////////////////////////////////////////////
 exports.updateOne = function (request, response, next) {
-
     response.contentType('application/json');
     Digestor.findOneAndUpdate({name: request.params.name}, request.body, onUpdate);
 
@@ -192,7 +178,6 @@ exports.updateOne = function (request, response, next) {
 // @url GET /digestor/remove/:id                                             //
 ///////////////////////////////////////////////////////////////////////////////
 exports.deleteOne = function (request, response, next) {
-
     response.contentType('application/json');
     Digestor.findByIdAndRemove(request.body._id, deleteDigestor);
     function deleteDigestor (error, account) {
@@ -219,7 +204,6 @@ exports.deleteOne = function (request, response, next) {
 // @url GET /digestor/removeall                                              //
 ///////////////////////////////////////////////////////////////////////////////
 exports.deleteAll = function (request, response, next) {
-
     response.contentType('application/json');
     Digestor.find().remove(function(error) {
         if (error) {
@@ -229,27 +213,5 @@ exports.deleteAll = function (request, response, next) {
         var msgJSON = JSON.stringify({action: 'deleteAll', result: true});
         return response.send(msgJSON);
     });
-
-    /*
-    function onFind(error, digestors) {
-        if (error) {
-            return next();
-        }
-        if (!digestors || !Array.isArray(digestors) || digestors.length === 0) {
-            console.log('no docs found');
-            return next();
-        }
-        digestors.forEach(function (digestor) {
-            digestor.remove(function (err, product) {
-                console.log('document id:%d could not be removed', digestor._id);
-                return next();
-            });
-        });
-        // The request was processed successfully, but no response body is needed.
-        response.status(204);
-        var msgJSON = JSON.stringify({action: 'deleteAll', result: true});
-        return response.send(msgJSON);
-    }
-    */
 };
 

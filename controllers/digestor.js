@@ -75,9 +75,9 @@ exports.readAll = function (request, response, next) {
 exports.readOne = function (request, response, next) {
 
     response.contentType('application/json');
-    Digestor.findById(request.params.id, gotDigestor);
+    Digestor.findOne({name: request.params.name}, onRead);
 
-    function gotDigestor(err, digestor) {
+    function onRead(err, digestor) {
         if (err) {
             return next(err);
         }
@@ -164,35 +164,18 @@ exports.create = function (request, response, next) {
 exports.updateOne = function (request, response, next) {
 
     response.contentType('application/json');
-    Digestor.findById(request.params.id, updateDigestor);
+    Digestor.findOneAndUpdate({name: request.params.name}, request.body, onUpdate);
 
-    function updateDigestor (error, digestor) {
+    function onUpdate (error, account) {
         if (error) {
-            console.log(error);
             return next(error);
         }
-        if (!digestor) {
-            console.log(error);
+        if (!account) {
             return next(error);
         }
-        else {
-            // is Ok
-        }
-        digestor.name = request.body.name || digestor.name;
-        digestor.entries = request.body.entries || digestor.entries;
-        digestor.lastUpdate = new Date();
-        digestor.lastAccess = new Date();
-
-        digestor.save(onSaved);
-
-        function onSaved(error, digestor) {
-            if (error) {
-                console.log(error);
-                return next(error);
-            }
-            var digestorJSON = JSON.stringify(digestor);
-            return response.send(digestorJSON);
-        }
+        response.status(200);
+        var accountJSON = JSON.stringify(account);
+        return response.send(accountJSON);
     }
 };
 
@@ -238,14 +221,21 @@ exports.deleteOne = function (request, response, next) {
 exports.deleteAll = function (request, response, next) {
 
     response.contentType('application/json');
-    Digestor.find(gotDigestors);
-
-    function gotDigestors(error, digestors) {
+    Digestor.find().remove(function(error) {
         if (error) {
             return next();
         }
-        if (!digestors || !Array.isArray(digestors) || digestors.length === 0)
-        {
+        response.status(204);
+        var msgJSON = JSON.stringify({action: 'deleteAll', result: true});
+        return response.send(msgJSON);
+    });
+
+    /*
+    function onFind(error, digestors) {
+        if (error) {
+            return next();
+        }
+        if (!digestors || !Array.isArray(digestors) || digestors.length === 0) {
             console.log('no docs found');
             return next();
         }
@@ -260,5 +250,6 @@ exports.deleteAll = function (request, response, next) {
         var msgJSON = JSON.stringify({action: 'deleteAll', result: true});
         return response.send(msgJSON);
     }
+    */
 };
 

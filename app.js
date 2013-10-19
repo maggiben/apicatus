@@ -227,9 +227,9 @@ app.get('/digestors', ensureAuthenticated, DigestorCtl.readAll);
 //app.put('/digestors', DigestorCtl.updateAll);
 app.delete('/digestors', DigestorCtl.deleteAll);
 // Entities
-app.get('/digestors/:id', DigestorCtl.readOne);
-app.put('/digestors/:id', DigestorCtl.updateOne);
-app.delete('/digestors/:id', DigestorCtl.deleteOne);
+app.get('/digestors/:name', DigestorCtl.readOne);
+app.put('/digestors/:name', DigestorCtl.updateOne);
+app.delete('/digestors/:name', DigestorCtl.deleteOne);
 
 /*
 app.put('/digestors/:id', DigestorCtl.updateOne);
@@ -252,29 +252,7 @@ app.get('/', function(request, response) {
 ///////////////////////////////////////////////////////////////////////////////
 // User CRUD Methods & Servi                                                 //
 ///////////////////////////////////////////////////////////////////////////////
-app.post('/user/signin', function(request, response, next) {
-    response.contentType('application/json');
-    passport.authenticate('local', function(error, user, info) {
-        if (error) {
-            response.status(503);
-            return next(err);
-        }
-        if (!user) {
-            //request.session.messages =  [info.message];
-            console.log("unauthorized");
-            response.status(401);
-            return response.send({error: 'unauthorized'});
-        }
-        request.logIn(user, function(err) {
-            if (err) {
-                response.status(503);
-                return next(err);
-            }
-            // User has authenticated
-            return response.send(JSON.stringify({username: request.user.username}));
-        });
-    })(request, response, next);
-});
+app.post('/user/signin', AccountCtl.signIn);
 app.get('/user/signout', function(request, response, next) {
     response.contentType('application/json');
     request.logout();

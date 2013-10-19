@@ -51,46 +51,24 @@ exports.signIn = function(request, response, next) {
     response.contentType('application/json');
     passport.authenticate('local', function(error, user, info) {
         if (error) {
-            return next(error);
+            response.status(503);
+            return next(err);
         }
         if (!user) {
-            var nouserJSON = JSON.stringify({title: 'bad login', locale: 'en_US', message: 'invalid username'});
-            return response.send(nouserJSON);
+            //request.session.messages =  [info.message];
+            console.log("unauthorized");
+            response.status(401);
+            return response.send({error: 'unauthorized'});
         }
-        request.logIn(user, function(error) {
-            if (error) {
-                return next(error);
+        request.logIn(user, function(err) {
+            if (err) {
+                response.status(503);
+                return next(err);
             }
+            // User has authenticated
+            return response.send(JSON.stringify({username: request.user.username}));
         });
-        var accountJSON = JSON.stringify(request.user);
-        return response.send(accountJSON);
     })(request, response, next);
-};
-
-///////////////////////////////////////////////////////////////////////////////
-// Route to get specific Account by its _id                                  //
-//                                                                           //
-// @param {Object} request                                                   //
-// @param {Object} response                                                  //
-// @param {Object} next                                                      //
-// @return {Object} JSON Account                                             //
-//                                                                           //
-// @api public                                                               //
-//                                                                           //
-// @url GET /account/getAccountById/:id                                      //
-///////////////////////////////////////////////////////////////////////////////
-exports.getAccountById = function(request, response, next) {
-
-    response.contentType('application/json');
-    Account.findById(request.params.id, gotAccount);
-
-    function gotAccount(error, account) {
-        if (error) {
-            return next(error);
-        }
-        var accountJSON = JSON.stringify(account);
-        return response.send(accountJSON);
-    }
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -170,18 +148,16 @@ exports.create = function(request, response, next) {
 exports.update = function (request, response, next) {
 
     response.contentType('application/json');
-    Account.findByIdAndUpdate(request.user._id, request.body, updateAccount);
+    Account.findByIdAndUpdate(request.user._id, request.body, onUpdate);
 
-    function updateAccount (error, account) {
+    function onUpdate (error, account) {
         if (error) {
             return next(error);
         }
         if (!account) {
             return next(error);
         }
-        else {
-            console.log(JSON.stringify(account));
-        }
+        response.status(200);
         var accountJSON = JSON.stringify(account);
         return response.send(accountJSON);
     }
@@ -202,8 +178,8 @@ exports.update = function (request, response, next) {
 exports.delete = function (request, response, next) {
 
     response.contentType('application/json');
-    Account.findByIdAndRemove(request.user._id, deleteAccount);
-    function deleteAccount (error, account) {
+    Account.findByIdAndRemove(request.user._id, onDelete);
+    function onDelete (error, account) {
         if (error) {
             return next(error);
         }

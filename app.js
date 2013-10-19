@@ -275,7 +275,7 @@ app.post('/user/signin', function(request, response, next) {
         });
     })(request, response, next);
 });
-app.get('/user/signout', ensureAuthenticated, function(request, response, next) {
+app.get('/user/signout', function(request, response, next) {
     response.contentType('application/json');
     request.logout();
     response.status(204);

@@ -1,4 +1,4 @@
-TESTS = test/*.js
+TESTS = test/test_*.js
 REPORTER = spec
 XML_FILE = reports/TEST-all.xml
 HTML_FILE = reports/coverage.html

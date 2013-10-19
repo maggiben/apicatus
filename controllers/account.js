@@ -202,8 +202,6 @@ exports.update = function (request, response, next) {
 exports.delete = function (request, response, next) {
 
     response.contentType('application/json');
-    console.log("going to delete the user, request.isAuthenticated(): " + request.isAuthenticated())
-    console.log(request.user)
     Account.findByIdAndRemove(request.user._id, deleteAccount);
     function deleteAccount (error, account) {
         if (error) {

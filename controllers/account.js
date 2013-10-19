@@ -106,7 +106,7 @@ exports.getAccountById = function(request, response, next) {
 //                                                                           //
 // @url GET /account/getAccount                                              //
 ///////////////////////////////////////////////////////////////////////////////
-exports.getAccount = function(request, response, next) {
+exports.read = function(request, response, next) {
     response.contentType('application/json');
     if(request.isAuthenticated()) {
         var account = JSON.stringify(request.user);
@@ -128,13 +128,13 @@ exports.getAccount = function(request, response, next) {
 //                                                                           //
 // @url GET /account/createAccount                                           //
 ///////////////////////////////////////////////////////////////////////////////
-exports.createAccount = function(request, response, next) {
+exports.create = function(request, response, next) {
 
     response.contentType('application/json');
     var username = request.body.username;
-    Account.findOne({username : username}, function(error, existingUser) {
+    Account.findOne({username: username}, function(error, existingUser) {
         if (error || existingUser) {
-            response.status(503);
+            response.status(409);
             var message = JSON.stringify({error: "existingUser", message: 'User already exists'});
             return response.send(message);
         }
@@ -171,7 +171,7 @@ exports.createAccount = function(request, response, next) {
 exports.update = function (request, response, next) {
 
     response.contentType('application/json');
-    Account.findByIdAndUpdate({username : request.body.username}, request.body, updateAccount);
+    Account.findByIdAndUpdate(request.user._id, request.body, updateAccount);
 
     function updateAccount (error, account) {
         if (error) {
@@ -202,11 +202,15 @@ exports.update = function (request, response, next) {
 ///////////////////////////////////////////////////////////////////////////////
 exports.delete = function (request, response, next) {
 
-    response.status(403);
-
     response.contentType('application/json');
-    console.log(request.user);
-    //Account.findOne({username : request.user.username});
-    var accountJSON = JSON.stringify(account);
-    return response.send(accountJSON);
+    Account.findByIdAndRemove(request.user._id, deleteAccount);
+    function deleteAccount (error, account) {
+        if (error) {
+            return next(error);
+        }
+        // The request was processed successfully, but no response body is needed.
+        response.status(204);
+        var message = JSON.stringify({});
+        return response.send(message);
+    }
 };

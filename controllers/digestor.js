@@ -45,10 +45,10 @@ var digestor_schema = require('../models/digestor')
 //                                                                           //
 // @url GET /digestor/getall                                                 //
 ///////////////////////////////////////////////////////////////////////////////
-exports.getAll = function (request, response, next) {
+exports.readAll = function (request, response, next) {
 
     response.contentType('application/json');
-    Digestor.find(gotDigestors);
+    Digestor.find(gotDigestors).limit(10);
 
     function gotDigestors(err, digestors) {
         if (err) {
@@ -72,7 +72,7 @@ exports.getAll = function (request, response, next) {
 //                                                                           //
 // @url GET /digestor/getbyid                                                //
 ///////////////////////////////////////////////////////////////////////////////
-exports.getById = function (request, response, next) {
+exports.readOne = function (request, response, next) {
 
     response.contentType('application/json');
     Digestor.findById(request.params.id, gotDigestor);
@@ -116,29 +116,37 @@ exports.getDigestorByName = function (name, callback) {
 //                                                                           //
 // @api public                                                               //
 //                                                                           //
-// @url GET /digestor/create                                                 //
+// @url POST /digestors                                                      //
 ///////////////////////////////////////////////////////////////////////////////
 exports.create = function (request, response, next) {
 
-    var digestor = new Digestor({
-        name: request.body.name,
-        created: new Date(),
-        lastUpdate: new Date(),
-        lastAccess: new Date(),
-        entries: request.body.entries || []
-    });
-
     response.contentType('application/json');
-    digestor.save(onSaved);
-
-    function onSaved(err, digestor) {
-        if (err) {
-            console.log(err);
-            return next(err);
+    // Fail if digestor name is already created
+    Digestor.findOne({name: request.body.name}, function(error, digestor) {
+        if (error || digestor) {
+            response.status(409);
+            var message = JSON.stringify({error: "existingDigestor", message: 'Digestor already exists'});
+            return response.send(message);
         }
-        response.status(201);
-        return response.send(JSON.stringify(digestor));
-    }
+            var digestor = new Digestor({
+            name: request.body.name,
+            created: new Date(),
+            lastUpdate: new Date(),
+            lastAccess: new Date(),
+            entries: request.body.entries || []
+        });
+
+        digestor.save(onSave);
+
+        function onSave(err, digestor) {
+            if (err) {
+                console.log(err);
+                return next(err);
+            }
+            response.status(201);
+            return response.send(JSON.stringify(digestor));
+        }
+    });
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -153,7 +161,7 @@ exports.create = function (request, response, next) {
 //                                                                           //
 // @url PUT /digestors/:id                                                   //
 ///////////////////////////////////////////////////////////////////////////////
-exports.update = function (request, response, next) {
+exports.updateOne = function (request, response, next) {
 
     response.contentType('application/json');
     Digestor.findById(request.params.id, updateDigestor);
@@ -200,16 +208,18 @@ exports.update = function (request, response, next) {
 //                                                                           //
 // @url GET /digestor/remove/:id                                             //
 ///////////////////////////////////////////////////////////////////////////////
-exports.remove = function (request, response, next) {
-    response.contentType('application/json');
-    Digestor.remove({_id: request.params.id}, delDigestor);
+exports.deleteOne = function (request, response, next) {
 
-    function delDigestor(error, digestor) {
+    response.contentType('application/json');
+    Digestor.findByIdAndRemove(request.body._id, deleteDigestor);
+    function deleteDigestor (error, account) {
         if (error) {
             return next(error);
         }
-        var msgJSON = JSON.stringify({action: 'remove', result: 0});
-        return response.send(msgJSON);
+        // The request was processed successfully, but no response body is needed.
+        response.status(204);
+        var message = JSON.stringify({});
+        return response.send(message);
     }
 };
 
@@ -225,7 +235,7 @@ exports.remove = function (request, response, next) {
 //                                                                           //
 // @url GET /digestor/removeall                                              //
 ///////////////////////////////////////////////////////////////////////////////
-exports.removeAll = function (request, response, next) {
+exports.deleteAll = function (request, response, next) {
 
     response.contentType('application/json');
     Digestor.find(gotDigestors);
@@ -245,7 +255,9 @@ exports.removeAll = function (request, response, next) {
                 return next();
             });
         });
-        var msgJSON = JSON.stringify({action: 'removeAll', result: true});
+        // The request was processed successfully, but no response body is needed.
+        response.status(204);
+        var msgJSON = JSON.stringify({action: 'deleteAll', result: true});
         return response.send(msgJSON);
     }
 };

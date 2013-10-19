@@ -8,7 +8,7 @@ var http = require('http');
 var APP = require("../app").app;
 
 
-describe('Account', function () {
+describe('Apicatus test suite', function () {
     var url = 'https://apicatus-c9-bmaggi.c9.io';
     var server = null;
     var app = null;
@@ -21,12 +21,17 @@ describe('Account', function () {
           }
         }
         function startServer() {
-            APP.listen(process.env.PORT, process.env.IP);
+            var server = require('http').createServer(APP)
+            server.listen(conf.listenPort);
+            return server;
         }
-        mongoose.connect('mongodb://admin:admin@alex.mongohq.com:10062/cloud-db');
+        if(mongoose.connection.readyState === 0) {
+            mongoose.connect('mongodb://admin:admin@alex.mongohq.com:10062/cloud-db');
+        }
+
         mongoose.connection.on("open", function() {
             clearCollections();
-            startServer();
+            server = startServer();
             done();
         });
     })
@@ -37,61 +42,232 @@ describe('Account', function () {
           }
         }
         clearCollections();
-        mongoose.disconnect();
-        return done();
+        mongoose.disconnect(function() {
+            server.close(function() {
+                return done();
+            });
+        })
     });
 
-    describe('User management', function() {
-        it('should crete a new user', function() {
+    describe('User Management', function () {
+        describe('CURD Operations', function() {
+            it('should crete a new user', function(done) {
+                var url = 'http://' + conf.ip + ':' + conf.listenPort;
+                var profile = {
+                    username: 'admin',
+                    password: 'admin'
+                };
+                request(url)
+                    .post('/user')
+                    .set('Content-Type', 'application/json')
+                    .send(profile)
+                    .expect('Content-Type', /json/)
+                    .expect(201)
+                    .end(function(err, res) {
+                        if (err) throw err;
+                        res.body.username.should.equal('admin')
+                        return done();
+                    });
+            });
+            it('should not allow registering en existing with same id as existing one', function(done) {
+                var url = 'http://' + conf.ip + ':' + conf.listenPort;
+                var profile = {
+                    username: 'admin',
+                    password: 'admin'
+                };
+                request(url)
+                    .post('/user')
+                    .send(profile)
+                    .expect('Content-Type', /json/)
+                    .expect(409)
+                    .end(function(err, res) {
+                        if (err) throw err;
+                        res.statusCode.should.equal(409)
+                        return done();
+                    });
+            });
+            it('should be able to login', function(done) {
+                var url = 'http://' + conf.ip + ':' + conf.listenPort;
+                var profile = {
+                    username: 'admin',
+                    password: 'admin'
+                };
+                request(url)
+                    .post('/user/signin')
+                    .send(profile)
+                    .expect('Content-Type', /json/)
+                    .expect(200)
+                    .end(function(err, res) {
+                        if (err) throw err;
+                        res.body.username.should.equal('admin');
+                        return done();
+                    });
+            });
+            it('should be able to signout', function(done) {
+                var url = 'http://' + conf.ip + ':' + conf.listenPort;
+                request(url)
+                    .get('/user/signout')
+                    .expect(204)
+                    .end(function(err, res) {
+                        if (err) throw err;
+                        res.statusCode.should.equal(204)
+                        return done();
+                    });
+            });
+            it('should be able to delete a user account', function(done) {
+                var url = 'http://' + conf.ip + ':' + conf.listenPort;
+                var profile = {
+                    username: 'admin',
+                    password: 'admin'
+                };
+                request(url)
+                    .post('/user/signin')
+                    .send(profile)
+                    .expect('Content-Type', /json/)
+                    .expect(200)
+                    .end(function(err, res) {
+                        if (err) throw err;
+                        res.body.username.should.equal('admin')
+                        var cookie = res.headers['set-cookie'];
+                        request(url)
+                            .del('/user')
+                            .set('cookie', cookie)
+                            .expect(204)
+                            .end(function(err, res) {
+                                if (err) throw err;
+                                res.statusCode.should.equal(204)
+                                return done();
+                            });
+                    });
+            });
+        });
+        describe('Authentication', function() {
+            it('should be able to login', function(done) {
+                var url = 'http://' + conf.ip + ':' + conf.listenPort;
+                var profile = {
+                    username: 'admin',
+                    password: 'admin'
+                };
+                request(url)
+                    .post('/user')
+                    .set('Content-Type', 'application/json')
+                    .send(profile)
+                    .expect('Content-Type', /json/)
+                    .end(function(err, res) {
+                        if (err) throw err;
+                        res.body.username.should.equal('admin')
+                        var cookie = res.headers['set-cookie'];
+                        request(url)
+                            .post('/user/signin')
+                            .set('cookie', cookie)
+                            .send(profile)
+                            .expect('Content-Type', /json/)
+                            .expect(200)
+                            .end(function(err, res) {
+                                if (err) throw err;
+                                res.body.username.should.equal('admin');
+                                return done();
+                            });
+                    });
+            });
+            it('should be able to signout', function(done) {
+                var url = 'http://' + conf.ip + ':' + conf.listenPort;
+                request(url)
+                    .get('/user/signout')
+                    .expect(204)
+                    .end(function(err, res) {
+                        if (err) throw err;
+                        res.statusCode.should.equal(204)
+                        return done();
+                    });
+            });
+        });
+    });
+    describe('Digestor Management', function () {
+        var cookie = null;
+        before(function(done) {
             var url = 'http://' + conf.ip + ':' + conf.listenPort;
             var profile = {
                 username: 'admin',
                 password: 'admin'
             };
-            request(url)
-                .post('/signup')
+            // Create User
+            /*request(url)
+                .post('/user')
+                .set('Content-Type', 'application/json')
                 .send(profile)
                 .expect('Content-Type', /json/)
                 .expect(201)
                 .end(function(err, res) {
                     if (err) throw err;
-                });
-        });
-        it('should not allow registering en existing with same id as existing one', function() {
-            var url = 'http://' + conf.ip + ':' + conf.listenPort;
-            var profile = {
-                username: 'admin',
-                password: 'admin'
-            };
-            request(url)
-                .post('/signup')
-                .send(profile)
-                .expect('Content-Type', /json/)
-                .expect(503)
-                .end(function(err, res) {
-                    if (err) throw err;
-                });
-        });
-        it('should be able to login', function() {
-            var url = 'http://' + conf.ip + ':' + conf.listenPort;
-            var profile = {
-                username: 'admin',
-                password: 'admin'
-            };
-            request(url)
-                .post('/signup')
-                .send(profile)
-                .expect('Content-Type', /json/)
-                .expect(503)
-                .end(function(err, res) {
-                    if (err) throw err;
-                });
-        });
-        it('should be able to signout', function() {
+                    res.body.username.should.equal('admin')
+                    cookie = res.headers['set-cookie'];
+                    return done();
+                });*/
 
+                request(url)
+                    .post('/user/signin')
+                    .send(profile)
+                    .expect('Content-Type', /json/)
+                    .expect(200)
+                    .end(function(err, res) {
+                        if (err) throw err;
+                        res.body.username.should.equal('admin');
+                        cookie = res.headers['set-cookie'];
+                        return done();
+                    });
         });
-        it('should be able to delete a user account', function() {
-
+        describe('CURD Operations', function() {
+            it('should crete a new digestor', function(done) {
+                var url = 'http://' + conf.ip + ':' + conf.listenPort;
+                var digestor = {
+                    name: 'myDigestor'
+                };
+                request(url)
+                    .post('/digestors')
+                    .set('Content-Type', 'application/json')
+                    .send(digestor)
+                    .expect('Content-Type', /json/)
+                    .expect(201)
+                    .end(function(err, res) {
+                        if (err) throw err;
+                        res.body.name.should.equal('myDigestor');
+                        return done();
+                    });
+            });
+            it('should read all digestor', function(done) {
+                var url = 'http://' + conf.ip + ':' + conf.listenPort;
+                var digestor = {
+                    name: 'myDigestor'
+                };
+                request(url)
+                    .get('/digestors')
+                    .set('cookie', cookie)
+                    .expect('Content-Type', /json/)
+                    .expect(200)
+                    .end(function(err, res) {
+                        if (err) throw err;
+                        res.body.length.should.equal(1);
+                        return done();
+                    });
+            });
+            it('should not allow duplicates', function(done) {
+                var url = 'http://' + conf.ip + ':' + conf.listenPort;
+                var digestor = {
+                    name: 'myDigestor'
+                };
+                request(url)
+                    .post('/digestors')
+                    .send(digestor)
+                    .expect('Content-Type', /json/)
+                    .expect(409)
+                    .end(function(err, res) {
+                        if (err) throw err;
+                        res.statusCode.should.equal(409)
+                        return done();
+                    });
+            });
         });
-    })
+    });
 });
+

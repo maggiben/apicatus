@@ -1,27 +1,76 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Primary configuration file                                                //
 ///////////////////////////////////////////////////////////////////////////////
-var conf = {
-    "sessionSecret": "secret",
-    "listenPort": process.env.PORT || 8080,
-    "ip": process.env.IP || 'localhost',
-    "allowCrossDomain": false,
-    "mongo_local": {
-        "hostname": "localhost",
-        "port": 27017,
-        "username": "admin",
-        "password": "admin",
-        "name": "",
-        "db": "apicatus"
-    },
-    "mongohq": {
-        hostname: "alex.mongohq.com",
-        port: 10062,
+var os = require("os");
+
+///////////////////////////////////////////////////////////////////////////////
+// Development options                                                       //
+///////////////////////////////////////////////////////////////////////////////
+var development = {
+    sessionSecret: "secret",
+    environment: process.env.NODE_ENV,
+    listenPort: process.env.PORT || 8080,
+    ip: process.env.IP || os.hostname(),
+    allowCrossDomain: false,
+    autoStart: true,
+    mongoUrl: {
+        hostname: "paulo.mongohq.com",
+        port: 10026,
         username: "admin",
-        password: "12345",
+        password: "admin",
         name: "",
-        db: "cloud-db"
+        db: "apicatus"
+    }
+};
+///////////////////////////////////////////////////////////////////////////////
+// Testing options                                                           //
+// Warning: DB must be empty, do not use dev or prod databases               //
+///////////////////////////////////////////////////////////////////////////////
+var test = {
+    sessionSecret: "secret",
+    environment: process.env.NODE_ENV,
+    listenPort: process.env.PORT || 8080,
+    ip: process.env.IP || os.hostname(),
+    allowCrossDomain: false,
+    autoStart: false,
+    mongoUrl: {
+        hostname: "paulo.mongohq.com",
+        port: 10026,
+        username: "admin",
+        password: "admin",
+        name: "",
+        db: "apicatus"
+    }
+};
+///////////////////////////////////////////////////////////////////////////////
+// Production options                                                        //
+///////////////////////////////////////////////////////////////////////////////
+var production = {
+    sessionSecret: "secret",
+    environment: process.env.NODE_ENV,
+    listenPort: process.env.PORT || 8080,
+    ip: process.env.IP || os.hostname(),
+    allowCrossDomain: false,
+    autoStart: true,
+    mongoUrl: {
+        hostname: "paulo.mongohq.com",
+        port: 10026,
+        username: "admin",
+        password: "admin",
+        name: "",
+        db: "apicatus"
     }
 };
 
-module.exports = conf;
+module.exports = (function(){
+    switch(process.env.NODE_ENV){
+        case 'development':
+            return development;
+        case 'test':
+            return test;
+        case 'production':
+            return production;
+        default:
+            return development;
+    }
+})();

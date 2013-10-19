@@ -4,16 +4,16 @@
 var express = require('express'),
     mongoose = require('mongoose'),
     conf = require('./config'),
-    Account = require('./models/account'),
+    AccountMdl = require('./models/account'),
     AccountCtl = require('./controllers/account'),
     DigestorMdl = require('./models/digestor')
     DigestorCtl = require('./controllers/digestor'),
-    passport = require('passport'),
     FileSystem = require('fs'),
     util = require('util'),
     vm = require('vm'),
     url = require('url'),
     SocketIo = require('socket.io'),
+    passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -22,8 +22,7 @@ var express = require('express'),
 if(process.env.VCAP_SERVICES){
     var env = JSON.parse(process.env.VCAP_SERVICES);
     var mongo = env['mongodb-1.8'][0]['credentials'];
-}
-else{
+} else {
     var mongo = {
         "hostname": "127.0.0.1",
         "port": 27017,
@@ -44,12 +43,32 @@ var generate_mongo_url = function(obj){
         return "mongodb://" + obj.hostname + ":" + obj.port + "/" + obj.db;
     }
 };
-var mongourl = generate_mongo_url(conf.mongohq);
-console.log("mongourl: " + mongourl)
 
-////////////////////////////////////////////////////////////////////////////
-// Extend an object with another object's properties.                     //
-////////////////////////////////////////////////////////////////////////////
+var init = function(options) {
+    if(conf.autoStart) {
+        console.log("autostarting app")
+        var mongoUrl = generate_mongo_url(conf.mongoUrl);
+        console.log("mongodb connet to", mongoUrl);
+        ///////////////////////////////////////////////////////////////////////////
+        // MongoDB Connection setup                                              //
+        ///////////////////////////////////////////////////////////////////////////
+        // Connect mongoose
+        mongoose.connect(mongoUrl);
+        //mongoose.connect('mongodb://admin:admin@alex.mongohq.com:10062/cloud-db');
+        // Check if connected
+        mongoose.connection.on("open", function(){
+            console.log("mongodb connected to: %s", mongoUrl);
+        });
+        var server = require('http').createServer(app)
+        var io = require('socket.io').listen(server);
+        server.listen(conf.listenPort);
+    }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Extend an object with another object's properties.                        //
+///////////////////////////////////////////////////////////////////////////////
 function extend(object) {
     // Takes an unlimited number of extenders.
     var args = Array.prototype.slice.call(arguments, 1);
@@ -66,7 +85,7 @@ function extend(object) {
 ///////////////////////////////////////////////////////////////////////////////
 // Run app                                                                   //
 ///////////////////////////////////////////////////////////////////////////////
-var app = exports.app = express();
+var app = express();
 
 ///////////////////////////////////////////////////////////////////////////////
 // CORS middleware (only to test on cloud9)                                  //
@@ -84,10 +103,10 @@ var allowCrossDomain = function(request, response, next) {
         next();
     }
 };
-
 // reusable middleware to test authenticated sessions
 function ensureAuthenticated(request, response, next) {
-    console.log(ensureAuthenticated);
+    //console.log("ensureAuthenticated");
+    //console.log(request.isAuthenticated());
     if(request.isAuthenticated()) {
         return next();
     }
@@ -96,6 +115,10 @@ function ensureAuthenticated(request, response, next) {
     response.send({error: 'unauthorized'}); // if failed...
     //response.redirect('/signin'); // if failed...
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// APICATUS Digestors logic                                                  //
+///////////////////////////////////////////////////////////////////////////////
 function digestRequest(request, response, next) {
     if (!request.headers.host) {
         return next();
@@ -175,38 +198,45 @@ app.configure(function(){
 });
 
 app.configure('development', function() {
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+    app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+    app.use(express.logger());
+});
+app.configure('testing', function() {
+    app.use(express.errorHandler());
 });
 app.configure('production', function() {
-  app.use(express.errorHandler());
+    app.use(express.errorHandler());
 });
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
 // passport setup & strategy                                                 //
 ///////////////////////////////////////////////////////////////////////////////
-passport.use(new LocalStrategy(Account.authenticate()));
-passport.serializeUser(Account.serializeUser());
-passport.deserializeUser(Account.deserializeUser());
-
-///////////////////////////////////////////////////////////////////////////////
-// MongoDB Connection setup                                                  //
-///////////////////////////////////////////////////////////////////////////////
-// Connect mongoose
-//mongoose.connect(mongourl);
-// Check if connected
-mongoose.connection.on("open", function(){
-    console.log("mongodb connected at: %s", mongourl);
-});
+//passport.use(new LocalStrategy(Account.authenticate()));
+passport.use(AccountMdl.createStrategy());
+passport.serializeUser(AccountMdl.serializeUser());
+passport.deserializeUser(AccountMdl.deserializeUser());
 
 ///////////////////////////////////////////////////////////////////////////////
 // Digestors Resource Management                                             //
 ///////////////////////////////////////////////////////////////////////////////
-// Collections CURD
+// Collections
 app.post('/digestors', DigestorCtl.create);
-app.put('/digestors/:id', DigestorCtl.update);
-app.get('/digestors', DigestorCtl.getAll);
+app.get('/digestors', ensureAuthenticated, DigestorCtl.readAll);
+//app.put('/digestors', DigestorCtl.updateAll);
+app.delete('/digestors', DigestorCtl.deleteAll);
+// Entities
+app.get('/digestors/:id', DigestorCtl.readOne);
+app.put('/digestors/:id', DigestorCtl.updateOne);
+app.delete('/digestors/:id', DigestorCtl.deleteOne);
+
+/*
+app.put('/digestors/:id', DigestorCtl.updateOne);
+app.get('/digestors', DigestorCtl.getOne);
 app.get('/digestors/:id', DigestorCtl.getById);
+*/
+
 //app.delete('/digestors', DigestorCtl.removeAll);
 // Elements
 //app.get('/digestors/:id', DigestorCtl.getById);
@@ -220,76 +250,39 @@ app.get('/', function(request, response) {
 });
 
 ///////////////////////////////////////////////////////////////////////////////
-// USER API                                                                  //
-// @signup
-// @signin
-// @signout
-// @forgot
-// @password                                                                 //
+// User CRUD Methods & Servi                                                 //
 ///////////////////////////////////////////////////////////////////////////////
-/*
-app.post('/signup', function(req, res) {
-
-        var username = req.body.username;
-        console.log("registering: user: %s pass: %s", req.body.username, req.body.password);
-
-        Account.findOne({username : username }, function(err, existingUser) {
-            if (err || existingUser) {
-                console.log("existingUser");
-                response.status(409);
-                //return res.render('signup', { account : account });
-            }
-            var account = new Account({ username : req.body.username, email: req.body.username});
-            account.setPassword(req.body.password, function(err) {
-                if (err) {
-                    response.status(503);
-                    //return res.render('signup', { account : account });
-                }
-                account.save(function(err) {
-                    if (err) {
-                        response.status(503);
-                        return res.render('signup', { account : account });
-                    }
-                    response.status(201);
-                    //return res.redirect('/');
-                });
-            });
-        });
-});
-*/
-app.post('/signup', AccountCtl.createAccount);
-app.post('/signin', function(request, response, next) {
+app.post('/user/signin', function(request, response, next) {
     response.contentType('application/json');
-    passport.authenticate('local', function(err, user, info) {
-        if (err) {
+    passport.authenticate('local', function(error, user, info) {
+        if (error) {
             response.status(503);
             return next(err);
         }
         if (!user) {
+            //request.session.messages =  [info.message];
             console.log("unauthorized");
             response.status(401);
             return response.send({error: 'unauthorized'});
-            //return response.render('signin', { title: 'bad login', locale: 'en_US', user: req.user });
         }
         request.logIn(user, function(err) {
             if (err) {
                 response.status(503);
                 return next(err);
             }
+            // User has authenticated
+            return response.send(JSON.stringify({username: request.user.username}));
         });
-        console.log("auth okay");
-
-        return response.send(user);
-        // redirect but pass route to client application
-        return res.redirect('/');
     })(request, response, next);
 });
-app.get('/signout', function(request, response, next) {
+app.get('/user/signout', function(request, response, next) {
+    response.contentType('application/json');
     request.logout();
-    response.status(200);
-    return response.send({success: 'signout'});
+    response.status(204);
+    var message = JSON.stringify({});
+    return response.send(message);
 });
-app.post('/forgot', function(req, res) {
+app.post('/user/forgot', function(req, res) {
 
     var email = req.body.email;
     //res.writeHead(401, {"Content-Type": "application/json"});
@@ -315,18 +308,25 @@ app.post('/forgot', function(req, res) {
             }
     });
 });
-///////////////////////////////////////////////////////////////////////////////
-// TEST API                                                                  //
-///////////////////////////////////////////////////////////////////////////////
+app.post('/user', AccountCtl.create);
+app.get('/user', ensureAuthenticated, AccountCtl.read);
+app.put('/user', ensureAuthenticated, AccountCtl.update);
+app.del('/user', ensureAuthenticated, AccountCtl.delete);
+
+app.post('/xxx', ensureAuthenticated, function(request, response, next) {
+    console.log("no prob")
+    response.contentType('application/json');
+    response.status(401);
+    var message = JSON.stringify({message: 'xxx'});
+    return response.send(message);
+});
 
 ///////////////////////////////////////////////////////////////////////////////
 // socket.io                                                                 //
 ///////////////////////////////////////////////////////////////////////////////
-//var server = require('http').createServer(app)
-//var io = require('socket.io').listen(server);
 
-//server.listen(conf.listenPort);
-
+init();
+exports.app = app;
 //module.exports = app;
 
 ///////////////////////////////////////////////////////////////////////////////

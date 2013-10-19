@@ -4,16 +4,16 @@
 var express = require('express'),
     mongoose = require('mongoose'),
     conf = require('./config'),
-    Account = require('./models/account'),
+    AccountMdl = require('./models/account'),
     AccountCtl = require('./controllers/account'),
     DigestorMdl = require('./models/digestor')
     DigestorCtl = require('./controllers/digestor'),
-    passport = require('passport'),
     FileSystem = require('fs'),
     util = require('util'),
     vm = require('vm'),
     url = require('url'),
     SocketIo = require('socket.io'),
+    passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -22,8 +22,7 @@ var express = require('express'),
 if(process.env.VCAP_SERVICES){
     var env = JSON.parse(process.env.VCAP_SERVICES);
     var mongo = env['mongodb-1.8'][0]['credentials'];
-}
-else{
+} else {
     var mongo = {
         "hostname": "127.0.0.1",
         "port": 27017,
@@ -66,7 +65,7 @@ function extend(object) {
 ///////////////////////////////////////////////////////////////////////////////
 // Run app                                                                   //
 ///////////////////////////////////////////////////////////////////////////////
-var app = exports.app = express();
+var app = express();
 
 ///////////////////////////////////////////////////////////////////////////////
 // CORS middleware (only to test on cloud9)                                  //
@@ -87,7 +86,8 @@ var allowCrossDomain = function(request, response, next) {
 
 // reusable middleware to test authenticated sessions
 function ensureAuthenticated(request, response, next) {
-    console.log(ensureAuthenticated);
+    console.log("ensureAuthenticated");
+    console.log(request.isAuthenticated());
     if(request.isAuthenticated()) {
         return next();
     }
@@ -161,6 +161,7 @@ function digestRequest(request, response, next) {
 app.configure(function(){
     app.set('view engine', 'html');
     app.set('views', __dirname + '/views');
+    app.use(express.logger());
     app.use(express.bodyParser());
     app.use(express.methodOverride());
     app.use(express.cookieParser());
@@ -185,15 +186,17 @@ app.configure('production', function() {
 ///////////////////////////////////////////////////////////////////////////////
 // passport setup & strategy                                                 //
 ///////////////////////////////////////////////////////////////////////////////
-passport.use(new LocalStrategy(Account.authenticate()));
-passport.serializeUser(Account.serializeUser());
-passport.deserializeUser(Account.deserializeUser());
+//passport.use(new LocalStrategy(Account.authenticate()));
+passport.use(AccountMdl.createStrategy());
+passport.serializeUser(AccountMdl.serializeUser());
+passport.deserializeUser(AccountMdl.deserializeUser());
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // MongoDB Connection setup                                                  //
 ///////////////////////////////////////////////////////////////////////////////
 // Connect mongoose
-//mongoose.connect(mongourl);
+mongoose.connect(mongourl);
 // Check if connected
 mongoose.connection.on("open", function(){
     console.log("mongodb connected at: %s", mongourl);
@@ -227,61 +230,29 @@ app.get('/', function(request, response) {
 // @forgot
 // @password                                                                 //
 ///////////////////////////////////////////////////////////////////////////////
-/*
-app.post('/signup', function(req, res) {
-
-        var username = req.body.username;
-        console.log("registering: user: %s pass: %s", req.body.username, req.body.password);
-
-        Account.findOne({username : username }, function(err, existingUser) {
-            if (err || existingUser) {
-                console.log("existingUser");
-                response.status(409);
-                //return res.render('signup', { account : account });
-            }
-            var account = new Account({ username : req.body.username, email: req.body.username});
-            account.setPassword(req.body.password, function(err) {
-                if (err) {
-                    response.status(503);
-                    //return res.render('signup', { account : account });
-                }
-                account.save(function(err) {
-                    if (err) {
-                        response.status(503);
-                        return res.render('signup', { account : account });
-                    }
-                    response.status(201);
-                    //return res.redirect('/');
-                });
-            });
-        });
-});
-*/
 app.post('/signup', AccountCtl.createAccount);
 app.post('/signin', function(request, response, next) {
     response.contentType('application/json');
-    passport.authenticate('local', function(err, user, info) {
-        if (err) {
+    passport.authenticate('local', function(error, user, info) {
+        if (error) {
             response.status(503);
             return next(err);
         }
         if (!user) {
+            //request.session.messages =  [info.message];
             console.log("unauthorized");
             response.status(401);
             return response.send({error: 'unauthorized'});
-            //return response.render('signin', { title: 'bad login', locale: 'en_US', user: req.user });
         }
         request.logIn(user, function(err) {
             if (err) {
                 response.status(503);
                 return next(err);
             }
+            console.log("auth okay");
+            console.log(JSON.stringify({username: request.user.username}));
         });
-        console.log("auth okay");
-
-        return response.send(user);
-        // redirect but pass route to client application
-        return res.redirect('/');
+        return response.send(JSON.stringify({username: request.user.username}));
     })(request, response, next);
 });
 app.get('/signout', function(request, response, next) {
@@ -315,6 +286,31 @@ app.post('/forgot', function(req, res) {
             }
     });
 });
+app.delete('/users', AccountCtl.delete);
+
+app.post('/xxx', ensureAuthenticated, function(request, response, next) {
+    response.contentType('application/json');
+    response.status(200);
+    var message = JSON.stringify({message: 'return'});
+    return response.send(message);
+})
+
+app.delete('/users', ensureAuthenticated, delete);
+
+/*
+function(request, response, next) {
+    response.contentType('application/json');
+    if(request.isAuthenticated()) {
+        console.log('will delete 200');
+        var account = JSON.stringify(request.user);
+        return response.send(account);
+    }
+    console.log('cant delete not auth 403');
+    response.status(403);
+    var message = JSON.stringify({error: 'youre not logged in'});
+    return response.send(message);
+})
+*/
 ///////////////////////////////////////////////////////////////////////////////
 // TEST API                                                                  //
 ///////////////////////////////////////////////////////////////////////////////
@@ -322,11 +318,12 @@ app.post('/forgot', function(req, res) {
 ///////////////////////////////////////////////////////////////////////////////
 // socket.io                                                                 //
 ///////////////////////////////////////////////////////////////////////////////
-//var server = require('http').createServer(app)
-//var io = require('socket.io').listen(server);
+var server = require('http').createServer(app)
+var io = require('socket.io').listen(server);
 
-//server.listen(conf.listenPort);
+server.listen(conf.listenPort);
 
+exports.app = app;
 //module.exports = app;
 
 ///////////////////////////////////////////////////////////////////////////////

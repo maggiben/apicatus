@@ -8,7 +8,7 @@ var http = require('http');
 var APP = require("../app").app;
 
 
-describe('Account', function () {
+describe('User account management', function () {
     var url = 'https://apicatus-c9-bmaggi.c9.io';
     var server = null;
     var app = null;
@@ -21,12 +21,15 @@ describe('Account', function () {
           }
         }
         function startServer() {
-            APP.listen(process.env.PORT, process.env.IP);
+            //APP.listen(process.env.PORT, process.env.IP);
+            var server = require('http').createServer(APP)
+            server.listen(conf.listenPort);
+            return server;
         }
         mongoose.connect('mongodb://admin:admin@alex.mongohq.com:10062/cloud-db');
         mongoose.connection.on("open", function() {
             clearCollections();
-            startServer();
+            //startServer();
             done();
         });
     })
@@ -79,16 +82,23 @@ describe('Account', function () {
                 password: 'admin'
             };
             request(url)
-                .post('/signup')
+                .post('/signin')
                 .send(profile)
                 .expect('Content-Type', /json/)
-                .expect(503)
+                .expect(200)
                 .end(function(err, res) {
                     if (err) throw err;
                 });
         });
         it('should be able to signout', function() {
-
+            var url = 'http://' + conf.ip + ':' + conf.listenPort;
+            request(url)
+                .get('/signout')
+                .expect('Content-Type', /json/)
+                .expect(200)
+                .end(function(err, res) {
+                    if (err) throw err;
+                });
         });
         it('should be able to delete a user account', function() {
 

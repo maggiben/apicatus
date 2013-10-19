@@ -1,6 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Primary configuration file                                                //
 ///////////////////////////////////////////////////////////////////////////////
+var os = require("os");
+console.log(os.hostname())
 var conf = {
     "sessionSecret": "secret",
     "listenPort": process.env.PORT || 8080,
@@ -14,13 +16,13 @@ var conf = {
         "name": "",
         "db": "apicatus"
     },
-    "mongohq": {
-        hostname: "alex.mongohq.com",
-        port: 10062,
+    mongohq: {
+        hostname: "paulo.mongohq.com",
+        port: 10026,
         username: "admin",
-        password: "12345",
+        password: "admin",
         name: "",
-        db: "cloud-db"
+        db: "apicatus"
     }
 };
 

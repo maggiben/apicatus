@@ -55,7 +55,6 @@ exports.signIn = function(request, response, next) {
             return next(error);
         }
         if (!user) {
-            console.log("unauthorized");
             var nouserJSON = JSON.stringify({title: 'bad login', locale: 'en_US', message: 'invalid username'});
             return response.send(nouserJSON);
         }
@@ -64,7 +63,6 @@ exports.signIn = function(request, response, next) {
                 return next(error);
             }
         });
-        console.log("auth okay");
         var accountJSON = JSON.stringify(request.user);
         return response.send(accountJSON);
     })(request, response, next);
@@ -134,7 +132,6 @@ exports.createAccount = function(request, response, next) {
 
     response.contentType('application/json');
     var username = request.body.username;
-
     Account.findOne({username : username}, function(error, existingUser) {
         if (error || existingUser) {
             response.status(503);
@@ -178,11 +175,9 @@ exports.update = function (request, response, next) {
 
     function updateAccount (error, account) {
         if (error) {
-            console.log(error);
             return next(error);
         }
         if (!account) {
-            console.log(error);
             return next(error);
         }
         else {
@@ -193,3 +188,25 @@ exports.update = function (request, response, next) {
     }
 };
 
+///////////////////////////////////////////////////////////////////////////////
+// Route to remove an Account                                                //
+//                                                                           //
+// @param {Object} request                                                   //
+// @param {Object} response                                                  //
+// @param {Object} next                                                      //
+// @return {Object} JSON updated account                                     //
+//                                                                           //
+// @api public                                                               //
+//                                                                           //
+// @url DELETE /users                                                        //
+///////////////////////////////////////////////////////////////////////////////
+exports.delete = function (request, response, next) {
+
+    response.status(403);
+
+    response.contentType('application/json');
+    console.log(request.user);
+    //Account.findOne({username : request.user.username});
+    var accountJSON = JSON.stringify(account);
+    return response.send(accountJSON);
+};

@@ -64,5 +64,6 @@ var environments = {
     }
 }
 module.exports = (function(){
-    return environments[process.env.NODE_ENV];
+    var env = process.env.NODE_ENV || 'production';
+    return environments[env];
 })();

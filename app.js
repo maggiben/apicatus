@@ -253,7 +253,6 @@ app.get('/', function(request, response) {
 // User CRUD Methods & Servi                                                 //
 ///////////////////////////////////////////////////////////////////////////////
 app.post('/user/signin', function(request, response, next) {
-        console.log("user signIn")
     response.contentType('application/json');
     passport.authenticate('local', function(error, user, info) {
         if (error) {
@@ -276,7 +275,7 @@ app.post('/user/signin', function(request, response, next) {
         });
     })(request, response, next);
 });
-app.get('/user/signout', function(request, response, next) {
+app.get('/user/signout', ensureAuthenticated, function(request, response, next) {
     response.contentType('application/json');
     request.logout();
     response.status(204);
@@ -312,12 +311,13 @@ app.post('/user/forgot', function(req, res) {
 app.post('/user', AccountCtl.create);
 app.get('/user', ensureAuthenticated, AccountCtl.read);
 app.put('/user', ensureAuthenticated, AccountCtl.update);
-app.del('/user', AccountCtl.delete);
+app.del('/user', ensureAuthenticated, AccountCtl.delete);
 
 app.post('/xxx', ensureAuthenticated, function(request, response, next) {
+    console.log("no prob")
     response.contentType('application/json');
-    response.status(200);
-    var message = JSON.stringify({message: 'return'});
+    response.status(401);
+    var message = JSON.stringify({message: 'xxx'});
     return response.send(message);
 });
 

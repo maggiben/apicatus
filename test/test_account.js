@@ -92,8 +92,19 @@ describe('User account management', function () {
                 .expect(200)
                 .end(function(err, res) {
                     if (err) throw err;
-                    res.body.username.should.equal('admin')
-                    return done();
+                    //res.body.username.should.equal('admin')
+                    cookie = res.headers['set-cookie'];
+                    console.log("more tests")
+                    request(url)
+                        .post('/xxx')
+                        .set('cookie', cookie)
+                        .send({})
+                        .expect(401)
+                        .end(function(err, res) {
+                            console.log(res.body)
+                            res.body.message.should.equal('xxx')
+                            return done();
+                        })
                 });
         });
         it('should be able to signout', function(done) {

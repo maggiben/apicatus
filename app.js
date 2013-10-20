@@ -62,7 +62,7 @@ var init = function(options) {
         });
         var server = require('http').createServer(app)
         var io = require('socket.io').listen(server);
-        server.listen(conf.listenPort);
+        server.listen(conf.listenPort, conf.ip);
     }
 }
 
@@ -155,7 +155,9 @@ app.delete('/digestors/:name', DigestorCtl.deleteOne);
 app.get('/', function(request, response) {
     response.sendfile(__dirname + '/public/index.html');
 });
-
+app.get('/views/:name', function(request, response) {
+    response.sendfile(__dirname + '/views/' + request.params.name);
+});
 ///////////////////////////////////////////////////////////////////////////////
 // User CRUD Methods & Servi                                                 //
 ///////////////////////////////////////////////////////////////////////////////

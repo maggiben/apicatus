@@ -16,7 +16,7 @@
               <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex5-collapse">
                 <i class="glyphicon glyphicon-list"></i>
               </button>
-              <a class="navbar-brand" href="#"><img src="images/B_reverse_logo.png"></a>
+              <a class="navbar-brand" href="#"><img src="images/logo3.svg"></a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -103,18 +103,16 @@
                 <li style="width: 8%;background-color: rgba(245, 64, 32, 1);"></li>
             </ul>
         </footer>
-        <script src="javascripts/jquery-1.8.2.js"></script>
-        <script src="javascripts/modernizr.custom.js"></script>
-        <script src="javascripts/bootstrap.js"></script>
-        <script src="javascripts/jquery-ui.js"></script>
-        <script src="javascripts/jsviews.js"></script>
-        <script src="javascripts/jsrender.js"></script>
+        <script src="js/jquery-1.8.2.js"></script>
+        <script src="js/modernizr.custom.js"></script>
+        <script src="js/bootstrap.js"></script>
+        <script src="js/jquery-ui.js"></script>
 
-        <script src="javascripts/angular.js"></script>
-        <script src="javascripts/angular-route.js"></script>
-        <script src="javascripts/ui-bootstrap-tpls-0.6.0.js"></script>
+        <script src="js/angular.js"></script>
+        <script src="js/angular-route.js"></script>
+        <script src="js/ui-bootstrap-tpls-0.6.0.js"></script>
 
-        <script src="javascripts/bootstrap-select.js"></script>
+        <script src="js/bootstrap-select.js"></script>
         <!-- Chang URLs to wherever Video.js files will be hosted -->
         <script>
         $(document).ready(function() {
@@ -293,59 +291,10 @@
             var apicatus = angular.module('apicatus', ['ui.bootstrap', 'ngRoute'])
             .config(['$routeProvider', function($routeProvider) {
               $routeProvider.when('/resource/:id', {templateUrl: 'views/resources.html', controller: 'ApiEntryListCtrl', resolve: ApiEntryListCtrl.resolve});
-              $routeProvider.when('/home', {templateUrl: 'views/index.html', controller: 'HomeController', resolve: HomeController.resolve});
-              $routeProvider.otherwise({redirectTo: '/home'});
+              $routeProvider.when('/digestors', {templateUrl: 'views/digestors.html', controller: 'HomeController', resolve: HomeController.resolve});
+              $routeProvider.otherwise({redirectTo: '/digestors'});
             }]);
-            /*
-            apicatus.controller('ApiEntryListCtrl', function ApiEntryListCtrl($scope, $location, $q, $http, $routeParams, apicatusStorage, apicatusHelpers) {
-                var promise = apicatusStorage.get();
-                promise.then(function(api) {
-                    $scope.api = api;
-                    $scope.$watch('api', function (newValue, oldValue) {
-                        if (newValue !== oldValue) { // This prevents unneeded calls to the local storage
-                            apicatusStorage.put(api);
-                        }
-                    }, true);
-                    //$location.path( "/view1" );
-                });
-                $scope.headers = headers;
-                $scope.items = [
-                    "The first choice!",
-                    "And another choice for you.",
-                    "but wait! A third!"
-                ];
-                $scope.addResource = function () {
-                    console.log("addResource");
-                    //return;
-                    $scope.api.entries.push({
-                        "id": apicatusHelpers.guid(),
-                        "route": "",
-                        "method": {"id": 2, "label": "GET"},
-                        "parameters": {
-                            headers: [],
-                            values: []
-                        },
-                        "sends": "",
-                        "status": { "id": 204 },
-                        "contentType": { "id": 100 },
-                        "description": "",
-                        "proxy": {
-                            "enabled": false,
-                            "url": ""
-                        },
-                        "hits": 0,
-                        "isEditing": false
-                    });
 
-                    //$scope.newTodo = '';
-                };
-
-                $scope.removeResource = function (resource) {
-                    console.log(resource);
-                    $scope.api.entries.splice($scope.api.entries.indexOf(resource), 1);
-                };
-            })
-            */
             function ApiEntryListCtrl($scope, $location, $q, $http, $routeParams, apicatusStorage, apicatusHelpers, api) {
                 console.log("api");
                 console.log(api)
@@ -506,8 +455,8 @@
                         return deferred.promise;
                     },
                     put: function (api) {
-                        console.log("saving id: " + api._id)
-                        $http.put('/digestors/' + api._id, api).
+                        console.log("saving id: " + api.name)
+                        $http.put('/digestors/' + api.name, api).
                         success(function(data, status, headers, config) {
                             // this callback will be called asynchronously
                             // when the response is available

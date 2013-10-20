@@ -2,6 +2,7 @@ var conf = require('../config');
 var express = require('express');
 var mongoose = require('mongoose');
 var should = require('should');
+//var expect = require('expect');
 var assert = require('assert');
 var request = require('supertest');
 var http = require('http');
@@ -93,6 +94,7 @@ describe('Apicatus test suite', function () {
                             .end(function(err, res) {
                                 if (err) throw err;
                                 res.body.username.should.equal('admin')
+                                res.body._id.should.match(/^[0-9a-fA-F]{24}$/); // mongodb ObjectId
                                 return done();
                             });
                     });
@@ -234,7 +236,7 @@ describe('Apicatus test suite', function () {
                         return done();
                     });
             });
-            it('should read all digestor', function(done) {
+            it('should read all digestors', function(done) {
                 var url = 'http://' + conf.ip + ':' + conf.listenPort;
                 var digestor = {
                     name: 'myDigestor'
@@ -246,8 +248,8 @@ describe('Apicatus test suite', function () {
                     .expect(200)
                     .end(function(err, res) {
                         if (err) throw err;
-                        res.body.length.should.equal(1);
-                        res.body[0].name.should.equal('myDigestor');
+                        res.body.length.should.be.above(0);
+                        res.body.map(function (item){return item._id}).should.match(/^[0-9a-fA-F]{24}$/);
                         return done();
                     });
             });
@@ -264,6 +266,7 @@ describe('Apicatus test suite', function () {
                     .end(function(err, res) {
                         if (err) throw err;
                         res.body.name.should.equal('myDigestor');
+                        res.body._id.should.match(/^[0-9a-fA-F]{24}$/); // mongodb ObjectId
                         return done();
                     });
             });

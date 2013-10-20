@@ -8,6 +8,23 @@ var request = require('supertest');
 var http = require('http');
 var APP = require("../app").app;
 
+/*
+function loginUser() {
+    return function(done) {
+        server
+            .post('/login')
+            .send({ username: 'admin', password: 'admin' })
+            .expect(302)
+            .expect('Location', '/')
+            .end(onResponse);
+
+        function onResponse(err, res) {
+           if (err) return done(err);
+           return done();
+        }
+    };
+};
+*/
 
 describe('Apicatus test suite', function () {
     var url = 'https://apicatus-c9-bmaggi.c9.io';
@@ -51,7 +68,7 @@ describe('Apicatus test suite', function () {
     });
 
     describe('User Management', function () {
-        describe('CURD Operations', function() {
+        describe('CRUD Operations', function() {
             it('should crete a new user', function(done) {
                 var url = 'http://' + conf.ip + ':' + conf.listenPort;
                 var profile = {
@@ -195,6 +212,23 @@ describe('Apicatus test suite', function () {
                         return done();
                     });
             });
+            it('should check for wrong password', function(done) {
+                'user strict'
+                var url = 'http://' + conf.ip + ':' + conf.listenPort;
+                var profile = {
+                    username: 'admin',
+                    password: 'wrongpass'
+                };
+                request(url)
+                    .post('/user/signin')
+                    .send(profile)
+                    .expect(401)
+                    .end(function(err, res) {
+                        if (err) throw err;
+                        res.statusCode.should.equal(401);
+                        return done();
+                    });
+            })
         });
     });
     describe('Digestor Management', function () {
@@ -218,7 +252,7 @@ describe('Apicatus test suite', function () {
                     return done();
                 });
         });
-        describe('Resource CURD Operations', function() {
+        describe('Resource CRUD Operations', function() {
             it('should crete a new digestor', function(done) {
                 var url = 'http://' + conf.ip + ':' + conf.listenPort;
                 var digestor = {
@@ -294,7 +328,7 @@ describe('Apicatus test suite', function () {
                             .expect(200)
                             .end(function(err, res) {
                                 if (err) throw err;
-                                res.statusCode.should.equal(200)
+                                res.statusCode.should.equal(200);
                                 res.body.hits.should.equal(33);
                                 return done();
                             });

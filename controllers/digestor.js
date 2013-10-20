@@ -150,6 +150,7 @@ exports.create = function (request, response, next) {
 ///////////////////////////////////////////////////////////////////////////////
 exports.updateOne = function (request, response, next) {
     response.contentType('application/json');
+    delete request.body._id;
     Digestor.findOneAndUpdate({name: request.params.name}, request.body, onUpdate);
 
     function onUpdate (error, account) {

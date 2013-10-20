@@ -145,6 +145,7 @@ exports.create = function(request, response, next) {
 ///////////////////////////////////////////////////////////////////////////////
 exports.update = function (request, response, next) {
     response.contentType('application/json');
+    delete request.body._id;
     Account.findByIdAndUpdate(request.user._id, request.body, onUpdate);
 
     function onUpdate (error, account) {

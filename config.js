@@ -44,18 +44,18 @@ var environments = {
         }
     },
     ///////////////////////////////////////////////////////////////////////////
-    // Production options                                                    //
+    // Production options OpenShift                                          //
     ///////////////////////////////////////////////////////////////////////////
     production: {
         sessionSecret: "secret",
         environment: process.env.NODE_ENV,
-        listenPort: process.env.PORT || 8080,
-        ip: process.env.IP || os.hostname(),
+        listenPort: process.env.OPENSHIFT_NODEJS_PORT,
+        ip: process.env.OPENSHIFT_NODEJS_IP,
         allowCrossDomain: false,
         autoStart: true,
         mongoUrl: {
-            hostname: "paulo.mongohq.com",
-            port: 10026,
+            hostname: process.env.OPENSHIFT_MONGODB_DB_HOST,
+            port: process.env.OPENSHIFT_MONGODB_DB_PORT,
             username: "admin",
             password: "admin",
             name: "",

@@ -33,6 +33,9 @@ var mongoose = require('mongoose');
 var digestor_schema = require('../models/digestor')
   , Digestor = mongoose.model('Digestor', digestor_schema);
 
+// Load Account model
+var account_schema = require('../models/account')
+  , Account = mongoose.model('Account', account_schema);
 ///////////////////////////////////////////////////////////////////////////////
 // Route to get all Digestors                                                //
 //                                                                           //
@@ -129,6 +132,24 @@ exports.create = function (request, response, next) {
             if (err) {
                 console.log(err);
                 return next(err);
+            }
+            Account.findById(request.user._id, onFind);
+            function onFind(error, account) {
+                if (error) {
+                    return next(error);
+                }
+                if (!account) {
+                    return next(error);
+                }
+                account.digestors.push(digestor._id);
+                account.save(onSaved);
+                function onSaved(error, station) {
+                    if (error) {
+                        return next(error);
+                    }
+                    response.status(201);
+                    return response.send(JSON.stringify(digestor));
+                }
             }
             response.status(201);
             return response.send(JSON.stringify(digestor));

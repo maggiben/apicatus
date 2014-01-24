@@ -11,7 +11,7 @@
         <link href="stylesheets/base.css" rel="stylesheet">
     </head>
     <body>
-        <nav class="navbar navbar-metro navbar-static-top" role="navigation">
+        <nav class="navbar navbar-static-top" role="navigation">
             <div class="navbar-header">
               <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex5-collapse">
                 <i class="glyphicon glyphicon-list"></i>
@@ -19,14 +19,16 @@
               <a class="navbar-brand" href="#"><img src="images/logo3.svg"></a>
             </div>
 
+            <div class="colors-container" style="display:none">
+                <div class="color-panel" cz-color="rgb(214,176,207)" style="background:rgb(214,176,207)" title="rgb(214,176,207)">&nbsp;</div><div class="color-panel" cz-color="rgb(27,148,151)" style="background:rgb(27,148,151)" title="rgb(27,148,151)">&nbsp;</div><div class="color-panel" cz-color="rgb(22,155,158)" style="background:rgb(22,155,158)" title="rgb(22,155,158)">&nbsp;</div><div class="color-panel" cz-color="rgb(80,204,204)" style="background:rgb(80,204,204)" title="rgb(80,204,204)">&nbsp;</div><div class="color-panel" cz-color="rgb(3,165,159)" style="background:rgb(3,165,159)" title="rgb(3,165,159)">&nbsp;</div><div class="color-panel" cz-color="rgb(5,147,141)" style="background:rgb(5,147,141)" title="rgb(5,147,141)">&nbsp;</div><div class="color-panel" cz-color="rgb(0,166,157)" style="background:rgb(0,166,157)" title="rgb(0,166,157)">&nbsp;</div><div class="color-panel" cz-color="rgb(0,128,121)" style="background:rgb(0,128,121)" title="rgb(0,128,121)">&nbsp;</div><div class="color-panel" cz-color="rgb(6,169,161)" style="background:rgb(6,169,161)" title="rgb(6,169,161)">&nbsp;</div><div class="color-panel" cz-color="rgb(21,136,128)" style="background:rgb(21,136,128)" title="rgb(21,136,128)">&nbsp;</div><div class="color-panel" cz-color="rgb(27,161,154)" style="background:rgb(27,161,154)" title="rgb(27,161,154)">&nbsp;</div><div class="color-panel" cz-color="rgb(46,183,176)" style="background:rgb(46,183,176)" title="rgb(46,183,176)">&nbsp;</div><div class="color-panel" cz-color="rgb(192,231,229)" style="background:rgb(192,231,229)" title="rgb(192,231,229)">&nbsp;</div><div class="color-panel" cz-color="rgb(229,247,246)" style="background:rgb(229,247,246)" title="rgb(229,247,246)">&nbsp;</div><div class="color-panel" cz-color="rgb(255,247,72)" style="background:rgb(255,247,72)" title="rgb(255,247,72)">&nbsp;</div><div class="color-panel" cz-color="rgb(240,104,4)" style="background:rgb(240,104,4)" title="rgb(240,104,4)">&nbsp;</div><div class="color-panel" cz-color="rgb(0,0,0)" style="background:rgb(0,0,0)" title="rgb(0,0,0)">&nbsp;</div><div class="color-panel" cz-color="rgb(102,102,102)" style="background:rgb(102,102,102)" title="rgb(102,102,102)">&nbsp;</div><div class="color-panel" cz-color="rgb(117,117,117)" style="background:rgb(117,117,117)" title="rgb(117,117,117)">&nbsp;</div><div class="color-panel" cz-color="rgb(122,122,122)" style="background:rgb(122,122,122)" title="rgb(122,122,122)">&nbsp;</div><div class="color-panel" cz-color="rgb(128,128,128)" style="background:rgb(128,128,128)" title="rgb(128,128,128)">&nbsp;</div><div class="color-panel" cz-color="rgb(142,142,142)" style="background:rgb(142,142,142)" title="rgb(142,142,142)">&nbsp;</div><div class="color-panel" cz-color="rgb(192,192,192)" style="background:rgb(192,192,192)" title="rgb(192,192,192)">&nbsp;</div><div class="color-panel" cz-color="rgb(255,255,255)" style="background:rgb(255,255,255)" title="rgb(255,255,255)">&nbsp;</div></div>
             <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse navbar-ex5-collapse">
+            <div class="collapse navbar-collapse navbar-ex5-collapse secondary-b-1">
                 <div class="navbar-form navbar-left">
                         <button type="submit" class="btn btn-menu btn-notifications hillited"><i class="glyphicon glyphicon-bell"></i><span class="label count pull-right">2</span></button>
                 </div>
                 <div class="navbar-form navbar-right">
                     <button type="submit" class="btn btn-menu transparent hillited"><i class="glyphicon glyphicon-th"></i></button>
-                    <button type="submit" class="btn btn-menu transparent hillited"><i class="glyphicon glyphicon-user"></i></button>
+                    <a href="#/profile" class="btn btn-menu transparent hillited"><i class="glyphicon glyphicon-user"></i></a>
                 </div>
                 <form class="navbar-form navbar-right">
                         <div class="form-group" style="width: 240px">
@@ -51,19 +53,19 @@
                         </div>
                 </form>
             </div><!-- /.navbar-collapse -->
-            <ul class="colorin">
-                <li style="width: 12%;background-color: rgba(135, 115, 102, 1);"></li>
-                <li style="width: 8%;background-color: rgba(121, 25, 33, 1);"></li>
-                <li style="width: 6%;background-color: rgba(192, 18, 32, 1);"></li>
-                <li style="width: 4%;background-color: rgba(142, 22, 32, 1);"></li>
-                <li style="width: 13%;background-color: rgba(181, 167, 137, 1);"></li>
-                <li style="width: 10%;background-color: rgba(76, 66, 61, 1);"></li>
-                <li style="width: 3%;background-color: rgba(92, 83, 70, 1);"></li>
-                <li style="width: 17%;background-color: rgba(67, 46, 31, 1);"></li>
-                <li style="width: 9%;background-color: rgba(152, 104, 62, 1);"></li>
-                <li style="width: 10%;background-color: rgba(150, 41, 32, 1);"></li>
-                <li style="width: 8%;background-color: rgba(245, 64, 32, 1);"></li>
-            </ul>
+            <!-- ul class="colorin">
+                <li style="width: 12%;" class="secondary-a-2"></li>
+                <li style="width: 8%;" class="primary-2"></li>
+                <li style="width: 6%;" class="secondary-b-3"></li>
+                <li style="width: 4%;" class="secondary-a-5"></li>
+                <li style="width: 13%;" class="secondary-a-1"></li>
+                <li style="width: 10%;" class="primary-1"></li>
+                <li style="width: 3%;" class="secondary-a-4"></li>
+                <li style="width: 17%;" class="complement-3"></li>
+                <li style="width: 9%;" class="secondary-a-2"></li>
+                <li style="width: 10%" class="secondary-b-3"></li>
+                <li style="width: 8%" class="primary-1"></li>
+            </ul -->
         </nav>
 
         <div ng-view></div>
@@ -89,30 +91,32 @@
         <!-- MODALS -->
 
         <footer class="navbar-fixed-bottom brand-sprite stripe">
-            <ul class="colorin">
-                <li style="width: 12%;background-color: rgba(135, 115, 102, 1);"></li>
-                <li style="width: 8%;background-color: rgba(121, 25, 33, 1);"></li>
-                <li style="width: 6%;background-color: rgba(192, 18, 32, 1);"></li>
-                <li style="width: 4%;background-color: rgba(142, 22, 32, 1);"></li>
-                <li style="width: 13%;background-color: rgba(181, 167, 137, 1);"></li>
-                <li style="width: 10%;background-color: rgba(76, 66, 61, 1);"></li>
-                <li style="width: 3%;background-color: rgba(92, 83, 70, 1);"></li>
-                <li style="width: 17%;background-color: rgba(67, 46, 31, 1);"></li>
-                <li style="width: 9%;background-color: rgba(152, 104, 62, 1);"></li>
-                <li style="width: 10%;background-color: rgba(150, 41, 32, 1);"></li>
-                <li style="width: 8%;background-color: rgba(245, 64, 32, 1);"></li>
-            </ul>
+            <!-- ul class="colorin">
+                <li style="width: 12%;" class="secondary-a-2"></li>
+                <li style="width: 8%;" class="primary-2"></li>
+                <li style="width: 6%;" class="secondary-b-3"></li>
+                <li style="width: 4%;" class="secondary-a-5"></li>
+                <li style="width: 13%;" class="secondary-a-1"></li>
+                <li style="width: 10%;" class="primary-1"></li>
+                <li style="width: 3%;" class="secondary-a-4"></li>
+                <li style="width: 17%;" class="complement-3"></li>
+                <li style="width: 9%;" class="secondary-a-2"></li>
+                <li style="width: 10%" class="secondary-b-3"></li>
+                <li style="width: 8%" class="primary-1"></li>
+            </ul -->
         </footer>
         <script src="js/jquery-1.8.2.js"></script>
         <script src="js/modernizr.custom.js"></script>
         <script src="js/bootstrap.js"></script>
         <script src="js/jquery-ui.js"></script>
 
+
         <script src="js/angular.js"></script>
         <script src="js/angular-route.js"></script>
         <script src="js/ui-bootstrap-tpls-0.6.0.js"></script>
 
         <script src="js/bootstrap-select.js"></script>
+
         <!-- Chang URLs to wherever Video.js files will be hosted -->
         <script>
         $(document).ready(function() {
@@ -292,6 +296,7 @@
             .config(['$routeProvider', function($routeProvider) {
               $routeProvider.when('/resource/:id', {templateUrl: 'views/resources.html', controller: 'ApiEntryListCtrl', resolve: ApiEntryListCtrl.resolve});
               $routeProvider.when('/digestors', {templateUrl: 'views/digestors.html', controller: 'HomeController', resolve: HomeController.resolve});
+              $routeProvider.when('/profile', {templateUrl: 'views/profile.html', controller: 'UserCtl', resolve: UserCtl.resolve});
               $routeProvider.otherwise({redirectTo: '/digestors'});
             }]);
 
@@ -523,5 +528,6 @@
             });
 
         </script>
+        <script src="javascripts/controllers/userCtrl.js"></script>
     </body>
 </html>

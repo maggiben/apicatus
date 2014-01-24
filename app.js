@@ -155,6 +155,9 @@ app.delete('/digestors/:name', DigestorCtl.deleteOne);
 app.get('/', function(request, response) {
     response.sendfile(__dirname + '/public/index.html');
 });
+app.get('/feed', function(request, response) {
+    response.sendfile(__dirname + '/public/feed.html');
+});
 app.get('/views/:name', function(request, response) {
     response.sendfile(__dirname + '/views/' + request.params.name);
 });

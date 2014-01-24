@@ -11,7 +11,7 @@ var environments = {
         sessionSecret: "secret",
         environment: process.env.NODE_ENV,
         listenPort: process.env.PORT || 8080,
-        ip: process.env.IP || os.hostname(),
+        ip: process.env.IP || '127.0.0.1',
         allowCrossDomain: false,
         autoStart: true,
         mongoUrl: {

@@ -60,9 +60,10 @@ var init = function(options) {
         mongoose.connection.on("open", function(){
             console.log("mongodb connected to: %s", mongoUrl);
         });
-        var server = require('http').createServer(app)
+        var server = require('http').createServer(app);
         var io = require('socket.io').listen(server);
         server.listen(conf.listenPort, conf.ip);
+        console.log(conf.listenPort, conf.ip);
     }
 }
 
@@ -153,7 +154,7 @@ app.delete('/digestors/:name', DigestorCtl.deleteOne);
 // Application rutes                                                         //
 ///////////////////////////////////////////////////////////////////////////////
 app.get('/', function(request, response) {
-    response.sendfile(__dirname + '/public/index.html');
+    response.sendfile(__dirname + '/public/index2.html');
 });
 app.get('/feed', function(request, response) {
     response.sendfile(__dirname + '/public/feed.html');

@@ -113,7 +113,7 @@ app.configure(function(){
     app.use(app.router);
     //app.use(DigestCtl.digestRequest);
     //app.use(express.vhost('*.miapi.com', require('./test/test').test));
-    app.use(express.static(__dirname + '/public'));
+    app.use(express.static(__dirname + '/frontend/build'));
 });
 
 app.configure('development', function() {
@@ -154,7 +154,7 @@ app.delete('/digestors/:name', DigestorCtl.deleteOne);
 // Application rutes                                                         //
 ///////////////////////////////////////////////////////////////////////////////
 app.get('/', function(request, response) {
-    response.sendfile(__dirname + '/public/index2.html');
+    response.sendfile(__dirname + '/frontend/build/index.html');
 });
 app.get('/feed', function(request, response) {
     response.sendfile(__dirname + '/public/feed.html');

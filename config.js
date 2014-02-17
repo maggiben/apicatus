@@ -14,6 +14,8 @@ var environments = {
         ip: process.env.IP || '127.0.0.1',
         allowCrossDomain: false,
         autoStart: true,
+        ttl: (1000 * 60 * 10), // 10 minutes
+        resetTokenExpiresMinutes: 20,
         mongoUrl: {
             hostname: "paulo.mongohq.com",
             port: 10026,
@@ -34,6 +36,8 @@ var environments = {
         ip: process.env.IP || os.hostname(),
         allowCrossDomain: false,
         autoStart: false,
+        ttl: 1000,
+        resetTokenExpiresMinutes: 20,
         mongoUrl: {
             hostname: "paulo.mongohq.com",
             port: 10026,
@@ -53,6 +57,8 @@ var environments = {
         ip: process.env.OPENSHIFT_NODEJS_IP,
         allowCrossDomain: false,
         autoStart: true,
+        ttl: 3600000,
+        resetTokenExpiresMinutes: 20,
         mongoUrl: {
             hostname: process.env.OPENSHIFT_MONGODB_DB_HOST,
             port: process.env.OPENSHIFT_MONGODB_DB_PORT,

@@ -14,6 +14,7 @@ var express = require('express'),
     url = require('url'),
     SocketIo = require('socket.io'),
     passport = require('passport'),
+    jwt = require('jwt-simple'),
     LocalStrategy = require('passport-local').Strategy,
     DigestCtl = require('./controllers/digest');
 
@@ -90,11 +91,23 @@ var allowCrossDomain = function(request, response, next) {
 };
 // reusable middleware to test authenticated sessions
 function ensureAuthenticated(request, response, next) {
-    if(request.isAuthenticated()) {
-        return next();
+    response.contentType('application/json');
+    var decoded = null;
+    var incomingToken = request.headers.token;
+
+    if(incomingToken) {
+        AccountMdl.verify(incomingToken, function(error, isValid) {
+            if(error || !isValid) {
+                response.status(403);
+                response.json({error: 'No auth token received.'});
+            } else {
+                return next();
+            }
+        });
+    } else {
+        response.status(403);
+        response.json({error: 'No auth token received.'});
     }
-    response.status(403);
-    return next();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -146,9 +159,13 @@ app.get('/digestors', ensureAuthenticated, DigestorCtl.readAll);
 //app.put('/digestors', DigestorCtl.updateAll);
 app.delete('/digestors', DigestorCtl.deleteAll);
 // Entities
-app.get('/digestors/:name', DigestorCtl.readOne);
-app.put('/digestors/:name', DigestorCtl.updateOne);
-app.delete('/digestors/:name', DigestorCtl.deleteOne);
+app.get('/digestors/:name', ensureAuthenticated, DigestorCtl.readOne);
+app.put('/digestors/:id', function (request, response, next) {
+    response.contentType('application/json');
+    response.status(200);
+    return response.json({ message: "ok put" });
+});
+app.delete('/digestors/:name', ensureAuthenticated, DigestorCtl.deleteOne);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Application rutes                                                         //
@@ -203,12 +220,14 @@ app.post('/user', ensureAuthenticated, AccountCtl.create);
 app.get('/user', ensureAuthenticated, AccountCtl.read);
 app.put('/user', ensureAuthenticated, AccountCtl.update);
 app.del('/user', ensureAuthenticated, AccountCtl.delete);
+app.post('/token', ensureAuthenticated, AccountCtl.token);
 
-app.post('/xxx', ensureAuthenticated, function(request, response, next) {
-    console.log("no prob")
+app.post('/xxx', function(request, response, next) {
     response.contentType('application/json');
-    response.status(401);
-    var message = JSON.stringify({message: 'xxx'});
+    var incomingToken = request.headers.token;
+    console.log('incomingToken: ' + incomingToken);
+    response.status(200);
+    var message = JSON.stringify({token: incomingToken});
     return response.send(message);
 });
 

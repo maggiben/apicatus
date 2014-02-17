@@ -1,5 +1,5 @@
 .home {
-    margin: 0 auto;
+  margin: 0 auto;
   .jumbotron {
     margin: 0 0 80px 0;
     text-align: center;
@@ -11,13 +11,16 @@
     line-height: 2.1428571435;
     color: #f1f1f1;
     background-color: #eeeeee;
-    background-image: url('images/jumbo.jpg');
+    background-image: url('http://localhost:8000/images/header-bg.jpg');
     background-size: cover;
 
     h1 {
       margin-bottom: 20px;
       font-size: 55px;
       line-height: 1;
+      img {
+        max-height: 120px;
+      }
     }
 
     .lead {
@@ -30,9 +33,9 @@
       font-size: 21px;
       padding: 14px 24px;
       border-radius: 2px;
-      color:#FFF; 
-      background:#469acc; 
-      text-align:center; 
+      color:#FFF;
+      background:#469acc;
+      text-align:center;
       font-size:1.3em;
       border: none;
       &:hover {

@@ -3,33 +3,57 @@ angular.module( 'apicatus', [
     'templates-common',
     'apicatus.main',
     'apicatus.home',
+    'apicatus.login',
     'apicatus.applications',
+    'apicatus.error',
     //'apicatus.application',
     'AuthService',
     'restangular',
     'ui.bootstrap',
     'ui.router',
-    'ui.utils'
+    'ui.utils',
+    'LocalStorageModule',
+    'ui.ace'
 ])
 
-.config( function myAppConfig ( $stateProvider, $urlRouterProvider, RestangularProvider ) {
+.config( function myAppConfig ( $stateProvider, $urlRouterProvider, RestangularProvider, localStorageServiceProvider ) {
     $urlRouterProvider.otherwise( '/main/home' );
     RestangularProvider.setBaseUrl('http://localhost:8080');
+    RestangularProvider.setRestangularFields({
+        id: "_id"
+    });
     RestangularProvider.setDefaultHeaders({
         "Content-Type": "application/json",
         "X-Requested-With": "XMLHttpRequest",
         "Access-Control-Allow-Headers": "x-requested-with"
+        //"token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InBwcEBwcHAuY29tIn0.zUkcQtZizlLHyNFTZ-iN8wtHS3zDzDaQZYdPkPS3Y9g"
     });
+    //RestangularProvider.setDefaultHttpFields({cache: true});
+    localStorageServiceProvider.setPrefix('apicatus');
 })
 
-.run(function run($rootScope, $state, AuthService) {
+.run(function run($rootScope, $state, AuthService, Restangular) {
+    Restangular.setErrorInterceptor(function (response) {
+        console.log("error: ", response);
+        switch(response.status) {
+            case 401:
+                $state.transitionTo("main.login");
+                break;
+            case 403:
+                $state.transitionTo("main.login");
+                break;
+            case 404:
+                $state.transitionTo("main.error.404", {data: "response.data"});
+                break;
+        }
+        return response;
+    });
     $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams) {
-        window.state = $state;
         if (toState.authenticate && !AuthService.isAuthenticated()) {
             console.log("user isn't authenticated");
             AuthService.saveState(toState);
             // User isn’t authenticated
-            $state.transitionTo("login");
+            $state.transitionTo("main.login");
             event.preventDefault();
         }
     });
@@ -48,6 +72,8 @@ angular.module( 'apicatus', [
         city: "Buenos Aires",
         timezone: "AGT",
     };*/
+    // authenticate
+    $scope.user = Restangular.one('user').customPOST({username: "admin", password: "admin"}, 'signin');
     // Restangular returns promises
     $scope.baseApi = Restangular.one('user');
     $scope.baseApi.get().then(function(account) {

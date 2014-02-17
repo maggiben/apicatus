@@ -3,8 +3,11 @@
 // NOTES:                                                                     //
 // * Maybe it would be a good idea to use a CDN to fetch d3's source          //
 ////////////////////////////////////////////////////////////////////////////////
-angular.module('AuthService', [])
-.factory('AuthService', ['$document', '$q', '$rootScope', function($document, $q, $rootScope) {
+angular.module('AuthService', ['restangular'])
+.config(function AuthServiceConfig (RestangularProvider) {
+    //console.log(RestangularProvider);
+})
+.factory('AuthService', ['$document', '$q', '$rootScope', 'Restangular', 'localStorageService', function($document, $q, $rootScope, Restangular, localStorageService) {
     var isAuthenticated = false;
     var appState = {};  // holds the state of the app
 
@@ -14,45 +17,51 @@ angular.module('AuthService', [])
         // has been loaded
         var defer = $q.defer();
         var code = [];
-        if(user == "admin" && pass == "admin") {
-            code = ['window.isAuthenticated = true;'];
-            isAuthenticated = true;
-        } else {
+
+        Restangular.one('user').customPOST({username: user, password: pass}, 'signin').then(function (user) {
+
+            var codeBlob = null;
+            var url = null;
+            var scriptTag = $document[0].createElement('script');
+
+            if(user.token.token) {
+                Restangular.configuration.defaultHeaders.token = user.token.token;
+                localStorageService.add('token', user.token);
+                code = ['window.isAuthenticated = true;'];
+                isAuthenticated = true;
+            } else {
+                code = ['window.isAuthenticated = false;'];
+                isAuthenticated = false;
+                defer.reject(isAuthenticated);
+            }
+
+            codeBlob = new Blob(code, {type : 'text/javascript'});
+            url = URL.createObjectURL(codeBlob);
+
+            function onAuthenticated(event){
+                $rootScope.$apply(function() {
+                    defer.resolve(isAuthenticated);
+                });
+            }
+            scriptTag.type = 'text/javascript';
+            scriptTag.async = true;
+            scriptTag.src = url;
+            scriptTag.onreadystatechange = function () {
+                if (!this.readyState || this.readyState == 'complete') {
+                    onAuthenticated();
+                }
+            };
+            scriptTag.onload = onAuthenticated;
+
+            var node = $document[0].getElementsByTagName('body')[0];
+            node.appendChild(scriptTag);
+
+        }, function(error) {
             code = ['window.isAuthenticated = false;'];
             isAuthenticated = false;
-        }
-        var codeBlob = new Blob(code, {type : 'text/javascript'}); // the blob
-        var url = URL.createObjectURL(codeBlob);
-        var scriptTag = $document[0].createElement('script');
+            defer.reject(error);
+        });
 
-        function onAuthenticated(event){
-            console.log("window", window.isAuthenticated);
-            $rootScope.$apply(function() {
-                defer.resolve(window.isAuthenticated);
-            });
-        }
-
-        scriptTag.type = 'text/javascript';
-        scriptTag.async = true;
-        scriptTag.src = url;
-        scriptTag.onreadystatechange = function () {
-            if (!this.readyState || this.readyState == 'complete') {
-                onAuthenticated();
-            }
-        };
-        scriptTag.onload = onAuthenticated;
-
-        var s = $document[0].getElementsByTagName('body')[0];
-        s.appendChild(scriptTag);
-        return defer.promise;
-    }
-    function leaveAuthentication() {
-        var defer = $q.defer();
-        isAuthenticated = false;
-        // Mock Api callback
-        setTimeout(function(){
-            defer.resolve(isAuthenticated);
-        }, 500);
         return defer.promise;
     }
     return {

@@ -384,7 +384,7 @@ img.expand, img.expand-name {
 #location {
   height: 20em;
   overflow: hidden;
-  background-image: url(../img/location-bg.jpg);
+  background-image: url(../images/location-bg.jpg);
   background-position: center center;
   background-repeat: no-repeat;
   -webkit-background-size: cover;

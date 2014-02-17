@@ -6,7 +6,7 @@
                     <div class="btn-group">
                         <button type="button" class="btn btn-info" ng-click="addResource()"><i class="fa fa-plus"></i></button>
                         <button type="button" class="btn btn-info"><i class="fa fa-minus"></i></button>
-                        <button type="button" class="btn btn-info">Right</button>
+                        <button type="button" class="btn btn-info" ng-click="save()">Save</button>
                     </div>
                 </div>
             </div>
@@ -121,8 +121,7 @@
                                 </form>
                             </div>
                             <div class="tab-pane" id="entry-{{entry.id}}-tab-two">
-                                <pre>
-                                </pre>
+                                <div ui-ace="{ onLoad : 'aceLoaded', mode: 'javascript' }" ng-model="aceModel"></div>
                             </div>
                             <div class="tab-pane" id="entry-{{entry.id}}-tab-tree">Thirdamuno, ipsum dolor sit amet, consectetur adipiscing elit. Duis pharetra varius quam sit amet vulputate.
                             Quisque mauris augue, molestie tincidunt condimentum vitae.</div>
@@ -135,6 +134,9 @@
         </accordion-group>
     </accordion>
 
+</application>
+
+<script type="text/ng-template" id="graphSettings.html">>
     <div class="row" style="display:none;" ng-repeat="entry in api.entries">
         <div class="col-lg-12">
             <div class="panel panel-default" >
@@ -267,5 +269,4 @@
             </div>
       </div>
     </div>
-
-</application>
+</script>

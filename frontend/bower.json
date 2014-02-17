@@ -11,7 +11,8 @@
     "lodash": "~2.4",
     "restangular": "*",
     "momentjs": "~2.5",
-    "angular-ui-ace": "~0.1.0"
+    "angular-ui-ace": "~0.1.0",
+    "angular-local-storage": "*"
   },
   "dependencies": {}
 }

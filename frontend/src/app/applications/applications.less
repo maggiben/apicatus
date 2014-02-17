@@ -19,8 +19,12 @@ applications {
             float: left;
             padding: 10px;
             border-radius: 2px;
-            background-color: @gray-light;
+            background-color: #f9fafb;
             text-align: center;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            color: @brand-info;
             -webkit-transition: all 0.25s ease-in-out;
                -moz-transition: all 0.25s ease-in-out;
                  -o-transition: all 0.25s ease-in-out;
@@ -28,9 +32,9 @@ applications {
             &:hover {
                 background-color: @brand-info;
                 a {
-                    color: @gray-light;
+                    color: @gray-lighter;
                     .icon-background {
-                        background-color: @gray-light;
+                        background-color: @gray-lighter;
                         i {
                             color: @brand-info;
                         }
@@ -69,7 +73,7 @@ applications {
                         height: 3.25em;
                     };
                     i {
-                        color: @gray-light;
+                        color: @gray-lighter;
                         display: table-cell;
                         vertical-align: middle;
                         font-size:2em;

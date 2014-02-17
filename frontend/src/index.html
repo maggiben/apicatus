@@ -5,16 +5,16 @@
         <title ng-bind="pageTitle"></title>
         <!-- social media tags -->
         <meta name="twitter:card" content="summary">
-        <meta name="twitter:site" content="@joshdmiller">
+        <meta name="twitter:site" content="@apicatus">
         <meta name="twitter:title" content="apicatus">
-        <meta name="twitter:description" content="Non-Trivial AngularJS Made Easy: Everything you need to kickstart AngularJS projects: a best-practice directory structure, an intelligent build system, and the best web design libraries around.">
-        <meta name="twitter:creator" content="@joshdmiller">
-        <meta name="twitter:image:src" content="https://a248.e.akamai.net/assets.github.com/images/modules/logos_page/Octocat.png?1366128846">
+        <meta name="twitter:description" content="SoftWired APIS">
+        <meta name="twitter:creator" content="@maggijs">
+        <meta name="twitter:image:src" content="https://pbs.twimg.com/profile_images/435133998168154112/MMGILZpn.png">
         <meta property="og:title" content="apicatus" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="http://bit.ly/apicatus" />
-        <meta property="og:image" content="https://a248.e.akamai.net/assets.github.com/images/modules/logos_page/Octocat.png?1366128846" />
-        <meta property="og:description" content="Non-Trivial AngularJS Made Easy: Everything you need to kickstart AngularJS projects: a best-practice directory structure, an intelligent build system, and the best web design libraries around.">
+        <meta property="og:image" content="" />
+        <meta property="og:description" content=".">
 
         <!-- mobile viewport -->
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -39,15 +39,15 @@
             // Plugin activation and full site events go here
             $(document).ready(function(){
                 $("body").on('click', '#menu-toggle', function(event){
-                    var button = $(this);
+                    var button = $('#menu-toggle');
                     if(button.hasClass('open')) {
-                        $("#wrapper").addClass("open");
+                        //$("#wrapper").addClass("open");
+                        $("body").css("margin-left", $(".side-nav").width());
                         $(".side-nav").removeClass("closed");
-                        //button.removeClass("closed");
                     } else {
-                        $("#wrapper").removeClass("open");
+                        //$("#wrapper").removeClass("open");
+                        $("body").css("margin-left", "0");
                         $(".side-nav").addClass("closed");
-                        //button.addClass("closed");
                     }
                     $(window).trigger('resize');
                 });

@@ -29,7 +29,5 @@ angular.module( 'apicatus.main', [
     });
 })
 .controller( 'MainCtrl', function MainController( $scope ) {
-    $scope.baseApi.one('projects').getList().then(function(project){
-        //console.log("project", project);
-    });
+
 });

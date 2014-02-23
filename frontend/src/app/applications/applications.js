@@ -118,9 +118,9 @@ angular.module( 'apicatus.applications', [])
         console.log(digestors);
         $scope.apis = digestors;
     });
-    Restangular.one('projects').getList().then(function(project){
+    //Restangular.one('projects').getList().then(function(project){
         //console.log("project", project);
-    });
+    //});
     $scope.addApplication = function() {
         $scope.apis.push({
             _id: "5262f08d284b9963b1000001",

@@ -4,7 +4,7 @@
             <!-- API EMPTY WELCOME -->
             <div class="panel panel-default" ng-show="apis.length">
                 <div class="panel-heading">
-                    <h3 class="panel-title"><i class="fa fa-list-alt"></i> Applications</h3>
+                    <h3 class="panel-title"><i class="fa fa-list-alt"></i> {{ 'APPLICATIONS.TITLE' | translate }}</h3>
                 </div>
                 <div class="panel-body">
                     <ul class="app-list">
@@ -21,177 +21,94 @@
                 </div>
                 <div class="panel-footer"><span class="label label-primary">{{apis.length}} apps</span></div>
             </div>
-            <!-- API EMPTY WELCOME -->
-            <!-- API RESOURCES PANELS -->
-            <div class="panel panel-primary" ng-repeat="entry in api.entries">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><i class="glyphicon glyphicon-th-large"></i> {{entry.name}}</h3>
-                </div>
-                <div class="panel-body">
-                    <div id="entry-info" class="accordion-group">
-                        <div id="overview" class="row show-grid">
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                    <div class="input-group-btn">
-                                        <label class="label-select">
-                                            <select ng-model="entry.method.id" ng-options="method.id as method.label group by method.group for method in headers.methods"></select>
-                                        </label>
-                                    </div><!-- /btn-group -->
-                                    <input type="text" class="form-control" ng-model="entry.route" value="{{entry.route}}" ng-disabled="!entry.isEditing" placeholder="route">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="btn-group pull-right">
-                                    <button type="button" class="btn"><i class="glyphicon glyphicon-record"></i></button>
-                                    <button type="button" class="btn"><i class="glyphicon glyphicon-link"></i></button>
-                                    <button type="button" class="btn" data-toggle="collapse" data-target="#entry-{{entry.id}}-settings" data-parent="#entry-info" ng-model="entry.isEditing" btn-checkbox><i class="glyphicon glyphicon-cog"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- EMPTY DESCRIPTION -->
-                        <div class="row show-grid" ng-show="!entry.description.length || entry.isEditing">
-                            <div class="col-md-12">
-                                <textarea class="form-control" ng-disabled="!entry.isEditing" rows="3" ng-model="entry.description" placeholder="description"></textarea>
-                            </div>
-                        </div>
-                        <!-- EMPTY DESCRIPTION -->
-                        <!-- DESCRIPTION -->
-                        <div class="row description" ng-hide="!entry.description.length || entry.isEditing">
-                            <article class="col-md-12">
-                                <p>{{entry.description}}</p>
-                                <table class="table table-condensed">
-                                    <thead>
-                                        <tr class="danger">
-                                            <th ng-repeat="header in entry.parameters.headers">{{header}}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr ng-repeat="values in entry.parameters.values">
-                                            <td ng-repeat="key in values">{{key}}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </article>
-                        </div>
-                        <!-- DESCRIPTION -->
-                        <div id="entry-{{entry.id}}-settings" class="row settings  show-grid" ng-class="{collapse: !entry.isEditing}" ng-show="entry.isEditing">
-                            <div class="col-md-12">
-                                <div class="tabbable">
-                                    <ul class="nav nav-tabs">
-                                        <li class="active"><a href="#entry-{{entry.id}}-tab-one" target="_self" data-toggle="tab">Settings</a></li>
-                                        <li><a href="#entry-{{entry.id}}-tab-two" target="_self" data-toggle="tab">Example</a></li>
-                                        <li><a href="#entry-{{entry.id}}-tab-tree" target="_self" data-toggle="tab">Debugger</a></li>
-                                        <li><a href="#entry-{{entry.id}}-tab-four" target="_self" data-toggle="tab">Try it</a></li>
-                                    </ul>
-                                    <div class="tab-content">
-                                        <div class="tab-pane active" id="entry-{{entry.id}}-tab-one">
-                                            <form class="form-horizontal">
-                                              <div class="form-group">
-                                                <label for="inputEmail1" class="col-lg-2 control-label">Proxy</label>
-                                                <div class="col-lg-10">
-                                                  <div class="input-group">
-                                                    <span class="input-group-addon">
-                                                      <input type="checkbox" ng-model="entry.proxy.enabled">
-                                                    </span>
-                                                    <input type="text" class="form-control" ng-model="entry.proxy.url" value="{{entry.proxy.url}}" placeholder="proxy url (http / https)">
-                                                  </div>
-                                                </div>
-                                              </div>
-                                              <div class="form-group">
-                                                <label for="inputPassword1" class="col-lg-2 control-label">Content type</label>
-                                                <div class="col-lg-10">
-                                                    <!-- input type="text" class="form-control" ng-model="entry.contentType" placeholder="application/json" -->
-                                                    <label class="label-select">
-                                                        <select class="" ng-model="entry.contentType.id" ng-options="contentTypes.id as contentTypes.label group by contentTypes.group for contentTypes in headers.contentTypes"></select>
-                                                    </label>
-                                                </div>
-                                              </div>
-                                              <!-- CUSTOM HEADERS -->
-                                              <div class="form-group hidden">
-                                                <label for="inputPassword1" class="col-lg-2 control-label">Custom headers</label>
-                                                <div class="col-lg-3">
-                                                    <input type="text" class="form-control">
-                                                </div>
-                                                <div class="col-lg-6">
-                                                    <input type="text" class="form-control">
-                                                </div>
-                                                <div class="col-lg-1">
-                                                    <button type="button" class="btn btn-menu" ng-click=""><i class="glyphicon glyphicon-plus"></i></button>
-                                                </div>
-                                              </div>
-                                              <!-- CUSTOM HEADERS -->
-                                              <div class="form-group">
-                                                <label for="inputPassword1" class="col-lg-2 control-label">Status Code</label>
-                                                <div class="col-lg-10">
-                                                    <label class="label-select">
-                                                    <select class="selectpicker" ng-model="entry.status.id" ng-options="status.id as status.label group by status.group for status in headers.statuses">
-                                                    </select>
-                                                    </label>
-                                                </div>
-                                              </div>
-
-                                              <div class="form-group">
-                                                <label for="inputPassword1" class="col-lg-2 control-label">Response Body</label>
-                                                <div class="col-lg-10">
-                                                    <textarea class="form-control" ng-disabled="!entry.isEditing" rows="3" ng-model="entry.sends" placeholder="{}"></textarea>
-                                                </div>
-                                              </div>
-
-                                              <div class="form-group hidden">
-                                                <label for="exampleInputFile" class="col-lg-2 control-label">File input</label>
-                                                <div class="col-lg-10">
-                                                    <div style="position:relative;">
-                                                            <a class="btn btn-menu" href="javascript:;">
-                                                                Choose File...
-                                                                <input type="file" style="height:100%;position:absolute;z-index:2;top:0;left:0;opacity:0;background-color:transparent;color:transparent;" name="file_source" size="40" >
-                                                            </a>
-                                                            &nbsp;
-                                                            <span class="label label-info" id="upload-file-info"></span>
-                                                    </div>
-                                                </div>
-                                              </div>
-
-                                                <div class="form-group">
-                                                    <div class="col-lg-offset-2 col-lg-10">
-                                                        <button class="btn btn-menu">Save</button>
-                                                    </div>
-                                                </div>
-
-                                            </form>
-                                        </div>
-                                        <div class="tab-pane" id="entry-{{entry.id}}-tab-two">
-                                            <pre>
-                                            </pre>
-                                        </div>
-                                        <div class="tab-pane" id="entry-{{entry.id}}-tab-tree">Thirdamuno, ipsum dolor sit amet, consectetur adipiscing elit. Duis pharetra varius quam sit amet vulputate.
-                                        Quisque mauris augue, molestie tincidunt condimentum vitae.</div>
-                                       <div class="tab-pane" id="entry-{{entry.id}}-tab-four">Thirdamuno, ipsum dolor sit amet, consectetur adipiscing elit. Duis pharetra varius quam sit amet vulputate.
-                                        Quisque mauris augue, molestie tincidunt condimentum vitae.</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row actions">
-                            <div class="col-md-12">
-                                <div class="btn-group pull-left">
-                                    <button type="button" class="btn btn-menu" ng-click="removeResource(entry)"><i class="glyphicon glyphicon-remove-circle"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel-footer"><span class="label label-warning">{{entry.hits}}</span></div>
-            </div>
-            <!-- API RESOURCES PANELS -->
-            <!-- API RESOURCES ACTIONS -->
             <div class="row actions">
                 <div class="col-md-12">
                     <div class="btn-group pull-left">
-                        <button type="button" class="btn btn-primary" ng-click="addApplication()"><i class="fa fa-plus"></i> New</button>
+                        <button type="button" class="btn btn-primary" ng-click="newApi()"><i class="fa fa-plus"></i> {{ 'APPLICATIONS.NEWAPI.NEW' | translate }}</button>
                     </div>
                 </div>
             </div>
             <!-- API RESOURCES ACTIONS -->
         </div>
     </div>
+
+    <div class="row" style="display:none">
+        <div class="col-md-12 resource-group">
+
+            <div class="endpoint" data-group="documentation" id="endpoint-Entity-type-description">
+                <div class="title">
+                    <span class="response">
+                        HTTP 200 :
+                        <a class="show-model">Type description<i class="icon-caret-down"></i></a>
+                    </span>
+                    <span class="method get">GET</span><span class="route">/type-description/<span class="route-parameter">type</span></span>
+                </div>
+                <div class="response-model" style="overflow: hidden; display: block;">
+                    <div class="description" style="display: block;">An array which specifies the available parameters. Note: only games have a platforms attribute, others have genres only.</div>
+                    <pre></pre>
+                </div>
+                <div class="meta">
+                    <strong>Entity type description</strong>
+                    <p>Specification of type options</p>
+                </div>
+                <hr>
+                <div class="parameters">
+                    <div class="label">
+                        <div class="console">Test console</div>
+                        <div class="description">Description</div>
+                        <div class="name">Parameter</div>
+                    </div>
+                    <div class="parameter" data-parameter="type">
+                        <div class="console">
+                            <input type="text" name="type" placeholder="Required">
+                        </div>
+                        <div class="description">
+                            <span class="parameter-type">string</span>
+                            <p>
+                                Entity type. Available values: game, movie, album. Default: game
+                                <br>    <span class="light">Example: <span class="parameter-example">game</span></span>
+                            </p>
+                        </div>
+                        <div class="name">
+                            <span class="parameter-name">type</span>
+                            <p>Required</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer">
+                    <div id="undefined-sticky-wrapper" class="sticky-wrapper" style="height: 15px;">
+                        <div class="generators" style="">
+                            <a data-language="" data-endpoint-for="Entity type description"></a>
+                        </div>
+                    </div>
+                    <span class="button grey test-endpoint">Test Endpoint</span>
+                    <div class="clear"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </applications>
+
+<script type="text/ng-template" id="new_api_modal.html">
+    <form role="form" ng-model="api" ng-submit="submit()">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">&times;</button>
+            <h4 class="modal-title">{{ 'APPLICATIONS.NEWAPI.TITLE' | translate }}</h4>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="name">{{ 'APPLICATIONS.NEWAPI.NAME' | translate }}</label>
+                <input type="text" class="form-control" id="name" placeholder="{{ 'APPLICATIONS.NEWAPI.NAME' | translate }}" required ng-required="true" ng-model="api.name">
+            </div>
+            <div class="form-group">
+                <label for="domain">{{ 'APPLICATIONS.NEWAPI.DOMAIN' | translate }}</label>
+                <input type="text" class="form-control" id="domain" placeholder="{{ 'APPLICATIONS.NEWAPI.DOMAIN' | translate }}" ng-model="api.domain">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">{{ 'OK' | translate }}</button>
+            <button type="button" class="btn btn-danger" ng-click="cancel()">{{ 'CANCEL' | translate }}</button>
+        </div>
+    </form>
+</script>

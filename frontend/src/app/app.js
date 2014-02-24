@@ -13,10 +13,11 @@ angular.module( 'apicatus', [
     'ui.router',
     'ui.utils',
     'LocalStorageModule',
+    'pascalprecht.translate',
     'ui.ace'
 ])
 
-.config( function myAppConfig ( $stateProvider, $urlRouterProvider, RestangularProvider, localStorageServiceProvider ) {
+.config( function myAppConfig ( $stateProvider, $urlRouterProvider, $translateProvider, RestangularProvider, localStorageServiceProvider ) {
     $urlRouterProvider.otherwise( '/main/home' );
     RestangularProvider.setBaseUrl('http://localhost:8080');
     RestangularProvider.setRestangularFields({
@@ -26,8 +27,12 @@ angular.module( 'apicatus', [
         "Content-Type": "application/json",
         "X-Requested-With": "XMLHttpRequest",
         "Access-Control-Allow-Headers": "x-requested-with"
-        //"token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InBwcEBwcHAuY29tIn0.zUkcQtZizlLHyNFTZ-iN8wtHS3zDzDaQZYdPkPS3Y9g"
     });
+    $translateProvider.useStaticFilesLoader({
+        prefix: '/languages/',
+        suffix: '.json'
+    });
+    $translateProvider.preferredLanguage('en');
     //RestangularProvider.setDefaultHttpFields({cache: true});
     localStorageServiceProvider.setPrefix('apicatus');
 })
@@ -59,7 +64,12 @@ angular.module( 'apicatus', [
     });
 })
 
-.controller( 'AppCtrl', function AppCtrl ( $scope, $location, Restangular ) {
+.controller( 'AppCtrl', function AppCtrl ( $scope, $location, localStorageService, Restangular ) {
+    var token = localStorageService.get('token');
+    if(token){
+        console.log("found token: ", token);
+        Restangular.configuration.defaultHeaders.token = token.token;
+    }
     /*$scope.account = {
         username: "James Woods",
         email: "jwoods@ananke.com",
@@ -73,13 +83,13 @@ angular.module( 'apicatus', [
         timezone: "AGT",
     };*/
     // authenticate
-    $scope.user = Restangular.one('user').customPOST({username: "admin", password: "admin"}, 'signin');
+    //$scope.user = Restangular.one('user').customPOST({username: "admin", password: "admin"}, 'signin');
     // Restangular returns promises
-    $scope.baseApi = Restangular.one('user');
-    $scope.baseApi.get().then(function(account) {
+    //$scope.baseApi = Restangular.one('user');
+    //$scope.baseApi.get().then(function(account) {
         // returns a list of users
-        $scope.account = account;   // first Restangular obj in list: { id: 123 }
-    });
+    //    $scope.account = account;   // first Restangular obj in list: { id: 123 }
+    //});
 
     $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
         if ( angular.isDefined( toState.data.pageTitle ) ) {

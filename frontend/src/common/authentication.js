@@ -11,6 +11,29 @@ angular.module('AuthService', ['restangular'])
     var isAuthenticated = false;
     var appState = {};  // holds the state of the app
 
+    function globalAuthenticate(isAuthenticated, defer) {
+        var code = ['window.isAuthenticated = ' + isAuthenticated + ';'];
+        var codeBlob = null;
+        var url = null;
+        var scriptTag = $document[0].createElement('script');
+        function onAuthenticated(event){
+            $rootScope.$apply(function() {
+                defer.resolve(isAuthenticated);
+            });
+        }
+        scriptTag.type = 'text/javascript';
+        scriptTag.async = true;
+        scriptTag.src = url;
+        scriptTag.onreadystatechange = function () {
+            if (!this.readyState || this.readyState == 'complete') {
+                onAuthenticated();
+            }
+        };
+        scriptTag.onload = onAuthenticated;
+
+        var node = $document[0].getElementsByTagName('body')[0];
+        node.appendChild(scriptTag);
+    }
     function enterAuthentication(user, pass) {
         // Create a script tag with d3 as the source
         // and call our onScriptLoad callback when it
@@ -18,6 +41,15 @@ angular.module('AuthService', ['restangular'])
         var defer = $q.defer();
         var code = [];
 
+        var token = localStorageService.get('token');
+        if(token){
+                localStorageService.add('token', token.token);
+                Restangular.configuration.defaultHeaders.token = token.token;
+                isAuthenticated = true;
+                console.log("we have a token: ", token);
+                //globalAuthenticate(isAuthenticated, defer);
+                //return defer.promise;
+        }
         Restangular.one('user').customPOST({username: user, password: pass}, 'signin').then(function (user) {
 
             var codeBlob = null;
@@ -30,6 +62,7 @@ angular.module('AuthService', ['restangular'])
                 code = ['window.isAuthenticated = true;'];
                 isAuthenticated = true;
             } else {
+                localStorageService.remove('token');
                 code = ['window.isAuthenticated = false;'];
                 isAuthenticated = false;
                 defer.reject(isAuthenticated);

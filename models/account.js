@@ -8,6 +8,7 @@ var Token = new Schema({
     token: {type: String},
     date_created: {type: Date, default: Date.now},
 });
+
 Token.methods.hasExpired = function() {
     var now = new Date();
     return (now.getTime() - this.date_created.getTime()) > conf.ttl;
@@ -25,6 +26,7 @@ var Account = new Schema({
     birthDate: {type: Date},
     digestors: { type: Array, required: false },
     date_created: {type: Date, default: Date.now},
+    digestors: [{ type: Schema.Types.ObjectId, ref: 'Digestor' }],
     token: {type: Object},
     //For reset we use a reset token with an expiry (which must be checked)
     reset_token: {type: String},

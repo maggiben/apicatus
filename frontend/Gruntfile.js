@@ -109,6 +109,17 @@ module.exports = function ( grunt ) {
           }
        ]
       },
+      build_languages: {
+        files: [
+          {
+            src: [ '**' ],
+            dest: '<%= build_dir %>/languages/',
+            cwd: 'languages',
+            expand: true,
+            flatten: true
+          }
+        ]
+      },
       build_vendor_assets: {
         files: [
           {
@@ -432,6 +443,13 @@ module.exports = function ( grunt ) {
       },
 
       /**
+       * When the Languages files change, we need to copy them.
+       */
+      languages: {
+        files: [ 'languages/*.json' ],
+        tasks: [ 'copy:build_languages' ]
+      },
+      /**
        * When assets are changed, copy them. Note that this will *not* copy new
        * files, so this is probably not very useful.
        */
@@ -508,7 +526,7 @@ module.exports = function ( grunt ) {
   grunt.registerTask( 'build', [
     'clean', 'html2js', 'jshint', 'less:build',
     'concat:build_css', 'copy:build_app_assets', 'copy:build_vendor_assets',
-    'copy:build_appjs', 'copy:build_vendorjs', 'index:build'
+    'copy:build_appjs', 'copy:build_vendorjs', 'copy:build_languages', 'index:build'
   ]);
 
   /**

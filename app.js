@@ -99,14 +99,14 @@ function ensureAuthenticated(request, response, next) {
         AccountMdl.verify(incomingToken, function(error, isValid) {
             if(error || !isValid) {
                 response.status(403);
-                response.json({error: 'No auth token received.'});
+                response.json({error: 'Invalid token !'});
             } else {
                 return next();
             }
         });
     } else {
         response.status(403);
-        response.json({error: 'No auth token received.'});
+        response.json({error: 'No auth token received !'});
     }
 }
 
@@ -124,7 +124,7 @@ app.configure(function(){
     app.use(passport.session());
     app.use(allowCrossDomain);
     app.use(app.router);
-    //app.use(DigestCtl.digestRequest);
+    app.use(DigestCtl.digestRequest);
     //app.use(express.vhost('*.miapi.com', require('./test/test').test));
     app.use(express.static(__dirname + '/frontend/build'));
 });
@@ -160,11 +160,7 @@ app.get('/digestors', ensureAuthenticated, DigestorCtl.readAll);
 app.delete('/digestors', DigestorCtl.deleteAll);
 // Entities
 app.get('/digestors/:name', ensureAuthenticated, DigestorCtl.readOne);
-app.put('/digestors/:id', function (request, response, next) {
-    response.contentType('application/json');
-    response.status(200);
-    return response.json({ message: "ok put" });
-});
+app.put('/digestors/:id', ensureAuthenticated, DigestorCtl.updateOne);
 app.delete('/digestors/:name', ensureAuthenticated, DigestorCtl.deleteOne);
 
 ///////////////////////////////////////////////////////////////////////////////

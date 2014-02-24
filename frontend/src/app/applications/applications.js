@@ -25,7 +25,7 @@ angular.module( 'apicatus.applications', [])
     .state('main.applications.list', {
         url: '/list',
         templateUrl: 'applications/list/applications.list.tpl.html',
-        authenticate: true,
+        //authenticate: true,
         onEnter: function(){
             console.log("enter contacts.list");
         }
@@ -33,40 +33,44 @@ angular.module( 'apicatus.applications', [])
     .state('main.applications.application', {
         url: '/:id',
         templateUrl: 'applications/application/application.tpl.html',
-        authenticate: true,
+        //authenticate: true,
         controller: function($scope, $stateParams, Restangular){
             $scope.applications = Restangular.one('digestors', $stateParams.id).get().then(function(digestor){
                 console.log(digestor);
                 $scope.api = digestor;
-                $scope.$watch('api', function(newValue, oldValue) {
-                    $scope.api.put();
-                });
             });
 
             $scope.save = function(api) {
                 console.log("save api");
                 $scope.api.put();
             };
-            $scope.addResource = function () {
-                $scope.api.entries.push({
-                    "id": "dsfadsf-asdfasdf-asdfadsf",
-                    "route": "",
-                    "method": {"id": 2, "label": "GET"},
-                    "parameters": {
-                        headers: [],
-                        values: []
-                    },
-                    "sends": "",
-                    "status": { "id": 204 },
-                    "contentType": { "id": 100 },
-                    "description": "",
-                    "proxy": {
-                        "enabled": false,
-                        "url": ""
-                    },
-                    "hits": 0,
-                    "isEditing": false
+            $scope.addResource = function (api) {
+                console.log($scope.api.endpoints);
+                $scope.api.endpoints.push({
+                    name: "Resource Group A",
+                    methods: [
+                        {
+                            "name": "Method A1",
+                            "synopsis": "Grabs information from the A1 data set",
+                            "method": "GET",
+                            "URI": "/a1/grab"
+                        }
+                    ]
                 });
+                $scope.api.put();
+            };
+            $scope.addEndpoint = function(endpoint) {
+                console.log(endpoint.methods);
+                endpoint.methods.push({
+                    "name": "Method XX1",
+                    "synopsis": "Grabs information from the A1 data set",
+                    "method": "GET",
+                    "URI": "/myroute"
+                });
+                $scope.api.put();
+            };
+            $scope.saveMethod = function(method) {
+                console.log(method);
             };
             // The modes
             $scope.modes = ['Scheme', 'XML', 'Javascript'];
@@ -109,11 +113,10 @@ angular.module( 'apicatus.applications', [])
     });
 })
 
-/**
- * And of course we define a controller for our route.
- */
-.controller( 'ApplicationsCtrl', function ApplicationsController( $scope, $location, Restangular ) {
+// Applications controller
+.controller( 'ApplicationsCtrl', function ApplicationsController( $scope, $location, $modal, Restangular ) {
 
+    var baseDigestors = Restangular.all('digestors');
     $scope.applications = Restangular.one('digestors').getList().then(function(digestors){
         console.log(digestors);
         $scope.apis = digestors;
@@ -121,6 +124,50 @@ angular.module( 'apicatus.applications', [])
     //Restangular.one('projects').getList().then(function(project){
         //console.log("project", project);
     //});
+    $scope.newApi = function () {
+        var modalInstance = $modal.open({
+            templateUrl: 'new_api_modal.html',
+            controller: newApiModalCtrl,
+            windowClass: '',
+            resolve: {
+                apis: function () {
+                    return $scope.apis;
+                }
+            }
+        });
+
+        modalInstance.result.then(
+            function (api) {
+                console.log("modal ok: ", api);
+                baseDigestors.post(api).then(function(result){
+                    $scope.apis.push(api);
+                }, function(error) {
+
+                });
+            },
+            function () {
+                console.info('Modal dismissed at: ' + new Date());
+        });
+    };
+
+    // Please note that $modalInstance represents a modal window (instance) dependency.
+    // It is not the same as the $modal service used above.
+    var newApiModalCtrl = function ($scope, $modalInstance, apis) {
+        $scope.api = {
+            name: "test123",
+            domain: "myDomain"
+        };
+        $scope.ok = function() {
+            console.log("ok:", apis);
+        };
+        $scope.submit = function () {
+            console.log("ok:", apis);
+            $modalInstance.close($scope.api);
+        };
+        $scope.cancel = function () {
+            $modalInstance.dismiss('cancel');
+        };
+    };
     $scope.addApplication = function() {
         $scope.apis.push({
             _id: "5262f08d284b9963b1000001",
@@ -135,6 +182,14 @@ angular.module( 'apicatus.applications', [])
             name: "myApi3",
             type: "REST"
         });
+    };
+})
+// We already have a limitTo filter built-in to angular,
+// let's make a startFrom filter
+.filter('startFrom', function() {
+    return function(input, start) {
+        start = +start; //parse to int
+        return input.slice(start);
     };
 });
 

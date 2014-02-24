@@ -14,7 +14,7 @@ var environments = {
         ip: process.env.IP || '127.0.0.1',
         allowCrossDomain: false,
         autoStart: true,
-        ttl: (1000 * 60 * 10), // 10 minutes
+        ttl: (1000 * 60 * 100), // 10 minutes
         resetTokenExpiresMinutes: 20,
         mongoUrl: {
             hostname: "paulo.mongohq.com",

@@ -12,13 +12,51 @@ var express = require('express'),
 ///////////////////////////////////////////////////////////////////////////////
 // APICATUS Digestors logic                                                  //
 ///////////////////////////////////////////////////////////////////////////////
+function _escapeRegExp(str) {
+    return str.replace(/[-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
+
+
+/**
+ * Creates the custom regex object from the specified baseUrl
+ *
+ * @param  {string} baseUrl [description]
+ * @return {Object} the regex object
+ */
+function subdomainRegex(baseUrl){
+    var regex;
+
+    baseUrl = _escapeRegExp(baseUrl);
+
+    regex = new RegExp('((?!www)\\b[-\\w\\.]+)\\.' + baseUrl + '(?::)?(?:\d+)?');
+
+    return regex;
+}
 exports.digestRequest = function(request, response, next) {
-    console.log("digest")
-    return next();
-    /*
+    //console.log("digest")
+    //return next();
+
     if (!request.headers.host) {
         return next();
     }
+    // original req.url
+    var originalUrl = request.headers.host + request.url;
+
+    // create our subdomain regex
+    var regex = subdomainRegex("miapi.com");
+
+    // extract the subdomain string from the req.url
+    var subdomainString = regex.exec(request.headers.host);
+
+    // if there is no subdomain, return
+    if(!subdomainString) return next();
+
+    // create an array of subdomains
+    subdomainArray = subdomainString[1].split('.');
+
+    console.log("subdomainArray", subdomainArray);
+
+
     var host = request.headers.host.split(':')[0];
     var subdomain = host.split( "." )[ 0 ];
     var path = subdomain;
@@ -26,8 +64,39 @@ exports.digestRequest = function(request, response, next) {
     var url_parts = url.parse(request.url, true);
     var query = url_parts.query;
 
-    //console.log("url: " + request.url + " subdomain: " + subdomain + " url_parts: " + JSON.stringify(url_parts) + " query: " + JSON.stringify(query));
+    console.log("url: " + request.url + " subdomain: " + subdomain + " host: ", request.headers.host + " method: ", request.method);
 
+    var gotDigestor = function(error, digestor) {
+        if (error) {
+            response.status(500);
+            return next(error);
+        }
+        if(!digestor) {
+            response.status(404);
+            return response.json({ error: "digestor not found" });
+        }
+
+        /*var sandbox = {
+            test: [],
+            "__dirname": __dirname,
+            require: require,
+            FileSystem: FileSystem,
+            console: console,
+            exports: exports,
+            api: digestor,
+        }
+        FileSystem.readFile(filename, 'utf8', function(error, data) {
+            if (error) {
+                return next(error);
+            }
+        }*/
+        response.status(200);
+        return response.json({ message: "digestor found" });
+    };
+
+    DigestorMdl.findOne({name: subdomainArray[0]}, gotDigestor);
+
+    /*
     DigestorMdl.findOne({name: subdomain}, gotDigestor);
     function gotDigestor(error, digestor) {
         if (error) {

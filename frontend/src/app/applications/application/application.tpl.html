@@ -4,6 +4,20 @@
             <div class="well well-sm">
                 <div class="btn-toolbar" role="toolbar">
                     <div class="btn-group">
+                        <button type="button" class="btn btn-default" ng-click="addResource()">
+                            <i class="fa fa-file-o"></i>
+                        </button>
+                        <button type="button" class="btn btn-default">
+                            <i class="fa fa-save"></i>
+                        </button>
+                        <button type="button" class="btn btn-default">
+                            <i class="fa fa-print"></i>
+                        </button>
+                        <button type="button" class="btn btn-default">
+                            <i class="fa fa-code"></i> Source
+                        </button>
+                    </div>
+                    <div class="btn-group">
                         <button type="button" class="btn btn-info" ng-click="addResource()"><i class="fa fa-plus"></i></button>
                         <button type="button" class="btn btn-info"><i class="fa fa-minus"></i></button>
                         <button type="button" class="btn btn-info" ng-click="save()">Save</button>
@@ -17,7 +31,14 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="page-header">
-                      <h1 ng-clickx="edit=!edit"><i class="fa fa-sitemap"></i><input type="text" class="resource-name" ng-model="endpoint.name" ng-disabled="edit" ng-init="edit=true" required> <small>{{endpoint.synopsis}}</small><button type="button" class="btn btn-default pull-right" ng-click="addEndpoint(endpoint)"><i class="fa fa-plus"></i></button></h1>
+                        <h1 ng-clickx="edit=!edit">
+                            <i class="fa fa-sitemap heading"></i>
+                            <input type="text" class="resource-name" ng-model="endpoint.name" ng-disabled="edit" ng-init="edit=true" required> <small>{{endpoint.synopsis}}</small>
+                            <div class="btn-group btn-group-sm pull-right">
+                                <button type="button" class="btn btn-default" ng-click="addEndpoint(endpoint)"><i class="fa fa-plus"></i></button>
+                                <button type="button" class="btn btn-default fg-red" ng-click="removeEndpoint(endpoint, $index)"><i class="fa fa-times"></i></button>
+                            </div>
+                        </h1>
                     </div>
                 </div>
             </div>
@@ -34,13 +55,11 @@
                         <div class="col-md-12">
                             <div class="input-group">
                                 <div class="input-group-btn">
-                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Action <span class="caret"></span></button>
+                                    <button type="button" class="btn btn-default dropdown-toggle">Action <span class="caret"></span></button>
                                     <ul class="dropdown-menu" role="menu">
-                                        <li><a href="#">Action</a></li>
-                                        <li><a href="#">Another action</a></li>
-                                        <li><a href="#">Something else here</a></li>
-                                        <li class="divider"></li>
-                                        <li><a href="#">Separated link</a></li>
+                                        <li ng-repeat="choice in [1,2,3,4,5]">
+                                            <a>{{choice}}</a>
+                                        </li>
                                     </ul>
                                 </div>
                                 <input type="text" class="form-control" ng-model="method.URI">
@@ -49,28 +68,24 @@
                     </div>
                     <div class="row" >
                         <div class="col-md-12">
-                            <div class="tabbable">
-                                <ul class="nav nav-tabs">
-                                    <li class="active"><a href="#entry-{{entry.id}}-tab-one" target="_self" data-toggle="tab">Settings</a></li>
-                                    <li><a href="#entry-{{entry.id}}-tab-two" target="_self" data-toggle="tab">Example</a></li>
-                                    <li><a href="#entry-{{entry.id}}-tab-tree" target="_self" data-toggle="tab">Debugger</a></li>
-                                    <li><a href="#entry-{{entry.id}}-tab-four" target="_self" data-toggle="tab">Try it</a></li>
-                                </ul>
-                                <div class="tab-content">
-                                    <div class="tab-pane active" id="entry-{{entry.id}}-tab-one">
-                                        <form novalidate name="form" class="form-horizontal">
-                                          <div class="form-group">
+                            <tabset>
+                                <tab>
+                                    <tab-heading>
+                                        <i class="fa fa-gears"></i> Setup
+                                    </tab-heading>
+                                    <form novalidate name="form" class="form-horizontal">
+                                        <div class="form-group">
                                             <label for="inputEmail1" class="col-lg-2 control-label">Proxy</label>
                                             <div class="col-lg-10">
-                                              <div class="input-group">
-                                                <span class="input-group-addon">
-                                                  <input type="checkbox" ng-model="method.proxy.enabled">
-                                                </span>
-                                                <input type="text" class="form-control" ng-model="method.proxy.URI" value="{{entry.proxy.url}}" placeholder="proxy url (http / https)">
-                                              </div>
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">
+                                                        <input type="checkbox" ng-model="method.proxy.enabled">
+                                                    </span>
+                                                    <input type="text" class="form-control" ng-model="method.proxy.URI" value="{{entry.proxy.url}}" placeholder="proxy url (http / https)">
+                                                </div>
                                             </div>
-                                          </div>
-                                          <div class="form-group">
+                                        </div>
+                                        <div class="form-group">
                                             <label for="inputPassword1" class="col-lg-2 control-label">Content type</label>
                                             <div class="col-lg-10">
                                                 <!-- input type="text" class="form-control" ng-model="entry.contentType" placeholder="application/json" -->
@@ -78,9 +93,9 @@
                                                     <select class="" ng-model="entry.contentType.id" ng-options="contentTypes.id as contentTypes.label group by contentTypes.group for contentTypes in headers.contentTypes"></select>
                                                 </label>
                                             </div>
-                                          </div>
-                                          <!-- CUSTOM HEADERS -->
-                                          <div class="form-group hidden">
+                                        </div>
+                                        <!-- CUSTOM HEADERS -->
+                                        <div class="form-group hidden">
                                             <label for="inputPassword1" class="col-lg-2 control-label">Custom headers</label>
                                             <div class="col-lg-3">
                                                 <input type="text" class="form-control">
@@ -89,59 +104,72 @@
                                                 <input type="text" class="form-control">
                                             </div>
                                             <div class="col-lg-1">
-                                                <button type="button" class="btn btn-menu" ng-click=""><i class="glyphicon glyphicon-plus"></i></button>
+                                                <button type="button" class="btn btn-menu" ng-click=""><i class="glyphicon glyphicon-plus"></i>
+                                                </button>
                                             </div>
-                                          </div>
-                                          <!-- CUSTOM HEADERS -->
-                                          <div class="form-group">
+                                        </div>
+                                        <!-- Headers -->
+                                        <div class="form-group">
                                             <label for="inputPassword1" class="col-lg-2 control-label">Status Code</label>
                                             <div class="col-lg-10">
                                                 <label class="label-select">
-                                                <select class="selectpicker" ng-model="entry.status.id" ng-options="status.id as status.label group by status.group for status in headers.statuses">
-                                                </select>
+                                                    <!-- select class="selectpicker" ng-model="entry.status.id" ng-options="status.id as status.label group by status.group for status in headers.statuses" -->
+                                                    <!-- /select -->
                                                 </label>
                                             </div>
-                                          </div>
-
-                                          <div class="form-group">
+                                        </div>
+                                        <!-- Response -->
+                                        <div class="form-group">
                                             <label for="inputPassword1" class="col-lg-2 control-label">Response Body</label>
                                             <div class="col-lg-10">
                                                 <textarea class="form-control" ng-disabled="!entry.isEditing" rows="3" ng-model="entry.sends" placeholder="{}"></textarea>
                                             </div>
-                                          </div>
-
-                                          <div class="form-group hidden">
-                                            <label for="exampleInputFile" class="col-lg-2 control-label">File input</label>
-                                            <div class="col-lg-10">
-                                                <div style="position:relative;">
-                                                        <a class="btn btn-menu" href="javascript:;">
-                                                            Choose File...
-                                                            <input type="file" style="height:100%;position:absolute;z-index:2;top:0;left:0;opacity:0;background-color:transparent;color:transparent;" name="file_source" size="40" >
-                                                        </a>
-                                                        &nbsp;
-                                                        <span class="label label-info" id="upload-file-info"></span>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-lg-offset-2 col-lg-10">
+                                                <div class="btn-group">
+                                                    <button class="btn btn-default" ng-click="saveMethod(method)" ng-disabled="form.$pristine"><i class="fa fa-save"></i></button>
+                                                    <button class="btn btn-default" ng-click="removeMethod(method, $index)"><i class="fa fa-power-off"></i></button>
                                                 </div>
+                                                <button class="btn btn-danger pull-right" ng-click="removeMethod(method, $index)" tooltip="Remove"><i class="fa fa-trash-o"></i></button>
                                             </div>
-                                          </div>
-
-                                            <div class="form-group">
-                                                <div class="col-lg-offset-2 col-lg-10">
-                                                    <button class="btn btn-primary" ng-click="saveMethod(method)" ng-disabled="form.$pristine">Save</button>
-                                                </div>
+                                        </div>
+                                    </form>
+                                </tab>
+                                <tab>
+                                    <tab-heading>
+                                        <i class="fa fa-bolt"></i> Try
+                                    </tab-heading>
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div ui-ace="{ onLoad : 'aceLoaded', mode: 'javascript' }" ng-model="aceModel"></div>
+                                        </div>
+                                        <div class="col-lg-12">
+                                            <div class="btn-group">
+                                                <button class="btn btn-primary" ng-click="saveMethod(method)" ng-disabled="form.$pristine">Save</button>
+                                                <button class="btn btn-primary" ng-click="removeMethod($index)"><i class="fa fa-times"></i>Remove</button>
                                             </div>
+                                        </div>
+                                    </div>
+                                </tab>
+                                <tab>
+                                    <tab-heading>
+                                        <i class="fa fa-puzzle-piece"></i> Debug
+                                        <!-- span class="fa-stack fa-lg">
+                                            <i class="fa fa-dot-circle-o fa-stack-1x fg-red"></i>
+                                            <i class="fa fa-circle-o fa-stack-1x"></i>
+                                        </span -->
+                                    </tab-heading>
+                                    <pre>method = {{method | json}}</pre>
+                                </tab>
+                                <tab>
+                                    <tab-heading>
+                                        <i class="fa fa-bar-chart-o"></i> Statistics
+                                    </tab-heading>
+                                    <pre>method = {{method | json}}</pre>
+                                </tab>
 
-                                        </form>
-                                    </div>
-                                    <div class="tab-pane" id="entry-{{entry.id}}-tab-two">
-                                        <div ui-ace="{ onLoad : 'aceLoaded', mode: 'javascript' }" ng-model="aceModel"></div>
-                                    </div>
-                                    <div class="tab-pane" id="entry-{{entry.id}}-tab-tree">
-                                        <pre>method = {{method | json}}</pre>
-                                    </div>
-                                   <div class="tab-pane" id="entry-{{entry.id}}-tab-four">Thirdamuno, ipsum dolor sit amet, consectetur adipiscing elit. Duis pharetra varius quam sit amet vulputate.
-                                    Quisque mauris augue, molestie tincidunt condimentum vitae.</div>
-                                </div>
-                            </div>
+                            </tabset>
                         </div>
                     </div>
                 </accordion-group>
@@ -151,143 +179,15 @@
     <div class="row">
         <div class="col-md-12">
             <div class="well well-sm" style="margin-top: 10px;">
+                <span class="fa-stack fa-lg">
+                    <i class="fa fa-dot-circle-o fa-stack-1x fg-red"></i>
+                    <i class="fa fa-circle-o fa-stack-1x"></i>
+                </span>
                 [API: {{api.name}}, Base URL: {{api.baseURL}}, Version: {{api.version}} ]
             </div>
         </div>
     </div>
 </application>
 
-<script type="text/ng-template" id="graphSettings.html">>
-    <div class="row" style="display:none;" ng-repeat="entry in api.entries">
-        <div class="col-lg-12">
-            <div class="panel panel-default" >
-                <div class="panel-heading clearfix">
-                    <h3 class="panel-title pull-left" style="padding-top: 7.5px;"><i class="fa fa-th-large"></i> {{entry.route}}</h3>
-                    <div class="btn-group pull-right">
-                        <button type="button" class="btn btn-default"><i class="fa fa-circle fg-red"></i></button>
-                        <button type="button" class="btn btn-default"><i class="fa fa-link"></i></button>
-                        <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#entry-{{entry.id}}-settings" data-parent=".panel-body" btn-checkbox><i class="fa fa-cog"></i></button>
-                    </div>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                         <div class="col-md-12">
-                            <div class="input-group">
-                                <div class="input-group-btn">
-                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Action <span class="caret"></span></button>
-                                        <ul class="dropdown-menu" role="menu">
-                                        <li><a href="#">Action</a></li>
-                                        <li><a href="#">Another action</a></li>
-                                        <li><a href="#">Something else here</a></li>
-                                        <li class="divider"></li>
-                                        <li><a href="#">Separated link</a></li>
-                                    </ul>
-                                </div>
-                                <input type="text" class="form-control" ng-model="entry.route">
-                            </div>
-                        </div>
-                    </div>
-                    <!-- DESCRIPTION -->
-                    <div id="entry-{{entry.id}}-settings" class="row collapse" >
-                        <div class="col-md-12">
-                            <div class="tabbable">
-                                <ul class="nav nav-tabs">
-                                    <li class="active"><a href="#entry-{{entry.id}}-tab-one" target="_self" data-toggle="tab">Settings</a></li>
-                                    <li><a href="#entry-{{entry.id}}-tab-two" target="_self" data-toggle="tab">Example</a></li>
-                                    <li><a href="#entry-{{entry.id}}-tab-tree" target="_self" data-toggle="tab">Debugger</a></li>
-                                    <li><a href="#entry-{{entry.id}}-tab-four" target="_self" data-toggle="tab">Try it</a></li>
-                                </ul>
-                                <div class="tab-content">
-                                    <div class="tab-pane active" id="entry-{{entry.id}}-tab-one">
-                                        <form class="form-horizontal">
-                                          <div class="form-group">
-                                            <label for="inputEmail1" class="col-lg-2 control-label">Proxy</label>
-                                            <div class="col-lg-10">
-                                              <div class="input-group">
-                                                <span class="input-group-addon">
-                                                  <input type="checkbox" ng-model="entry.proxy.enabled">
-                                                </span>
-                                                <input type="text" class="form-control" ng-model="entry.proxy.url" value="{{entry.proxy.url}}" placeholder="proxy url (http / https)">
-                                              </div>
-                                            </div>
-                                          </div>
-                                          <div class="form-group">
-                                            <label for="inputPassword1" class="col-lg-2 control-label">Content type</label>
-                                            <div class="col-lg-10">
-                                                <!-- input type="text" class="form-control" ng-model="entry.contentType" placeholder="application/json" -->
-                                                <label class="label-select">
-                                                    <select class="" ng-model="entry.contentType.id" ng-options="contentTypes.id as contentTypes.label group by contentTypes.group for contentTypes in headers.contentTypes"></select>
-                                                </label>
-                                            </div>
-                                          </div>
-                                          <!-- CUSTOM HEADERS -->
-                                          <div class="form-group hidden">
-                                            <label for="inputPassword1" class="col-lg-2 control-label">Custom headers</label>
-                                            <div class="col-lg-3">
-                                                <input type="text" class="form-control">
-                                            </div>
-                                            <div class="col-lg-6">
-                                                <input type="text" class="form-control">
-                                            </div>
-                                            <div class="col-lg-1">
-                                                <button type="button" class="btn btn-menu" ng-click=""><i class="glyphicon glyphicon-plus"></i></button>
-                                            </div>
-                                          </div>
-                                          <!-- CUSTOM HEADERS -->
-                                          <div class="form-group">
-                                            <label for="inputPassword1" class="col-lg-2 control-label">Status Code</label>
-                                            <div class="col-lg-10">
-                                                <label class="label-select">
-                                                <select class="selectpicker" ng-model="entry.status.id" ng-options="status.id as status.label group by status.group for status in headers.statuses">
-                                                </select>
-                                                </label>
-                                            </div>
-                                          </div>
 
-                                          <div class="form-group">
-                                            <label for="inputPassword1" class="col-lg-2 control-label">Response Body</label>
-                                            <div class="col-lg-10">
-                                                <textarea class="form-control" ng-disabled="!entry.isEditing" rows="3" ng-model="entry.sends" placeholder="{}"></textarea>
-                                            </div>
-                                          </div>
 
-                                          <div class="form-group hidden">
-                                            <label for="exampleInputFile" class="col-lg-2 control-label">File input</label>
-                                            <div class="col-lg-10">
-                                                <div style="position:relative;">
-                                                        <a class="btn btn-menu" href="javascript:;">
-                                                            Choose File...
-                                                            <input type="file" style="height:100%;position:absolute;z-index:2;top:0;left:0;opacity:0;background-color:transparent;color:transparent;" name="file_source" size="40" >
-                                                        </a>
-                                                        &nbsp;
-                                                        <span class="label label-info" id="upload-file-info"></span>
-                                                </div>
-                                            </div>
-                                          </div>
-
-                                            <div class="form-group">
-                                                <div class="col-lg-offset-2 col-lg-10">
-                                                    <button class="btn btn-menu">Save</button>
-                                                </div>
-                                            </div>
-
-                                        </form>
-                                    </div>
-                                    <div class="tab-pane" id="entry-{{entry.id}}-tab-two">
-                                        <pre>
-                                        </pre>
-                                    </div>
-                                    <div class="tab-pane" id="entry-{{entry.id}}-tab-tree">Thirdamuno, ipsum dolor sit amet, consectetur adipiscing elit. Duis pharetra varius quam sit amet vulputate.
-                                    Quisque mauris augue, molestie tincidunt condimentum vitae.</div>
-                                   <div class="tab-pane" id="entry-{{entry.id}}-tab-four">Thirdamuno, ipsum dolor sit amet, consectetur adipiscing elit. Duis pharetra varius quam sit amet vulputate.
-                                    Quisque mauris augue, molestie tincidunt condimentum vitae.</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel-footer"><span class="label label-warning">{{entry.hits}}</span></div>
-            </div>
-      </div>
-    </div>
-</script>

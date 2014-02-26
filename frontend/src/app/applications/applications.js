@@ -69,6 +69,11 @@ angular.module( 'apicatus.applications', [])
                 });
                 $scope.api.put();
             };
+            $scope.removeEndpoint = function(endpoint, $index) {
+                //console.log($scope.api.endpoints);
+                $scope.api.endpoints.splice($index, 1);
+                $scope.api.put();
+            };
             $scope.saveMethod = function(method) {
                 console.log(method);
             };

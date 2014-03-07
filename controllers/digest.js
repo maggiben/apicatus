@@ -4,11 +4,17 @@ var express = require('express'),
     AccountCtl = require('../controllers/account'),
     DigestorMdl = require('../models/digestor')
     DigestorCtl = require('../controllers/digestor'),
+    LogsCtl = require('../controllers/logs'),
     FileSystem = require('fs'),
     util = require('util'),
     vm = require('vm'),
     url = require('url'),
-    SocketIo = require('socket.io');
+    SocketIo = require('socket.io'),
+    http = require('http'),
+    httpProxy = require('http-proxy');
+
+
+// var proxy = httpProxy.RoutingProxy();
 ///////////////////////////////////////////////////////////////////////////////
 // APICATUS Digestors logic                                                  //
 ///////////////////////////////////////////////////////////////////////////////
@@ -33,10 +39,11 @@ function subdomainRegex(baseUrl){
     return regex;
 }
 exports.digestRequest = function(request, response, next) {
-    //console.log("digest")
+    console.log("digest")
     //return next();
 
     if (!request.headers.host) {
+        console.log("skip digest");
         return next();
     }
     // original req.url
@@ -47,6 +54,8 @@ exports.digestRequest = function(request, response, next) {
 
     // extract the subdomain string from the req.url
     var subdomainString = regex.exec(request.headers.host);
+
+    //console.log("subdomainString", subdomainString);
 
     // if there is no subdomain, return
     if(!subdomainString) return next();
@@ -64,8 +73,34 @@ exports.digestRequest = function(request, response, next) {
     var url_parts = url.parse(request.url, true);
     var query = url_parts.query;
 
-    console.log("url: " + request.url + " subdomain: " + subdomain + " host: ", request.headers.host + " method: ", request.method);
+    console.log("query: ", request.url," subdomain: " , subdomain , " body: ", request.body, " method: ", request.method);
 
+    var proxyRequest = function(request, response, cb) {
+        LogsCtl.create(request, response, next);
+        var options = {
+            host: 'google.com',
+            port: 80,
+            path: request.url,
+            method: 'GET',
+            path: '/',
+            headers: {}
+        };
+        var req = http.request(options, function(response) {
+            console.log('STATUS: ' + response.statusCode);
+            console.log('HEADERS: ' + JSON.stringify(response.headers));
+            response.setEncoding('utf8');
+            response.on('data', function (chunk) {
+                console.log('BODY: ' + chunk);
+                cb(chunk);
+            });
+        });
+        req.on('error', function(error) {
+            console.log('problem with request: ' + error.message);
+        });
+        // write data to request body
+        req.write(JSON.stringify(request.body));
+        req.end();
+    };
     var gotDigestor = function(error, digestor) {
         if (error) {
             response.status(500);
@@ -90,8 +125,11 @@ exports.digestRequest = function(request, response, next) {
                 return next(error);
             }
         }*/
-        response.status(200);
-        return response.json({ message: "digestor found" });
+        console.log("found digestor for subdomain !");
+        proxyRequest(request, response, function(data){
+            response.status(200);
+            return response.send(data);
+        });
     };
 
     DigestorMdl.findOne({name: subdomainArray[0]}, gotDigestor);

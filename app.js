@@ -6,8 +6,8 @@ var express = require('express'),
     conf = require('./config'),
     AccountMdl = require('./models/account'),
     AccountCtl = require('./controllers/account'),
-    DigestorMdl = require('./models/digestor')
     DigestorCtl = require('./controllers/digestor'),
+    LogsCtl = require('./controllers/logs'),
     FileSystem = require('fs'),
     util = require('util'),
     vm = require('vm'),
@@ -162,6 +162,15 @@ app.delete('/digestors', DigestorCtl.deleteAll);
 app.get('/digestors/:name', ensureAuthenticated, DigestorCtl.readOne);
 app.put('/digestors/:id', ensureAuthenticated, DigestorCtl.updateOne);
 app.delete('/digestors/:name', ensureAuthenticated, DigestorCtl.deleteOne);
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Logs CRUD                                                                 //
+///////////////////////////////////////////////////////////////////////////////
+app.post('/logs', LogsCtl.create);
+app.get('/logs/:id', LogsCtl.read);
+app.put('/logs/:id', LogsCtl.update);
+app.delete('/logs/:id', LogsCtl.delete);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Application rutes                                                         //

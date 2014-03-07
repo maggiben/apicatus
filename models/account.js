@@ -2,6 +2,7 @@ var mongoose = require('mongoose'),
     conf = require('../config'),
     Schema = mongoose.Schema,
     passportLocalMongoose = require('passport-local-mongoose'),
+    jwt = require('jwt-simple'),
     tokenSecret = 'apicatus-secret';
 
 var Token = new Schema({

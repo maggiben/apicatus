@@ -11,9 +11,13 @@ var environments = {
         sessionSecret: "secret",
         environment: process.env.NODE_ENV,
         listenPort: process.env.PORT || 8080,
-        ip: process.env.IP || os.hostname(),
+        ip: process.env.IP || '127.0.0.1',
+        baseUrl: 'miapi.com',
         allowCrossDomain: false,
         autoStart: true,
+        ttl: (1000 * 60 * 100), // 10 minutes
+        resetTokenExpiresMinutes: 20,
+        staticPath: "/frontend/build",
         mongoUrl: {
             hostname: "paulo.mongohq.com",
             port: 10026,
@@ -32,8 +36,12 @@ var environments = {
         environment: process.env.NODE_ENV,
         listenPort: process.env.PORT || 8080,
         ip: process.env.IP || os.hostname(),
+        baseUrl: 'miapi.com',
         allowCrossDomain: false,
         autoStart: false,
+        ttl: 1000,
+        resetTokenExpiresMinutes: 20,
+        staticPath: "/frontend/build",
         mongoUrl: {
             hostname: "paulo.mongohq.com",
             port: 10026,
@@ -47,17 +55,21 @@ var environments = {
     // Production options OpenShift                                          //
     ///////////////////////////////////////////////////////////////////////////
     production: {
-        sessionSecret: "secret",
+        sessionSecret: process.env.SECRET,
         environment: process.env.NODE_ENV,
-        listenPort: process.env.OPENSHIFT_NODEJS_PORT,
-        ip: process.env.OPENSHIFT_NODEJS_IP,
+        listenPort: 80,
+        ip: process.env.IP || '107.170.71.230',
+        baseUrl: 'apicat.us',
         allowCrossDomain: false,
         autoStart: true,
+        ttl: 3600000,
+        resetTokenExpiresMinutes: 20,
+        staticPath: "/frontend/build",
         mongoUrl: {
-            hostname: process.env.OPENSHIFT_MONGODB_DB_HOST,
-            port: process.env.OPENSHIFT_MONGODB_DB_PORT,
-            username: "admin",
-            password: "admin",
+            hostname: "paulo.mongohq.com",
+            port: 10026,
+            username: process.env.MONGO_USER,
+            password: process.env.MONGO_PASS,
             name: "",
             db: "apicatus"
         }

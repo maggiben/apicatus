@@ -8,6 +8,7 @@ var request = require('supertest');
 var http = require('http');
 var APP = require("../app").app;
 
+
 /*
 function loginUser() {
     return function(done) {
@@ -258,16 +259,31 @@ describe('Apicatus test suite', function () {
                 var digestor = {
                     name: 'myDigestor'
                 };
+                var profile = {
+                    username: 'admin',
+                    password: 'admin'
+                };
                 request(url)
-                    .post('/digestors')
+                    .post('/user/signin')
                     .set('Content-Type', 'application/json')
-                    .send(digestor)
+                    .send(profile)
                     .expect('Content-Type', /json/)
-                    .expect(201)
                     .end(function(err, res) {
                         if (err) throw err;
-                        res.body.name.should.equal('myDigestor');
-                        return done();
+                        res.body.username.should.equal('admin')
+                        var cookie = res.headers['set-cookie'];
+                        request(url)
+                            .post('/digestors')
+                            .set('cookie', cookie)
+                            .set('Content-Type', 'application/json')
+                            .send(digestor)
+                            .expect('Content-Type', /json/)
+                            .expect(201)
+                            .end(function(err, res) {
+                                if (err) throw err;
+                                res.body.name.should.equal('myDigestor');
+                                return done();
+                            });
                     });
             });
             it('should read all digestors', function(done) {
@@ -312,25 +328,39 @@ describe('Apicatus test suite', function () {
                     name: 'myDigestor',
                     hits: 33
                 };
+                var profile = {
+                    username: 'admin',
+                    password: 'admin'
+                };
                 request(url)
-                    .put('/digestors/' + digestor.name)
-                    .set('cookie', cookie)
-                    .send(digestor)
+                    .post('/user/signin')
+                    .set('Content-Type', 'application/json')
+                    .send(profile)
                     .expect('Content-Type', /json/)
-                    .expect(200)
                     .end(function(err, res) {
                         if (err) throw err;
-                        res.statusCode.should.equal(200)
+                        res.body.username.should.equal('admin')
+                        var cookie = res.headers['set-cookie'];
                         request(url)
-                            .get('/digestors/' + digestor.name)
+                            .put('/digestors/' + digestor.name)
                             .set('cookie', cookie)
+                            .send(digestor)
                             .expect('Content-Type', /json/)
                             .expect(200)
                             .end(function(err, res) {
                                 if (err) throw err;
-                                res.statusCode.should.equal(200);
-                                res.body.hits.should.equal(33);
-                                return done();
+                                res.statusCode.should.equal(200)
+                                request(url)
+                                    .get('/digestors/' + digestor.name)
+                                    .set('cookie', cookie)
+                                    .expect('Content-Type', /json/)
+                                    .expect(200)
+                                    .end(function(err, res) {
+                                        if (err) throw err;
+                                        res.statusCode.should.equal(200);
+                                        res.body.hits.should.equal(33);
+                                        return done();
+                                    });
                             });
                     });
             });

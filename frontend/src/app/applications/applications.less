@@ -1,0 +1,335 @@
+applications {
+    .panel-title {
+        text-transform: uppercase;
+        font-weight: 200;
+        i {
+            margin-right: 6px;
+        }
+    }
+    .app-list {
+        display: block;
+        list-style: none;
+        margin: 0px;
+        padding: 0px;
+        li {
+            position: relative;
+            margin: 4px;
+            height: 78px;
+            width: 78px;
+            float: left;
+            padding: 10px;
+            border-radius: 2px;
+            background-color: #f9fafb;
+            text-align: center;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            color: @brand-info;
+            -webkit-transition: all 0.25s ease-in-out;
+               -moz-transition: all 0.25s ease-in-out;
+                 -o-transition: all 0.25s ease-in-out;
+                    transition: all 0.25s ease-in-out;
+            &:hover {
+                background-color: @brand-info;
+                a {
+                    color: @gray-lighter;
+                    .icon-background {
+                        background-color: @gray-lighter;
+                        i {
+                            color: @brand-info;
+                        }
+                    }
+                }
+            }
+            a {
+                text-decoration: inherit;
+                -webkit-transition: all 0.25s ease-in-out;
+                   -moz-transition: all 0.25s ease-in-out;
+                     -o-transition: all 0.25s ease-in-out;
+                        transition: all 0.25s ease-in-out;
+                &:hover, :focus {
+                    text-decoration: inherit;
+                }
+                img {
+                    max-width: 100%;
+                    max-height: 70%;
+                    display: block;
+                    margin: auto;
+                    margin-bottom: 4px;
+                }
+                .icon-background {
+                    display: table;
+                    background-color: @brand-info;
+                    margin: 0 auto;
+                    width: 3em;
+                    height: 3em;
+                    border-radius: 50%;
+                    -webkit-transition: all 0.1s ease-out;
+                       -moz-transition: all 0.1s ease-out;
+                         -o-transition: all 0.1s ease-out;
+                            transition: all 0.1s ease-out;
+                    &:hover {
+                        width: 3.25em;
+                        height: 3.25em;
+                    };
+                    i {
+                        color: @gray-lighter;
+                        display: table-cell;
+                        vertical-align: middle;
+                        font-size:2em;
+                    }
+                }
+            }
+            .name {
+                position: relative;
+                bottom: 0px;
+                line-height: 14px;
+                font-size: 14px;
+                text-align: center;
+            }
+        }
+    }
+
+    .app-cards {
+        display: block;
+        list-style: none;
+        margin: 0px;
+        padding: 0px;
+        & > li {
+            display: inline-block;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+    }
+    bar-chart {
+        .axis path, .axis line {
+            fill: none;
+            stroke: black;
+            shape-rendering: crispEdges;
+        }
+        .axis path{
+            fill: none;
+            stroke: none;
+        }
+        .bar {
+            fill: #fff;
+            fill-opacity: 0.25;
+        }
+    }
+    line-chart {
+        position: absolute;
+        top: 0px;
+        .axis path, .axis line {
+            fill: none;
+            stroke: black;
+            shape-rendering: crispEdges;
+        }
+        .axis path{
+            fill: none;
+            stroke: none;
+        }
+        .line {
+            fill: none;
+        }
+    }
+    .endpoint{margin:0 0 20px;border:1px rgba(0, 0, 0, 0.1) solid;border-radius:3px;box-shadow:0 1px 2px rgba(0, 0, 0, 0.05);}
+    /*.endpoint div.title{margin:-14px -20px 14px;}*/
+    .endpoint div.title,.endpoint .response{text-shadow:0 1px 0 #fff;box-shadow:inset 0 1px 0 #fff;box-shadow:inset 0 1px 0 #ffffff;border-radius:3px 3px 0 0;}
+    .endpoint .response{border-top:0;border-left:0;border-right:0;}
+    .endpoint .route-parameter{background-color:rgba(255, 255, 255, 0.6);border-radius:3px;padding:1px 4px;margin:0 3px;color:#8c59a6;border-bottom:1px #fff solid;border-top:1px rgba(0, 0, 0, 0.12) solid;text-shadow:0 1px 0 #fff;}
+    .endpoint .method{display:inline-block;margin:0 15px 0 -20px;padding:0 20px;border-right:1px rgba(0, 0, 0, 0.12) solid;box-shadow:1px 0 0 #fff;background-color:rgba(0, 0, 0, 0.02);}
+    .endpoint div.title{background-image:linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-o-linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-moz-linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-webkit-linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-ms-linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-webkit-gradient(linear, left bottom, left top, color-stop(0%, #f3f5f7), color-stop(100%, #fcfdfd));background-color:#f8f9fa;border-radius:3px;font-family:'Lato','Trebuchet MS',Helvetica,Arial,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-bottom:1px #d0d2d9 solid;font-weight:bold;font-size:15px;line-height:40px;text-shadow:0 1px 0 #fff;box-shadow:0 1px 0 #fff;padding:0 20px;max-height:42px;}
+    .endpoint div.title i:not(.icon-caret-down){margin-right:0.7em;color:#878ca2;}
+
+    .endpoint div.title.open{border-radius:3px 3px 0 0;}
+    .endpoint div.title.head{border-bottom:none;margin-bottom:0;}
+    .endpoint p{margin-bottom:1em;}
+    .endpoint >*:first-child{margin-top:0;}
+    .endpoint >*:last-child{margin-bottom:0;}
+    .endpoint .response {background-image:linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-o-linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-moz-linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-webkit-linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-ms-linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-webkit-gradient(linear, left bottom, left top, color-stop(0%, #f3f5f7), color-stop(100%, #fcfdfd));background-color:#f8f9fa;position:relative;z-index:5;padding-left:20px;float:right;font-size:13px;font-weight:normal;color:#797e96;}
+
+
+
+    .container {
+        max-width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+    }
+    .card {
+        background: white;
+        border-radius: 0.3rem;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+        margin-bottom: 1em;
+        &.stock {
+            .stock-chart {
+                background: #00c5de;
+                border-top-left-radius: 0.3rem;
+                border-top-right-radius: 0.3rem;
+            }
+            .stock-chart {
+                height: 120px;
+                #chart {
+                    height: 10.7em;
+                    background: url(http://i.imgbox.com/abmuNQx2) center bottom no-repeat;
+                }
+            }
+            .current-price {
+                background: #1d2122;
+                padding: 1em;
+                width: 100%;
+                .info abbr {
+                    display: block;
+                    color: #f8f8f8;
+                    font-size: 1.5em;
+                    font-weight: 600;
+                    margin-top: 0.18em;
+                }
+                .changes {
+                    text-align: right;
+                    .value {
+                        font-size: 1.8em;
+                        font-weight: 600;
+                        &:before {
+                            content: "";
+                            height: 0;
+                            width: 0;
+                            border-color: transparent;
+                            border-style: solid;
+                            border-width: 0.25em;
+                            border-bottom-color: #4fd98b;
+                            display: inline-block;
+                            vertical-align: middle;
+                            margin-top: -0.5em;
+                            margin-right: 0.4em;
+                        }
+                        &.up {
+                            color: #4fd98b;
+                        }
+                        &.down {
+                            color: #e76646;
+                            &:before {
+                                border-color: #e76646 transparent transparent;
+                            }
+                        }
+                    }
+                    time, .change {
+                        color: #c8c8c8;
+                        font-weight: 300;
+                        font-size: 0.9em;
+                    }
+                }
+                .info {
+                    time, .change {
+                        color: #c8c8c8;
+                        font-weight: 300;
+                        font-size: 0.9em;
+                    }
+                }
+            }
+            .yearly-changes {
+                height: 6em;
+                padding: 1em;
+                &:after {
+                    content: "";
+                    height: 100%;
+                    display: inline-block;
+                    vertical-align: middle;
+                }
+                .year-all, .year-chart {
+                    display: inline-block;
+                    vertical-align: middle;
+                }
+                .year-chart, .chart-bars {
+                    height: 100%;
+                }
+            }
+            .summary {
+                padding: 0 1em 1em;
+                text-align: center;
+                a {
+                    color: #46494c;
+                    display: block;
+                    background: rgba(0, 0, 0, 0.05);
+                    padding: 1em 0.5em;
+                    border-radius: 0.3rem;
+                    &:hover {
+                        color: #1c84d4;
+                        span {
+                            color: #1d8cdf;
+                        }
+                    }
+                }
+                span {
+                    color: #a1a5a8;
+                    font-size: 0.9em;
+                    font-weight: 300;
+                    text-transform: uppercase;
+                }
+                strong {
+                    display: block;
+                    font-weight: 600;
+                    font-size: 1.4em;
+                }
+            }
+            .year-chart .chart-bars {
+                list-style: none;
+                padding: 0;
+                padding-bottom: 1.5em;
+                margin: 0;
+                text-align: justify;
+                &:after {
+                    content: "";
+                    display: inline-block;
+                    width: 100%;
+                }
+                li {
+                    position: relative;
+                    font-size: 0.9em;
+                    width: 10px;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.1);
+                    display: inline-block;
+                    border-radius: 0.3rem;
+                    .value {
+                        position: absolute;
+                        display: block;
+                        width: 100%;
+                        height: 50%;
+                        left: 0;
+                        bottom: 0;
+                        background: #49c5b1;
+                        border-radius: 0.3rem;
+                    }
+                    label {
+                        color: #a1a5a8;
+                        width: 100%;
+                        display: block;
+                        text-align: center;
+                        position: absolute;
+                        font-size: 10px;
+                        font-weight: 100;
+                        bottom: -2em;
+                    }
+                }
+            }
+            .year-all {
+                text-align: center;
+                strong {
+                    display: block;
+                    font-weight: 600;
+                    font-size: 1.4em;
+                }
+                span {
+                    color: #a1a5a8;
+                    font-size: 0.9em;
+                    font-weight: 300;
+                    text-transform: uppercase;
+                }
+            }
+        }
+    }
+
+
+}

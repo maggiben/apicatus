@@ -1,0 +1,811 @@
+/* =========================
+        openvisconf.com
+========================== */
+
+body {
+  font: 16px 'Raleway', sans-serif;
+  color: #4b4b4b;
+  background: #FFF;
+  margin: 0;
+}
+
+img {
+  vertical-align: middle;
+  max-width: 100%;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+p {
+  font-size: 1.2em;
+  line-height: 1.5em;
+  text-align: left;
+}
+
+h1 {
+  font-size: 2.5em;
+  font-weight: 500;
+  letter-spacing: 4px;
+  margin: 0;
+}
+
+h2 {
+  font-weight: 100;
+  letter-spacing: 2px;
+  margin: 0 0 2em;
+  position: relative;
+  display: inline-block;
+}
+
+h2:before, h2:after {
+  content: "";
+  position: absolute;
+  height: 2px;
+  background: #4b4b4b;
+  width: 30px;
+  top: .6em;
+}
+
+h2:before {
+  left: -38px;
+}
+
+h2:after {
+  right: -38px;
+}
+
+a {
+  color: #49c5b1;
+  text-decoration: none;
+}
+
+a:hover, .active a {
+  color: #35a694;
+}
+
+p a:hover {
+  text-decoration: underline;
+}
+
+nav a, #header a.button {
+  color: white;
+}
+
+nav a:hover,  #header a.button:hover {
+  color: #49c5b1;
+}
+
+textarea {
+  resize: vertical;
+}
+
+::selection {
+  background: #00afd7;
+  color: #fff;
+}
+
+.block {
+  max-width: 980px;
+  margin: auto;
+  text-align: center;
+  padding: 6em 2em;
+}
+
+.button {
+  border: 2px solid;
+  padding: .8em 0;
+  font-size: 1.4em;
+  display: inline-block;
+}
+
+#header, #tagline, #location {
+  border-bottom: 13px solid #00afd7;
+}
+
+/* =========================
+            Header
+========================== */
+
+#header {
+  background-image: url(../images/header-bg.jpg);
+  background-position: center center;
+  background-repeat: no-repeat;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  color: #FFF;
+}
+
+#header .block {
+  padding-top: 8em;
+}
+
+#header .actions .button {
+  width: 33%;
+}
+
+#header .actions a:first-of-type {
+  margin-right: 1em;
+}
+
+#header h1 {
+  font-weight: 100;
+  font-size: 2em;
+  letter-spacing: 0;
+  margin: 1em 0;
+}
+
+
+/* =========================
+            Nav
+========================== */
+
+nav {
+  position: fixed;
+  width: 100%;
+  background-color: rgba(41, 52, 62, 0.5);
+  z-index: 1;
+}
+
+nav .block {
+  padding: 0;
+}
+
+nav ul {
+  display: inline-block;
+  width: 100%;
+ }
+
+nav ul li {
+  float: left;
+  width: 16.666666%;
+}
+
+/* Dropdown menu */
+
+nav label {
+  display: none;
+  cursor: pointer;
+  -webkit-user-select: none;
+}
+
+nav input[type=checkbox] {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+}
+
+nav.f-nav {
+  background-color: rgba(41, 52, 62, 1);
+}
+
+
+/* =========================
+          Tagline
+========================== */
+
+#tagline {
+  background-image: url(../images/tagline-bg.jpg);
+  background-position: center center;
+  background-repeat: no-repeat;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  color: #FFF;
+}
+
+#tagline h1 {
+  margin: 0;
+  font-weight: 600;
+  -webkit-text-stroke: 1px #000;
+     -moz-text-stroke: 1px #000;
+          text-stroke: 1px #000;
+}
+
+
+/* =========================
+          Call
+========================== */
+
+#call {
+  background: #FAFAFA;
+}
+
+#call .button {
+  color: #ff4b5c;
+  width: 18em;
+  margin-top: 1em;
+}
+
+#call .button:hover {
+  color: #4b4b4b;
+}
+
+/* =========================
+          Speakers
+========================== */
+
+#speakers h2.title {
+  margin-bottom: 2em;
+}
+
+.keynote_entity {
+  margin-bottom: 4em;
+}
+
+.speaker_entity {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  display: inline-block;
+  width: 50%;
+  margin: 0 -3px 2em 0;
+  padding: .5em;
+  vertical-align: top;
+  position: relative;
+}
+
+.speaker_entity .speaker-img {
+  display: block;
+  margin: auto;
+}
+
+.speaker_entity h2 {
+  color: #ff4b5c;
+  cursor: pointer;
+}
+
+.speaker_entity p {
+  font-size: 1em;
+  line-height: 1.3em;
+  clear: both;
+}
+
+.speaker_entity h2, .keynote_entity h2 {
+  margin: 1em 0 0;
+  letter-spacing: 0;
+}
+
+.speaker_entity h2 a:hover {
+  color: #4b4b4b;
+}
+
+.speaker_entity h2:before, .speaker_entity h2:after {
+  height: 0px;
+}
+
+.speaker_entity h3 {
+  cursor: pointer;
+  font-weight: 400;
+  margin-top: .5em;
+}
+
+.speaker_entity button {
+  border: 2px solid #ff4b5c;
+  color: #ff4b5c;
+  background: none;
+  font-size: 1em;
+  cursor: pointer;
+  outline: none;
+  width: 36%;
+}
+
+.speaker_entity button:hover {
+  border: 2px solid #4b4b4b;
+  color: #4b4b4b;
+}
+
+.speaker_entity.expanded_talk button.expand_talk, .speaker_entity.expanded_bio button.expand_bio {
+  border: 2px solid #4b4b4b;
+  color: #4b4b4b;
+}
+
+.speaker_entity .talk_abstract, .speaker_entity .speaker_bio {
+  display: none;
+}
+
+.speaker_entity.expanded_talk .talk_abstract,
+.speaker_entity.expanded_bio .speaker_bio {
+  display: block;
+}
+
+.talk_preview, .speaker_bio {
+  margin-bottom: 1em;
+}
+
+.speaker_entity .tag_container {
+  text-align: center;
+  font-size: 0.7em;
+  font-weight: normal;
+  margin-bottom: 1em;
+}
+
+.speaker_entity .tags .tag {
+  cursor: pointer;
+  background: #EEE;
+  padding: .15em .3em;
+}
+
+.speaker_entity .tags .tag:hover {
+  background: #DDD;
+}
+
+.speaker_entity.selected img.speaker-img {
+  box-shadow: 2px 2px 0px #ff4b5c, -2px -2px 0px #ff4b5c, 2px -2px 0px #ff4b5c, -2px 2px 0px #ff4b5c;
+}
+
+.close {
+  background: #ff4b5c;
+  padding: .1em .4em;
+  color: white;
+  float: right;
+  margin-bottom: .5em;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.close:hover {
+  background: #A8A8A8;
+  color: white;
+}
+
+img.expand, img.expand-name {
+  margin-bottom: .15em;
+}
+
+.expanded_talk img.expand, .expanded_bio img.expand-name  {
+  transform:rotate(180deg);
+  -ms-transform:rotate(180deg); /* IE 9 */
+  -webkit-transform:rotate(180deg); /* Safari and Chrome */
+}
+
+/* =========================
+          Locaion
+========================== */
+
+#last-year .button {
+  width: 18em;
+}
+
+
+/* =========================
+          Locaion
+========================== */
+
+#location {
+  height: 20em;
+  overflow: hidden;
+  background-image: url(../images/location-bg.jpg);
+  background-position: center center;
+  background-repeat: no-repeat;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  color: #FFF;
+}
+
+#location h1 {
+  margin: 0;
+  font-weight: 100
+}
+
+#location .block {
+  padding: 9em 2em;
+}
+
+
+/* =========================
+          Register
+========================== */
+
+#register .register-form {
+  background-image: url(../img/register-bg.jpg);
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  overflow: auto;
+}
+
+#register .register-info {
+  width: 50%;
+  float: left;
+  color: white;
+  margin-top: 1.3em;
+}
+
+#register .register-info h2 {
+  margin: 1em;
+}
+
+.register-info h2:before, .register-info h2:after {
+  width: 0;
+}
+
+#register .register-info img {
+  margin: 0 2em;
+}
+
+#register .form {
+  width: 39%;
+  float: right;
+  background: white;
+  border: 2px solid;
+  border-left: none;
+  padding: 0 1em 1em 1em;
+}
+
+.new_registration {
+  margin: 2em;
+}
+
+.tito-ticket {
+  border: 2px solid;
+  padding: 1em;
+}
+
+.tito-ticket:first-of-type {
+  margin-bottom: 1em;
+}
+
+.tito-ticket-price-quantity {
+  overflow: auto;
+  padding: 3px 0;
+}
+
+.tito-ticket-price {
+  float: left;
+  font-weight: 700;
+}
+
+.tito-ticket-quantity  {
+  float: right;
+}
+
+.tito-ticket-quantity input {
+  width: 22px;
+  border: 1px solid gray;
+  padding: .5em;
+  text-align: right;
+  border-radius: 3px;
+}
+
+.tito-ticket-status-sold-out {
+  font-weight: 700;
+  text-align: left;
+}
+
+.tito-ticket-name {
+  text-align: left;
+  margin-bottom: 1em;
+  display: block;
+}
+
+.tito-ticket-name:after {
+  content: "Individual Ticket";
+}
+
+#tito-footer {
+  display: none;
+}
+
+.tito-submit {
+  color: #ff4b5c;
+  border: 2px solid;
+  padding: .8em 0;
+  font-size: 1.4em;
+  background: none;
+  width: 100%;
+  cursor: pointer;
+}
+
+.tito-submit:hover {
+  color: #4b4b4b;
+  border-color: #4b4b4b;
+}
+
+#tito-register-form img {
+  display: none;
+}
+
+/* =========================
+          Sponsor
+========================== */
+
+#sponsor {
+  background-color: #FAFAFA;
+}
+
+/* =========================
+          About
+========================== */
+
+#about p {
+  font-size: 1em;
+}
+#about img.bob {
+  margin-right: 20px;
+  width: 90px
+}
+
+#about .committee_members {
+  width: 100%;
+  display: inline-block;
+}
+
+#about .committee_members div {
+  display: inline-block;
+  float: left;
+  width: 16.6%;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+#about .committee_members div img {
+  margin-bottom: 10px;
+}
+
+/* =========================
+          Footer
+========================== */
+
+footer {
+  background: #46596a;
+  color: white;
+  font-size: .8em;
+}
+
+footer .block {
+  padding: 1em 2em;
+}
+
+footer a {
+  color: #7797B3;
+}
+
+footer a:hover {
+  color: #FFF;
+  text-decoration: underline;
+}
+
+footer p {
+  color: #627c94;
+  text-align: center;
+}
+
+
+/* =========================
+        Media Queries
+========================== */
+
+@media only screen and (max-width: 875px) {
+
+  .block {
+    padding: 4em 2em;
+  }
+
+  #header .block {
+    padding-top: 6em;
+  }
+
+  nav {
+    background: #ff4b5c;
+  }
+
+  nav.f-nav {
+    background: #ff4b5c;
+  }
+
+  nav ul {
+    display: none;
+    width: 100%;
+    line-height: 1.5em;
+    padding: 0;
+    margin: 0;
+  }
+
+  nav ul li {
+    float: none;
+    text-align: left;
+    border-bottom: 1px solid #CE414E;
+    width: 100%;
+  }
+
+  nav ul li.twitter-button {
+    padding: 1em 1.5em 0.6em;
+  }
+
+  nav a {
+    display: block;
+    padding: 16px 1.5em;
+    width: 100%;
+  }
+
+  nav label {
+    display: block;
+    min-height: 3.5em;
+  }
+
+  nav label:after {
+    background-image: url("../img/menu-more.png");
+    content: '';
+    position: absolute;
+    right: .5em;
+    top: .5em;
+    font-size: 1.8em;
+    width: 23px;
+    height: 19px;
+  }
+
+  nav input[type=checkbox]:checked ~ ul {
+    display:block;
+  }
+
+  nav .active a, nav a:hover {
+    color: black;
+  }
+
+  #location .block {
+    padding: 8em 2em;
+  }
+
+  .speaker_entity button {
+    font-size: 0.9em;
+  }
+}
+
+@media only screen and (max-width: 760px) {
+
+  #header .actions .button {
+    width: 47%;
+  }
+
+  #header .actions a:first-of-type {
+    margin-right: 0;
+  }
+
+  #register .register-info, #register .form {
+    width: 100%;
+    float: none;
+  }
+
+  #register .register-form {
+    height: auto;
+    border: 2px solid;
+  }
+
+  #register .register-info {
+    margin: 1.3em 0;
+  }
+
+  #register .form {
+    height: auto;
+    border: none;
+    padding: 0;
+  }
+
+  #register .form form {
+    width: 90%;
+    margin: auto;
+    padding: 1em;
+  }
+
+  #register .register-form {
+    -webkit-background-size: auto;
+    -moz-background-size: auto;
+    -o-background-size: auto;
+  }
+
+  #about .committee_members div {
+    width: 25%;
+  }
+
+}
+
+@media only screen and (max-width: 700px) {
+
+  .speaker_entity {
+    width: 100%;
+  }
+
+  .speaker_entity button {
+    width: 45%;
+  }
+
+}
+
+@media only screen and (max-width: 570px) {
+
+  .block {
+    padding: 2em 1em;
+  }
+
+  #header .actions .button {
+    width: 100%;
+    margin-bottom: 1em;
+  }
+
+  h1 {
+    letter-spacing: 0;
+  }
+
+  .title h1 {
+    margin-bottom: 1em;
+  }
+
+  .title h2 {
+    display: none;
+  }
+
+  #location .block {
+    padding: 2em 1em;
+  }
+
+   #about .committee_members div {
+    width: 33.3%;
+  }
+
+}
+
+@media only screen and (max-width: 510px) and (min-width: 480px){
+
+  .speaker_entity button {
+    font-size: 0.8em;
+  }
+
+}
+
+@media only screen and (max-width: 480px) {
+
+  h1 {
+    font-size: 1.5em;
+  }
+
+  h2 {
+    font-size: 1.3em;
+  }
+
+  #header h1 {
+    font-size: 1.5em;
+  }
+
+  #header .actions .button {
+    font-size: 1.2em;
+  }
+
+  #call .button, #last-year .button {
+    width: 100%;
+  }
+
+  .new_registration {
+    margin: 1em;
+  }
+
+  #register .register-info img {
+    display: none;
+  }
+
+  #register .register-info h2 {
+    margin-top: 0;
+  }
+
+  #register .form {
+    padding: .1em 0 .1em;
+  }
+
+  .speaker_entity {
+    width: 100%;
+  }
+  #about .committee_members div {
+    width: 50%;
+  }
+}

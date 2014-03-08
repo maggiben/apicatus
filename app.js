@@ -6,63 +6,48 @@ var express = require('express'),
     conf = require('./config'),
     AccountMdl = require('./models/account'),
     AccountCtl = require('./controllers/account'),
-    DigestorMdl = require('./models/digestor')
     DigestorCtl = require('./controllers/digestor'),
+    LogsCtl = require('./controllers/logs'),
     FileSystem = require('fs'),
     util = require('util'),
     vm = require('vm'),
     url = require('url'),
     SocketIo = require('socket.io'),
     passport = require('passport'),
+    jwt = require('jwt-simple'),
     LocalStrategy = require('passport-local').Strategy,
     DigestCtl = require('./controllers/digest');
 
-///////////////////////////////////////////////////////////////////////////////
-// Mongo setup middleware                                                    //
-///////////////////////////////////////////////////////////////////////////////
-if(process.env.VCAP_SERVICES){
-    var env = JSON.parse(process.env.VCAP_SERVICES);
-    var mongo = env['mongodb-1.8'][0]['credentials'];
-} else {
-    var mongo = {
-        "hostname": "127.0.0.1",
-        "port": 27017,
-        "username": "admin",
-        "password": "admin",
-        "name": "",
-        "db": "fans"
-    };
-}
-var generate_mongo_url = function(obj){
-    obj.hostname = (obj.hostname || 'localhost');
-    obj.port = (obj.port || 27017);
-    obj.db = (obj.db || 'test');
-    if(obj.username && obj.password){
-        return "mongodb://" + obj.username + ":" + obj.password + "@" + obj.hostname + ":" + obj.port + "/" + obj.db;
+////////////////////////////////////////////////////////////////////////////////
+// Mongo URL generator                                                        //
+////////////////////////////////////////////////////////////////////////////////
+var generate_mongo_url = function(conf){
+    if(conf.username && conf.password){
+        return "mongodb://" + conf.username + ":" + conf.password + "@" + conf.hostname + ":" + conf.port + "/" + conf.db;
     }
     else{
-        return "mongodb://" + obj.hostname + ":" + obj.port + "/" + obj.db;
+        return "mongodb://" + conf.hostname + ":" + conf.port + "/" + conf.db;
     }
 };
-
+////////////////////////////////////////////////////////////////////////////////
+// MongoDB Connection setup                                                   //
+////////////////////////////////////////////////////////////////////////////////
 var init = function(options) {
     if(conf.autoStart) {
         console.log("autostarting app")
         var mongoUrl = generate_mongo_url(conf.mongoUrl);
         console.log("mongodb connet to", mongoUrl);
-        ///////////////////////////////////////////////////////////////////////////
-        // MongoDB Connection setup                                              //
-        ///////////////////////////////////////////////////////////////////////////
+
         // Connect mongoose
         mongoose.connect(mongoUrl);
-        //mongoose.connect('mongodb://admin:admin@alex.mongohq.com:10062/cloud-db');
         // Check if connected
         mongoose.connection.on("open", function(){
             console.log("mongodb connected to: %s", mongoUrl);
         });
-        var server = require('http').createServer(app)
+        var server = require('http').createServer(app);
         var io = require('socket.io').listen(server);
         server.listen(conf.listenPort, conf.ip);
+        console.log(conf.listenPort, conf.ip);
     }
 }
 
@@ -89,11 +74,23 @@ var allowCrossDomain = function(request, response, next) {
 };
 // reusable middleware to test authenticated sessions
 function ensureAuthenticated(request, response, next) {
-    if(request.isAuthenticated()) {
-        return next();
+    response.contentType('application/json');
+    var decoded = null;
+    var incomingToken = request.headers.token;
+
+    if(incomingToken) {
+        AccountMdl.verify(incomingToken, function(error, isValid) {
+            if(error || !isValid) {
+                response.status(403);
+                response.json({error: 'Invalid token !'});
+            } else {
+                return next();
+            }
+        });
+    } else {
+        response.status(403);
+        response.json({error: 'No auth token received !'});
     }
-    response.status(403);
-    return next();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -110,9 +107,9 @@ app.configure(function(){
     app.use(passport.session());
     app.use(allowCrossDomain);
     app.use(app.router);
-    //app.use(DigestCtl.digestRequest);
+    app.use(DigestCtl.digestRequest);
     //app.use(express.vhost('*.miapi.com', require('./test/test').test));
-    app.use(express.static(__dirname + '/public'));
+    app.use(express.static(__dirname + conf.staticPath));
 });
 
 app.configure('development', function() {
@@ -145,18 +142,24 @@ app.get('/digestors', ensureAuthenticated, DigestorCtl.readAll);
 //app.put('/digestors', DigestorCtl.updateAll);
 app.delete('/digestors', DigestorCtl.deleteAll);
 // Entities
-app.get('/digestors/:name', DigestorCtl.readOne);
-app.put('/digestors/:name', DigestorCtl.updateOne);
-app.delete('/digestors/:name', DigestorCtl.deleteOne);
+app.get('/digestors/:name', ensureAuthenticated, DigestorCtl.readOne);
+app.put('/digestors/:id', ensureAuthenticated, DigestorCtl.updateOne);
+app.delete('/digestors/:name', ensureAuthenticated, DigestorCtl.deleteOne);
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Logs CRUD                                                                 //
+///////////////////////////////////////////////////////////////////////////////
+app.post('/logs', LogsCtl.create);
+app.get('/logs', LogsCtl.read);
+app.put('/logs/:id', LogsCtl.update);
+app.delete('/logs/:id', LogsCtl.delete);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Application rutes                                                         //
 ///////////////////////////////////////////////////////////////////////////////
 app.get('/', function(request, response) {
-    response.sendfile(__dirname + '/public/index.html');
-});
-app.get('/views/:name', function(request, response) {
-    response.sendfile(__dirname + '/views/' + request.params.name);
+    response.sendfile(__dirname + '/frontend/build/index.html');
 });
 ///////////////////////////////////////////////////////////////////////////////
 // User CRUD Methods & Servi                                                 //
@@ -199,14 +202,7 @@ app.post('/user', ensureAuthenticated, AccountCtl.create);
 app.get('/user', ensureAuthenticated, AccountCtl.read);
 app.put('/user', ensureAuthenticated, AccountCtl.update);
 app.del('/user', ensureAuthenticated, AccountCtl.delete);
-
-app.post('/xxx', ensureAuthenticated, function(request, response, next) {
-    console.log("no prob")
-    response.contentType('application/json');
-    response.status(401);
-    var message = JSON.stringify({message: 'xxx'});
-    return response.send(message);
-});
+app.post('/token', ensureAuthenticated, AccountCtl.token);
 
 ///////////////////////////////////////////////////////////////////////////////
 // socket.io                                                                 //

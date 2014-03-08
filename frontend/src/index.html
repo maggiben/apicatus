@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html ng-app="apicatus" ng-controller="AppCtrl">
+    <head>
+        <meta charset="utf-8">
+        <title ng-bind="pageTitle"></title>
+        <!-- social media tags -->
+        <meta name="twitter:card" content="summary">
+        <meta name="twitter:site" content="@apicatus">
+        <meta name="twitter:title" content="apicatus">
+        <meta name="twitter:description" content="SoftWired APIS">
+        <meta name="twitter:creator" content="@maggijs">
+        <meta name="twitter:image:src" content="https://pbs.twimg.com/profile_images/435133998168154112/MMGILZpn.png">
+        <meta property="og:title" content="apicatus" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="http://bit.ly/apicatus" />
+        <meta property="og:image" content="" />
+        <meta property="og:description" content=".">
+
+        <!-- mobile viewport -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <!-- font awesome from BootstrapCDN -->
+        <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+        <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,600,900' rel='stylesheet' type='text/css'>
+
+        <!-- highlight.js -->
+        <link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/default.min.css">
+        <script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+        <!-- compiled CSS --><% styles.forEach( function ( file ) { %>
+        <link rel="stylesheet" type="text/css" href="<%= file %>" /><% }); %>
+
+        <!-- compiled JavaScript --><% scripts.forEach( function ( file ) { %>
+        <script type="text/javascript" src="<%= file %>"></script><% }); %>
+
+    </head>
+    <body>
+        <div id="wrapper" class="wrapper">
+            <nav ui-view="navbar" class="navbar navbar-inverse navbar-fixed-top" role="navigation"></nav>
+            <div ui-view="main" class="page-wrapper"></div>
+            <footer ui-view="footer" class="hidden"></footer>
+        </div>
+        <script type="text/javascript">
+            // Plugin activation and full site events go here
+            $(document).ready(function(){
+                $("body").on('click', '#menu-toggle', function(event){
+                    var button = $('#menu-toggle');
+                    if(button.hasClass('open')) {
+                        //$("#wrapper").addClass("open");
+                        $("body").css("margin-left", $(".side-nav").width());
+                        $(".side-nav").removeClass("closed");
+                    } else {
+                        //$("#wrapper").removeClass("open");
+                        $("body").css("margin-left", "0");
+                        $(".side-nav").addClass("closed");
+                    }
+                    $(window).trigger('resize');
+                });
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,59 @@
+application {
+    .page-header {
+        padding: 0;
+        margin: 20px 0 20px;
+        border-bottom-style: dotted;
+        h1 {
+            margin: 0.25em 0;
+            input[type="text"].resource-name {
+                margin-left: 10px;
+                &:disabled {
+                    border: none;
+                }
+            }
+            i.heading {
+                color: @brand-primary;
+            }
+            i.edit {
+                font-size: 1em;
+            }
+        }
+    }
+    accordion {
+        .panel-heading {
+            padding: 0;
+            background-image:linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-o-linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-moz-linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-webkit-linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-ms-linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-webkit-gradient(linear, left bottom, left top, color-stop(0%, #f3f5f7), color-stop(100%, #fcfdfd));background-color:#f8f9fa;
+            span.method {
+                display: inline-block;
+                border-right: 1px solid red;
+                margin-right: 10px;
+                padding: 10px 20px;
+                &.get {
+                    background-color: #d00;
+                }
+            }
+            span.trigger-collapse {
+                padding: 10px 10px;
+            }
+        }
+    }
+    max-width: 960px;
+    display: inherit;
+    margin: 0 auto;
+    .panel-body {
+        padding: 18px;
+        .tab-content {
+            padding: 10px;
+            border: 1px solid;
+            border-top: none;
+            border-color: @nav-tabs-border-color;
+        }
+        .row {
+            margin-bottom: 10px;
+        }
+    }
+    .input-group {
+        /*margin-bottom: 10px;*/
+    }
+    .ace_editor { height: 200px; }
+}

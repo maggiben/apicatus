@@ -1,0 +1,66 @@
+/*
+Author: Start Bootstrap - http://startbootstrap.com
+'SB Admin' HTML Template by Start Bootstrap
+
+All Start Bootstrap themes are licensed under Apache 2.0.
+For more info and more free Bootstrap 3 HTML themes, visit http://startbootstrap.com!
+*/
+
+/* ATTN: This is mobile first CSS - to update 786px and up screen width use the media query near the bottom of the document! */
+
+/* Global Styles */
+@side-nav-width: 150px;
+/* Nav Messages */
+
+body {
+    height: 100%;
+    margin: 0;
+    overflow-x: hidden;
+    -webkit-transition: all 0.25s ease-in-out;
+       -moz-transition: all 0.25s ease-in-out;
+         -o-transition: all 0.25s ease-in-out;
+            transition: all 0.25s ease-in-out;
+    &.open {
+        padding-left: @side-nav-width;
+    }
+}
+.page-wrapper {
+    padding: 65px 20px;
+}
+
+.wrapper {
+    padding-left: 0px;
+    &.open {
+        padding-left: @side-nav-width;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .page-wrapper {
+        width: 100%;
+        margin: 0 auto;
+    }
+}
+
+@media screen and (min-width: 481px) and (max-width: 767px) {
+    .page-wrapper {
+        width: 100%;
+        margin: 0 auto;
+    }
+}
+
+@media screen and (min-width: 768px) and (max-width: 980px) {
+    .page-wrapper {
+        width: 100%;
+        margin: 0 auto;
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    .page-wrapper {
+        width: 960px;
+        margin: 0 auto;
+    }
+}
+
+

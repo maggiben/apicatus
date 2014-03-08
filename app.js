@@ -18,45 +18,28 @@ var express = require('express'),
     LocalStrategy = require('passport-local').Strategy,
     DigestCtl = require('./controllers/digest');
 
-///////////////////////////////////////////////////////////////////////////////
-// Mongo setup middleware                                                    //
-///////////////////////////////////////////////////////////////////////////////
-if(process.env.VCAP_SERVICES){
-    var env = JSON.parse(process.env.VCAP_SERVICES);
-    var mongo = env['mongodb-1.8'][0]['credentials'];
-} else {
-    var mongo = {
-        "hostname": "127.0.0.1",
-        "port": 27017,
-        "username": "admin",
-        "password": "admin",
-        "name": "",
-        "db": "fans"
-    };
-}
-var generate_mongo_url = function(obj){
-    obj.hostname = (obj.hostname || 'localhost');
-    obj.port = (obj.port || 27017);
-    obj.db = (obj.db || 'test');
-    if(obj.username && obj.password){
-        return "mongodb://" + obj.username + ":" + obj.password + "@" + obj.hostname + ":" + obj.port + "/" + obj.db;
+////////////////////////////////////////////////////////////////////////////////
+// Mongo URL generator                                                        //
+////////////////////////////////////////////////////////////////////////////////
+var generate_mongo_url = function(conf){
+    if(conf.username && conf.password){
+        return "mongodb://" + conf.username + ":" + conf.password + "@" + conf.hostname + ":" + conf.port + "/" + conf.db;
     }
     else{
-        return "mongodb://" + obj.hostname + ":" + obj.port + "/" + obj.db;
+        return "mongodb://" + conf.hostname + ":" + conf.port + "/" + conf.db;
     }
 };
-
+////////////////////////////////////////////////////////////////////////////////
+// MongoDB Connection setup                                                   //
+////////////////////////////////////////////////////////////////////////////////
 var init = function(options) {
     if(conf.autoStart) {
         console.log("autostarting app")
         var mongoUrl = generate_mongo_url(conf.mongoUrl);
         console.log("mongodb connet to", mongoUrl);
-        ///////////////////////////////////////////////////////////////////////////
-        // MongoDB Connection setup                                              //
-        ///////////////////////////////////////////////////////////////////////////
+
         // Connect mongoose
         mongoose.connect(mongoUrl);
-        //mongoose.connect('mongodb://admin:admin@alex.mongohq.com:10062/cloud-db');
         // Check if connected
         mongoose.connection.on("open", function(){
             console.log("mongodb connected to: %s", mongoUrl);
@@ -126,7 +109,7 @@ app.configure(function(){
     app.use(app.router);
     app.use(DigestCtl.digestRequest);
     //app.use(express.vhost('*.miapi.com', require('./test/test').test));
-    app.use(express.static(__dirname + '/frontend/build'));
+    app.use(express.static(__dirname + conf.staticPath));
 });
 
 app.configure('development', function() {
@@ -168,7 +151,7 @@ app.delete('/digestors/:name', ensureAuthenticated, DigestorCtl.deleteOne);
 // Logs CRUD                                                                 //
 ///////////////////////////////////////////////////////////////////////////////
 app.post('/logs', LogsCtl.create);
-app.get('/logs/:id', LogsCtl.read);
+app.get('/logs', LogsCtl.read);
 app.put('/logs/:id', LogsCtl.update);
 app.delete('/logs/:id', LogsCtl.delete);
 
@@ -177,12 +160,6 @@ app.delete('/logs/:id', LogsCtl.delete);
 ///////////////////////////////////////////////////////////////////////////////
 app.get('/', function(request, response) {
     response.sendfile(__dirname + '/frontend/build/index.html');
-});
-app.get('/feed', function(request, response) {
-    response.sendfile(__dirname + '/public/feed.html');
-});
-app.get('/views/:name', function(request, response) {
-    response.sendfile(__dirname + '/views/' + request.params.name);
 });
 ///////////////////////////////////////////////////////////////////////////////
 // User CRUD Methods & Servi                                                 //
@@ -226,15 +203,6 @@ app.get('/user', ensureAuthenticated, AccountCtl.read);
 app.put('/user', ensureAuthenticated, AccountCtl.update);
 app.del('/user', ensureAuthenticated, AccountCtl.delete);
 app.post('/token', ensureAuthenticated, AccountCtl.token);
-
-app.post('/xxx', function(request, response, next) {
-    response.contentType('application/json');
-    var incomingToken = request.headers.token;
-    console.log('incomingToken: ' + incomingToken);
-    response.status(200);
-    var message = JSON.stringify({token: incomingToken});
-    return response.send(message);
-});
 
 ///////////////////////////////////////////////////////////////////////////////
 // socket.io                                                                 //

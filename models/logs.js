@@ -36,10 +36,13 @@ var Logs = new Schema({
     requestBody: {type: Object},
     responseHeaders: {type: Object},
     responseBody: {type: Object},
+    data: {type: Buffer, required: false},
+    responseStatus: {type: Number, default: 0, required: true},
     status: {type: Number, default: 0, required: true},
-    timeStamp: { type: Date, default: Date.now },
+    date: { type: Date, default: Date.now },
     time: {type: Number, default: 0, required: true},
-    endpoint: [{ type: Schema.Types.ObjectId, ref: 'Endpoints' }]
+    method: { type: Schema.Types.ObjectId, ref: 'Methods' },
+    digestor: { type: Schema.Types.ObjectId, ref: 'Methods' }
 });
 
 module.exports = mongoose.model('Logs', Logs);

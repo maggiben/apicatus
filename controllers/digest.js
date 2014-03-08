@@ -11,6 +11,7 @@ var express = require('express'),
     url = require('url'),
     SocketIo = require('socket.io'),
     http = require('http'),
+    https = require('https'),
     httpProxy = require('http-proxy');
 
 
@@ -38,6 +39,23 @@ function subdomainRegex(baseUrl){
 
     return regex;
 }
+exports.pathMatch = function(route, path) {
+    var PATH_REPLACER = "([^\/]+)";
+    var PATH_NAME_MATCHER = /:([\w\d]+)/g;
+    var QUERY_STRING_MATCHER = /\?([^#]*)?$/;
+    var param_names = [];
+
+    // find the names
+    while ((path_match = PATH_NAME_MATCHER.exec(path)) !== null) {
+        param_names.push(path_match[1]);
+    }
+
+    // replace with the path replacement
+    route = new RegExp(route.replace(PATH_NAME_MATCHER, PATH_REPLACER) + "$");
+
+    return path.match(route);
+};
+
 exports.digestRequest = function(request, response, next) {
     console.log("digest")
     //return next();
@@ -68,30 +86,33 @@ exports.digestRequest = function(request, response, next) {
 
     var host = request.headers.host.split(':')[0];
     var subdomain = host.split( "." )[ 0 ];
-    var path = subdomain;
     var filename = "./digestors/deedee.js";
-    var url_parts = url.parse(request.url, true);
+    var url_parts = url.parse(request.url, true, true);
+    var pathname = url_parts.pathname;
     var query = url_parts.query;
 
-    console.log("query: ", request.url," subdomain: " , subdomain , " body: ", request.body, " method: ", request.method);
+    //console.log("query: ", request.url, " route: ", url_parts.pathname, " subdomain: " , subdomain , " body: ", request.body, " method: ", request.method);
 
-    var proxyRequest = function(request, response, cb) {
-        LogsCtl.create(request, response, next);
+    var proxyRequest = function(request, response, log, cb) {
         var options = {
-            host: 'google.com',
-            port: 80,
+            host: 'api.github.com',
+            port: 443,
             path: request.url,
             method: 'GET',
-            path: '/',
-            headers: {}
+            path: '/gists/9398333',
+            headers: {'user-agent': 'Mozilla/5.0'}
         };
-        var req = http.request(options, function(response) {
-            console.log('STATUS: ' + response.statusCode);
-            console.log('HEADERS: ' + JSON.stringify(response.headers));
+        var req = https.request(options, function(response) {
+            //console.log('STATUS: ' + response.statusCode);
+            //console.log('HEADERS: ' + JSON.stringify(response.headers));
             response.setEncoding('utf8');
             response.on('data', function (chunk) {
-                console.log('BODY: ' + chunk);
                 cb(chunk);
+                log.data += chunk;
+            });
+            response.on('end', function() {
+                //console.log(log);
+                console.log("response ended");
             });
         });
         req.on('error', function(error) {
@@ -111,25 +132,34 @@ exports.digestRequest = function(request, response, next) {
             return response.json({ error: "digestor not found" });
         }
 
-        /*var sandbox = {
-            test: [],
-            "__dirname": __dirname,
-            require: require,
-            FileSystem: FileSystem,
-            console: console,
-            exports: exports,
-            api: digestor,
-        }
-        FileSystem.readFile(filename, 'utf8', function(error, data) {
-            if (error) {
-                return next(error);
+
+        for(var i = 0; i < digestor.endpoints.length; i++) {
+            var endpoint = digestor.endpoints[i];
+            for(var j = 0; j < endpoint.methods.length; j++) {
+                var method = endpoint.methods[j];
+                console.log(request.method.toUpperCase());
+                if(exports.pathMatch(method.URI, pathname)) {
+                    if(request.method.toUpperCase() === method.method.toUpperCase()) {
+
+                        console.log("route: ", method.URI, " path: ", pathname, " match: ", exports.pathMatch(method.URI, pathname));
+                        var log = LogsCtl.create(request, response, next);
+                        log.digestor = digestor._id;
+                        log.method = method._id;
+                        proxyRequest(request, response, log, function(data){
+                            response.status(200);
+                            return response.send(data);
+                        });
+
+                    } else {
+                        response.statusCode = 404;
+                        return next();
+                    }
+                }
             }
-        }*/
-        console.log("found digestor for subdomain !");
-        proxyRequest(request, response, function(data){
-            response.status(200);
-            return response.send(data);
-        });
+        }
+        //LogsCtl.create(request, response, next);
+        //response.status(200);
+        //return response.json({endpoint: digestor.endpoints[0]});
     };
 
     DigestorMdl.findOne({name: subdomainArray[0]}, gotDigestor);

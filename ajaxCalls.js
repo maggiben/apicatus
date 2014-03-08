@@ -22,3 +22,8 @@ $.get("/digestors").then(function(r){console.log(r)})
 // delete
 $.ajax({url: "/digestors", type: "delete"}).then(function(r){console.log(r)})
 
+
+
+// DIGESTORS
+
+curl -X get "http://localhost:8080"

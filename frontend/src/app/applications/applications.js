@@ -1,7 +1,12 @@
 /**
 
  */
-angular.module( 'apicatus.applications', [])
+angular.module( 'apicatus.applications', [
+    'd3Service',
+    'budgetDonut',
+    'barChart',
+    'lineChart'
+])
 
 /**
  * Each section or module of the site can also have its own routes. AngularJS
@@ -15,7 +20,6 @@ angular.module( 'apicatus.applications', [])
         template: '<ui-view/>',
         views: {
             "main": {
-                controller: 'ApplicationsCtrl',
                 templateUrl: 'applications/applications.tpl.html'
             }
         },
@@ -197,6 +201,9 @@ angular.module( 'apicatus.applications', [])
                 };*/
                 $scope.api.put();
             };
+            $scope.probe = function(method, $index) {
+
+            };
             // The modes
             $scope.modes = ['Scheme', 'XML', 'Javascript'];
             $scope.mode = $scope.modes[0];
@@ -223,12 +230,7 @@ angular.module( 'apicatus.applications', [])
                 }
             };
             // Initial code content...
-            $scope.aceModel = ';; Scheme code in here.\n' +
-                '(define (double x)\n\t(* x x))\n\n\n' +
-                '<!-- XML code in here. -->\n' +
-                '<root>\n\t<foo>\n\t</foo>\n\t<bar/>\n</root>\n\n\n' +
-                '// Javascript code in here.\n' +
-                'function foo(msg) {\n\tvar r = Math.random();\n\treturn "" + r + " : " + msg;\n}';
+            $scope.aceModel = '$.ajax(' + "route" + ')';
 
         },
         data: { pageTitle: 'Application' },
@@ -242,13 +244,57 @@ angular.module( 'apicatus.applications', [])
 .controller( 'ApplicationsCtrl', function ApplicationsController( $scope, $location, $modal, Restangular ) {
 
     var baseDigestors = Restangular.all('digestors');
-    $scope.applications = Restangular.one('digestors').getList().then(function(digestors){
-        console.log(digestors);
-        $scope.apis = digestors;
+
+    $scope.applications = Restangular.one('digestors').getList().then(function(digestors) {
+        $scope.apis = angular.copy(digestors);
+        Restangular.one('logs').getList().then(function(logs){
+            $scope.logs = angular.copy(logs);
+            $scope.apis.map(function(api) {
+                var digestorLogs = _.filter($scope.logs, {'digestor': api._id });
+                //console.log("api ", api.name,"logs:", digestorLogs);
+                api.logs = digestorLogs;
+            });
+            console.log($scope.apis);
+        });
+        for(var i = 0; i < digestors.length; i ++) {
+            $scope.apis[i].data = [
+                {
+                    date: new Date(2010, 1, 1),
+                    value: 22
+                }, {
+                    date: new Date(2010, 1, 2),
+                    value: 12
+                }, {
+                    date: new Date(2010, 1, 3),
+                    value: 12
+                }, {
+                    date: new Date(2010, 1, 4),
+                    value: 42
+                }, {
+                    date: new Date(2010, 1, 5),
+                    value: 32
+                }, {
+                    date: new Date(2010, 1, 6),
+                    value: 12
+                }, {
+                    date: new Date(2010, 1, 7),
+                    value: 22
+                }, {
+                    date: new Date(2010, 1, 8),
+                    value: 10
+                }, {
+                    date: new Date(2010, 1, 9),
+                    value: 30
+                }
+            ];
+        }
     });
     //Restangular.one('projects').getList().then(function(project){
         //console.log("project", project);
     //});
+    $scope.data = [1, 4, 2, 4, 7, 2, 9, 5, 6, 4, 1, 6, 8, 2];
+
+
     $scope.newApi = function () {
         var modalInstance = $modal.open({
             templateUrl: 'new_api_modal.html',

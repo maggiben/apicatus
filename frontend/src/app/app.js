@@ -67,21 +67,23 @@ angular.module( 'apicatus', [
 .controller( 'AppCtrl', function AppCtrl ( $scope, $location, localStorageService, Restangular ) {
     var token = localStorageService.get('token');
     if(token){
-        console.log("found token: ", token);
         Restangular.configuration.defaultHeaders.token = token.token;
+        $scope.user = Restangular.one('user').get().then(function(user) {
+            console.log("user", user);
+        });
     }
-    /*$scope.account = {
-        username: "James Woods",
+    $scope.account = {
+        username: "Marty Macfly",
         email: "jwoods@ananke.com",
-        avatar: "https://pbs.twimg.com/profile_images/378800000534882248/fc2341fbc7d96cd7a9dc21f0f396e099.jpeg",
+        avatar: "https://pbs.twimg.com/profile_images/1234618042/MartyMcfly.jpg",
         firstName: "James",
         lastName: "Woods",
         phone: "555-555-555",
         address: "bonpland",
         zip: 4336,
         city: "Buenos Aires",
-        timezone: "AGT",
-    };*/
+        timezone: "AGT"
+    };
     // authenticate
     //$scope.user = Restangular.one('user').customPOST({username: "admin", password: "admin"}, 'signin');
     // Restangular returns promises
@@ -93,7 +95,7 @@ angular.module( 'apicatus', [
 
     $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
         if ( angular.isDefined( toState.data.pageTitle ) ) {
-            $scope.pageTitle = toState.data.pageTitle + ' | apicatus' ;
+            $scope.pageTitle = toState.data.pageTitle ;
         }
     });
 });

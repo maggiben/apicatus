@@ -1,106 +1,32 @@
 applications {
-    .panel-title {
-        text-transform: uppercase;
-        font-weight: 200;
-        i {
-            margin-right: 6px;
-        }
-    }
-    .app-list {
-        display: block;
-        list-style: none;
-        margin: 0px;
-        padding: 0px;
-        li {
-            position: relative;
-            margin: 4px;
-            height: 78px;
-            width: 78px;
-            float: left;
-            padding: 10px;
-            border-radius: 2px;
-            background-color: #f9fafb;
-            text-align: center;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            color: @brand-info;
-            -webkit-transition: all 0.25s ease-in-out;
-               -moz-transition: all 0.25s ease-in-out;
-                 -o-transition: all 0.25s ease-in-out;
-                    transition: all 0.25s ease-in-out;
-            &:hover {
-                background-color: @brand-info;
-                a {
-                    color: @gray-lighter;
-                    .icon-background {
-                        background-color: @gray-lighter;
-                        i {
-                            color: @brand-info;
-                        }
-                    }
-                }
-            }
-            a {
-                text-decoration: inherit;
-                -webkit-transition: all 0.25s ease-in-out;
-                   -moz-transition: all 0.25s ease-in-out;
-                     -o-transition: all 0.25s ease-in-out;
-                        transition: all 0.25s ease-in-out;
-                &:hover, :focus {
-                    text-decoration: inherit;
-                }
-                img {
-                    max-width: 100%;
-                    max-height: 70%;
-                    display: block;
-                    margin: auto;
-                    margin-bottom: 4px;
-                }
-                .icon-background {
-                    display: table;
-                    background-color: @brand-info;
-                    margin: 0 auto;
-                    width: 3em;
-                    height: 3em;
-                    border-radius: 50%;
-                    -webkit-transition: all 0.1s ease-out;
-                       -moz-transition: all 0.1s ease-out;
-                         -o-transition: all 0.1s ease-out;
-                            transition: all 0.1s ease-out;
-                    &:hover {
-                        width: 3.25em;
-                        height: 3.25em;
-                    };
-                    i {
-                        color: @gray-lighter;
-                        display: table-cell;
-                        vertical-align: middle;
-                        font-size:2em;
-                    }
-                }
-            }
-            .name {
-                position: relative;
-                bottom: 0px;
-                line-height: 14px;
-                font-size: 14px;
-                text-align: center;
-            }
-        }
-    }
 
-    .app-cards {
-        display: block;
-        list-style: none;
-        margin: 0px;
-        padding: 0px;
-        & > li {
-            display: inline-block;
-            padding-left: 5px;
-            padding-right: 5px;
+    .group.panel {
+        border: none;
+        box-shadow: none;
+        .panel-heading {
+            border-top-left-radius: 0.3rem;
+            border-top-right-radius: 0.3rem;
+            background-color: #edf0f3;
+            padding: 6px;
+            border: none;
+            button {
+                background: #f9fafb;
+                border-color: darken(#f9fafb, 8%);
+            }
+            .panel-title {
+                text-transform: uppercase;
+                font-weight: 200;
+                i {
+                    margin-right: 6px;
+                }
+            }
+        }
+        .panel-body {
+            margin-top: 5px;
+            padding: 0;
         }
     }
+    /* GRAPHS */
     bar-chart {
         .axis path, .axis line {
             fill: none;
@@ -132,41 +58,64 @@ applications {
             fill: none;
         }
     }
-    .endpoint{margin:0 0 20px;border:1px rgba(0, 0, 0, 0.1) solid;border-radius:3px;box-shadow:0 1px 2px rgba(0, 0, 0, 0.05);}
-    /*.endpoint div.title{margin:-14px -20px 14px;}*/
-    .endpoint div.title,.endpoint .response{text-shadow:0 1px 0 #fff;box-shadow:inset 0 1px 0 #fff;box-shadow:inset 0 1px 0 #ffffff;border-radius:3px 3px 0 0;}
-    .endpoint .response{border-top:0;border-left:0;border-right:0;}
-    .endpoint .route-parameter{background-color:rgba(255, 255, 255, 0.6);border-radius:3px;padding:1px 4px;margin:0 3px;color:#8c59a6;border-bottom:1px #fff solid;border-top:1px rgba(0, 0, 0, 0.12) solid;text-shadow:0 1px 0 #fff;}
-    .endpoint .method{display:inline-block;margin:0 15px 0 -20px;padding:0 20px;border-right:1px rgba(0, 0, 0, 0.12) solid;box-shadow:1px 0 0 #fff;background-color:rgba(0, 0, 0, 0.02);}
-    .endpoint div.title{background-image:linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-o-linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-moz-linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-webkit-linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-ms-linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-webkit-gradient(linear, left bottom, left top, color-stop(0%, #f3f5f7), color-stop(100%, #fcfdfd));background-color:#f8f9fa;border-radius:3px;font-family:'Lato','Trebuchet MS',Helvetica,Arial,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-bottom:1px #d0d2d9 solid;font-weight:bold;font-size:15px;line-height:40px;text-shadow:0 1px 0 #fff;box-shadow:0 1px 0 #fff;padding:0 20px;max-height:42px;}
-    .endpoint div.title i:not(.icon-caret-down){margin-right:0.7em;color:#878ca2;}
 
-    .endpoint div.title.open{border-radius:3px 3px 0 0;}
-    .endpoint div.title.head{border-bottom:none;margin-bottom:0;}
-    .endpoint p{margin-bottom:1em;}
-    .endpoint >*:first-child{margin-top:0;}
-    .endpoint >*:last-child{margin-bottom:0;}
-    .endpoint .response {background-image:linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-o-linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-moz-linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-webkit-linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-ms-linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-webkit-gradient(linear, left bottom, left top, color-stop(0%, #f3f5f7), color-stop(100%, #fcfdfd));background-color:#f8f9fa;position:relative;z-index:5;padding-left:20px;float:right;font-size:13px;font-weight:normal;color:#797e96;}
-
-
-
+    /* TODO: MOVE TO APP LIST */
     .container {
         max-width: 100%;
         margin-left: auto;
         margin-right: auto;
-        padding-left: 5px !important;
-        padding-right: 5px !important;
+        .panel-body {
+            margin: 0px;
+            padding: 10px;
+        }
     }
     .card {
-        background: white;
+        /*background: white;
         border-radius: 0.3rem;
         box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
         margin-bottom: 1em;
+        */
+        .front {
+            background: white;
+            border-radius: 0.3rem;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+            margin-bottom: 1em;
+        }
+        .back {
+            .panel {
+                height: 100%;
+                border: 0;
+                box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+                .panel-heading {
+                    padding: 5px 10px;
+                }
+            }
+        }
         &.stock {
+            &:hover {
+                .api-setup {
+                    opacity: 1;
+                }
+            }
+            .api-setup {
+                position: absolute;
+                background-color: transparent;
+                color: #fff;
+                opacity: 0;
+                right: 0;
+                top: 0;
+                transition: all 0.25s ease-in-out;
+                outline: none;
+            }
             .stock-chart {
-                background: #00c5de;
                 border-top-left-radius: 0.3rem;
                 border-top-right-radius: 0.3rem;
+                &.enabled {
+                    background-color: #00c5de;
+                }
+                &.disabled {
+                    background-color: #FD3E07;
+                }
             }
             .stock-chart {
                 height: 120px;
@@ -188,6 +137,8 @@ applications {
                 }
                 .changes {
                     text-align: right;
+                    padding-left: 0px !important;
+                    padding-right: 0px !important;
                     .value {
                         font-size: 1.8em;
                         font-weight: 600;
@@ -221,6 +172,8 @@ applications {
                     }
                 }
                 .info {
+                    padding-left: 0px !important;
+                    padding-right: 0px !important;
                     time, .change {
                         color: #c8c8c8;
                         font-weight: 300;
@@ -230,12 +183,16 @@ applications {
             }
             .yearly-changes {
                 height: 6em;
-                padding: 1em;
+                padding: 15px 5px 10px 5px;
                 &:after {
                     content: "";
                     height: 100%;
                     display: inline-block;
                     vertical-align: middle;
+                }
+                div {
+                    padding-left: 5px !important;
+                    padding-right: 5px !important;
                 }
                 .year-all, .year-chart {
                     display: inline-block;
@@ -246,14 +203,19 @@ applications {
                 }
             }
             .summary {
-                padding: 0 1em 1em;
+                padding: 5px 5px 10px 5px;
                 text-align: center;
+                div {
+                    padding-left: 5px !important;
+                    padding-right: 5px !important;
+                }
                 a {
                     color: #46494c;
                     display: block;
                     background: rgba(0, 0, 0, 0.05);
                     padding: 1em 0.5em;
                     border-radius: 0.3rem;
+                    text-decoration: none;
                     &:hover {
                         color: #1c84d4;
                         span {
@@ -330,6 +292,84 @@ applications {
             }
         }
     }
+    /* FLIP CARD */
+    .card {
+        -webkit-perspective: 600px;
+           -moz-perspective: 600px;
+                perspective: 600px;
+    }
+    .card .front {
+        -webkit-transform: rotateX(0deg) rotateY(0deg);
+           -moz-transform: rotateX(0deg) rotateY(0deg);
+                transform: rotateX(0deg) rotateY(0deg);
 
+        -webkit-transform-style: preserve-3d;
+           -moz-transform-style: preserve-3d;
+                transform-style: preserve-3d;
+
+        -webkit-backface-visibility: hidden;
+           -moz-backface-visibility: hidden;
+                backface-visibility: hidden;
+
+        /* -- transition is the magic sauce for animation -- */
+        -webkit-transition: all .4s ease-in-out;
+                transition: all .4s ease-in-out;
+    }
+    .card.flip .front {
+        z-index: 2;
+        border-color: #eee;
+        background: #333;
+
+        -webkit-transform: rotateY(180deg);
+           -moz-transform: rotateY(180deg);
+                transform: rotateY(180deg);
+    }
+    .card .back {
+        position: absolute;
+        top: 0px;
+        height: 100%;
+        width: 100%;
+        -webkit-transform: rotateY(-180deg);
+           -moz-transform: rotateY(-179deg); /* setting to 180 causes an unnatural-looking half-flip */
+                transform: rotateY(-179deg);
+
+        -webkit-transform-style: preserve-3d;
+           -moz-transform-style: preserve-3d;
+                transform-style: preserve-3d;
+
+        -webkit-backface-visibility: hidden;
+           -moz-backface-visibility: hidden;
+                backface-visibility: hidden;
+
+        /* -- transition is the magic sauce for animation -- */
+        -webkit-transition: all .4s ease-in-out;
+                transition: all .4s ease-in-out;
+    }
+    .card.flip .back {
+        background: transparent;
+
+        -webkit-transform: rotateX(0deg) rotateY(0deg);
+           -moz-transform: rotateX(0deg) rotateY(0deg);
+                transform: rotateX(0deg) rotateY(0deg);
+        /*box-shadow: 0 15px 50px rgba(0,0,0,0.2);*/
+    }
+
+    .settings.panel {
+        .panel-body {
+            padding: 10px;
+        }
+    }
+    .app-cards-row {
+        -webkit-column-count: 3;
+           -moz-column-count: 3;
+                column-count: 3;
+        -webkit-column-gap: 1em;
+           -moz-column-gap: 1em;
+                column-gap: 1em;
+    }
+    .menu-category {
+        display: inline-block;
+        width:  100%;
+    }
 
 }

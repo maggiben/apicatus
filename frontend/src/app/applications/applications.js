@@ -37,8 +37,9 @@ angular.module( 'apicatus.applications', [
     .state('main.applications.application', {
         url: '/:id',
         templateUrl: 'applications/application/application.tpl.html',
+        controller: 'ApplicationCtrl',
         //authenticate: true,
-        controller: function($scope, $stateParams, Restangular) {
+        /*controller: function($scope, $stateParams, Restangular) {
             $scope.httpSettings = {
                 "statuses": [
                     { id: 100, group: "Informational", label: 100, code: 100, title: "Continue", description: "Client should continue with request" },
@@ -192,13 +193,6 @@ angular.module( 'apicatus.applications', [
                 $scope.api.put();
             };
             $scope.saveMethod = function(method, $index) {
-                console.log(method);
-                /*endpoint.methods[$index] = {
-                    "name": "Method XX1",
-                    "synopsis": "Grabs information from the A1 data set",
-                    "method": "GET",
-                    "URI": "/myroute"
-                };*/
                 $scope.api.put();
             };
             $scope.probe = function(method, $index) {
@@ -232,8 +226,8 @@ angular.module( 'apicatus.applications', [
             // Initial code content...
             $scope.aceModel = '$.ajax(' + "route" + ')';
 
-        },
-        data: { pageTitle: 'Application' },
+        },*/
+        data: { pageTitle: 'Resource editor' },
         onEnter: function(){
           console.log("enter contacts.detail");
         }
@@ -248,13 +242,21 @@ angular.module( 'apicatus.applications', [
     $scope.applications = Restangular.one('digestors').getList().then(function(digestors) {
         $scope.apis = angular.copy(digestors);
         Restangular.one('logs').getList().then(function(logs){
-            $scope.logs = angular.copy(logs);
+            $scope.logs = logs;
             $scope.apis.map(function(api) {
                 var digestorLogs = _.filter($scope.logs, {'digestor': api._id });
-                //console.log("api ", api.name,"logs:", digestorLogs);
-                api.logs = digestorLogs;
+                if(digestorLogs.length <= 0) {
+                    return;
+                }
+                digestorLogs = _.sortBy(digestorLogs, 'date');
+                var mean = 1;
+                //d3.mean(digestorLogs, function(d) { return d.time; });
+                api.meanTime = parseInt(mean, 10);
+                api.lastAccess = moment(digestorLogs[digestorLogs.length-1].date).fromNow();
+                api.logs = digestorLogs.map(function(log){
+                    return angular.copy(log);
+                });
             });
-            console.log($scope.apis);
         });
         for(var i = 0; i < digestors.length; i ++) {
             $scope.apis[i].data = [
@@ -354,6 +356,77 @@ angular.module( 'apicatus.applications', [
             type: "REST"
         });
     };
+})
+.controller( 'ApplicationCtrl', function ApplicationController( $scope, $location, $stateParams, $modal, Restangular ) {
+    $scope.applications = Restangular.one('digestors', $stateParams.id).get().then(function(digestor){
+        $scope.api = digestor;
+    });
+
+    $scope.save = function(api) {
+        $scope.api.put();
+    };
+    $scope.addResource = function (api) {
+        console.log($scope.api.endpoints);
+        $scope.api.endpoints.push({
+            name: "Resource Group A",
+            methods: [
+                {
+                    "name": "Method A1",
+                    "synopsis": "Grabs information from the A1 data set",
+                    "method": "GET",
+                    "URI": "/a1/grab"
+                }
+            ]
+        });
+        $scope.api.put();
+    };
+    $scope.addEndpoint = function(endpoint) {
+        console.log(endpoint.methods);
+        endpoint.methods.push({
+            "name": "Method XX1",
+            "synopsis": "Grabs information from the A1 data set",
+            "method": "GET",
+            "URI": "/myroute"
+        });
+        $scope.api.put();
+    };
+    $scope.removeEndpoint = function(endpoint, $index) {
+        $scope.api.endpoints.splice($index, 1);
+        $scope.api.put();
+    };
+    $scope.saveMethod = function(method, $index) {
+        $scope.api.put();
+    };
+    $scope.probe = function(method, $index) {
+
+    };
+    // The modes
+    $scope.modes = ['Scheme', 'XML', 'Javascript'];
+    $scope.mode = $scope.modes[0];
+
+    $scope.aceLoaded = function(_editor) {
+        console.log("ace loaded: ", _editor);
+        window.ace = _editor;
+         // Editor part
+        //var _session = _editor.getSession();
+        //_session.setMode('ace/mode/javascript');
+    };
+
+    // The ui-ace option
+    $scope.aceOption = {
+        mode: $scope.mode.toLowerCase(),
+        onLoad: function (_ace) {
+            console.log("ace loaded: ", _ace);
+            window.ace = _ace;
+            _ace.getSession().setMode('ace/mode/javascript');
+            // HACK to have the ace instance in the scope...
+            $scope.modeChanged = function () {
+                _ace.getSession().setMode('ace/mode/' + $scope.mode.toLowerCase());
+            };
+        }
+    };
+    // Initial code content...
+    $scope.aceModel = '$.ajax(' + "route" + ')';
 })
 // We already have a limitTo filter built-in to angular,
 // let's make a startFrom filter

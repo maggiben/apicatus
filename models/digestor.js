@@ -80,7 +80,7 @@ var Digestor = new Schema({
     created: { type: Date, default: Date.now },
     lastUpdate: { type: Date, default: Date.now },
     lastAccess: { type: Date, default: Date.now },
-    enabled: { type: Boolean, default: true, required: false },
+    enabled: { type: Boolean, default: false, required: false },
     endpoints: [Endpoints],
     hits: {type: Number, default: 0, required: false},
     owners: [{ type: Schema.Types.ObjectId, ref: 'Account' }]

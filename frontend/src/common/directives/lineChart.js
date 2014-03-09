@@ -28,17 +28,9 @@ angular.module('lineChart', ['d3Service'])
                 var height = $element[0].parentElement.clientHeight;
                 chart.height(height);
                 chart.width(width);
-                chart.key($scope.key);
-                $scope.$watch('data', function (newVal, oldVal) {
+                $scope.$watchCollection('data', function (newVal, oldVal) {
                     chartEl.datum(newVal).call(chart);
                 }, true);
-
-                    var timer = setInterval(function(){
-                        //d3.range(~~(Math.random()*50)+1).map(function(d, i){return ~~(Math.random()*1000);})
-                        //$scope.data.push(Math.random()*50);
-                        $scope.$apply();
-                    }, 1500);
-
             });
         }
     };

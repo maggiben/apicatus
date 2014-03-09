@@ -64,7 +64,7 @@ charts.line = function module() {
             filter.append("feColorMatrix")
                 .attr("in","SourceGraphic")
                 .attr("type", "matrix")
-                .attr("values", "0 0 0 0 0.1 0 0 0 0 0.1 0 0 0 0 0.1 0 0 0 1 0")
+                .attr("values", "0 0 0 0 0.1 0 0 0 0 0.1 0 0 0 0 0.1 0 0 0 0.2 0")
                 .attr("result","f1coloredMask");
 
             // SourceAlpha refers to opacity of graphic that this filter will be applied to
@@ -72,15 +72,15 @@ charts.line = function module() {
             // in blur
             filter.append("feGaussianBlur")
                 .attr("in", "f1coloredMask")
-                .attr("stdDeviation", 5)
+                .attr("stdDeviation", 3)
                 .attr("result", "blur");
 
             // translate output of Gaussian blur to the right and downwards with 2px
             // store result in offsetBlur
             filter.append("feOffset")
                 .attr("in", "blur")
-                .attr("dx", 2)
-                .attr("dy", 2)
+                .attr("dx", 3)
+                .attr("dy", 3)
                 .attr("result", "offsetBlur");
 
             // overlay original SourceGraphic over translated blurred opacity by using
@@ -96,12 +96,29 @@ charts.line = function module() {
             svg.select('.container-group')
                 .attr({transform: 'translate(' + margin.left + ',' + margin.top + ')'});
 
+            var meanValue = d3.mean(_data, function(d) { return d[_key]; });
+            var meanLine = svg.select('.chart-group')
+                .append('line')
+                .datum(meanValue)
+                .attr('class', 'mean-line')
+                .attr('x1', 0)
+                .attr('y1', function(d){
+                    return y(d);
+                })
+                .attr('x2', chartW)
+                .attr('y2', function(d){
+                    console.log("call");
+                    return y(d);
+                })
+                .style('stroke', "#ccc")
+                .style('stroke-width', 1)
+                .style('stroke-dasharray', '4,2');
+
             var path = svg.select('.chart-group')
                 .append('path')
                 .datum(_data)
                 .attr('class', 'line')
                 .attr('d', function(d) {
-                    console.log("d",d);
                     return line(d);
                 })
                 .style('stroke', '#fff')
@@ -194,7 +211,6 @@ charts.line = function module() {
         if (!arguments.length) {
             return _key;
         }
-        console.log("set new key: ", key);
         _key = key;
         return this;
     };

@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/maggiben/apicatus.png?label=ready&title=Ready)](https://waffle.io/maggiben/apicatus)
 Apicatus
 ========
 [![Build Status](https://travis-ci.org/maggiben/apicatus.png?branch=master)](https://travis-ci.org/maggiben/apicatus)

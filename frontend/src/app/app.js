@@ -8,6 +8,8 @@ angular.module( 'apicatus', [
     'apicatus.error',
     //'apicatus.application',
     'AuthService',
+    'timeago',
+    'humanize',
     'restangular',
     'ui.bootstrap',
     'ui.router',
@@ -68,8 +70,8 @@ angular.module( 'apicatus', [
     var token = localStorageService.get('token');
     if(token){
         Restangular.configuration.defaultHeaders.token = token.token;
-        $scope.user = Restangular.one('user').get().then(function(user) {
-            console.log("user", user);
+        Restangular.one('user').get().then(function(user) {
+            $scope.user = user;
         });
     }
     $scope.account = {

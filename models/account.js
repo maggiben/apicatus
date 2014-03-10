@@ -66,6 +66,7 @@ Account.statics.findUser = function(email, token, cb) {
             cb(error, null);
         } else if (token === user.token.token) {
             cb(false, {
+                _id: user._id,
                 email: user.email,
                 token: user.token,
                 date_created: user.date_created,
@@ -78,7 +79,11 @@ Account.statics.findUser = function(email, token, cb) {
         }
     });
 };
-
+Account.statics.findUserByToken = function(token, cb) {
+    var self = this;
+    var decoded = self.decode(token);
+    self.findUser(decoded.email, token, cb);
+};
 Account.statics.findUserByEmailOnly = function(email, cb) {
     var self = this;
     this.findOne({email: email}, function(err, usr) {

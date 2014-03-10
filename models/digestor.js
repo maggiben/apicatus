@@ -72,7 +72,7 @@ var Digestor = new Schema({
     name: { type: String, required: true, trim: true },
     type: { type: String, required: false, default: "REST" },
     version: {type: String, required: false},
-    domain: {type: String, required: false},
+    domain: {type: String, required: true},
     protocol: { type: String, required: false, default: "http" },
     baseURL: {type: String, required: false},
     allowCrossDomain: {type: Boolean, default: false, required: false},
@@ -81,6 +81,7 @@ var Digestor = new Schema({
     lastUpdate: { type: Date, default: Date.now },
     lastAccess: { type: Date, default: Date.now },
     enabled: { type: Boolean, default: false, required: false },
+    public: {type: Boolean, default: true, required: false},
     endpoints: [Endpoints],
     hits: {type: Number, default: 0, required: false},
     owners: [{ type: Schema.Types.ObjectId, ref: 'Account' }]

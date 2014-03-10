@@ -138,7 +138,7 @@ passport.deserializeUser(AccountMdl.deserializeUser());
 ///////////////////////////////////////////////////////////////////////////////
 // Collections
 app.post('/digestors', DigestorCtl.create);
-app.get('/digestors', ensureAuthenticated, DigestorCtl.readAll);
+app.get('/digestors', ensureAuthenticated, DigestorCtl.read);
 //app.put('/digestors', DigestorCtl.updateAll);
 app.delete('/digestors', DigestorCtl.deleteAll);
 // Entities

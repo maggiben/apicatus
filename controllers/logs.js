@@ -37,6 +37,14 @@ var logs_schema = require('../models/logs')
   , Digestor = mongoose.model('Digestor', digestor_schema);
 
 ///////////////////////////////////////////////////////////////////////////////
+// Private utilities                                                         //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+deleteKeys = function(object, keys) {
+
+}
+///////////////////////////////////////////////////////////////////////////////
 // Route to get all Digestors                                                //
 //                                                                           //
 // @param {Object} request                                                   //
@@ -49,12 +57,25 @@ var logs_schema = require('../models/logs')
 // @url GET /logs/                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 exports.read = function (request, response, next) {
-    var queryObject = url.parse(request.url, true).query;
-    console.log("find by params: ", queryObject);
-    Logs.find(queryObject, onFind).limit(10);
-
-    function onFind(error, logs) {
+    var defaults = {
+        skip : 0,
+        limit : 0
+    };
+    var query = url.parse(request.url, true).query;
+    // Remove defauls from query object
+    for(key in defaults) {
+        if(defaults.hasOwnProperty(key)) {
+            defaults[key] = parseInt(query[key], 10);
+            delete query[key];
+        }
+    }
+    Logs
+    .find(query)
+    .limit(defaults.limit)
+    .skip(defaults.skip)
+    .exec(function(error, logs) {
         if (error) {
+            response.statusCode = 500;
             return next();
         }
         if(!logs) {
@@ -62,7 +83,7 @@ exports.read = function (request, response, next) {
             return response.json({"title": "error", "message": "Not Found", "status": "fail"});
         }
         return response.json(logs);
-    }
+    });
 };
 
 ///////////////////////////////////////////////////////////////////////////////

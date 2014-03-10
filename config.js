@@ -55,7 +55,7 @@ var environments = {
     // Production options OpenShift                                          //
     ///////////////////////////////////////////////////////////////////////////
     production: {
-        sessionSecret: process.env.SECRET,
+        sessionSecret: process.env.SECRET || "secret",
         environment: process.env.NODE_ENV,
         listenPort: 80,
         ip: process.env.IP || '107.170.71.230',

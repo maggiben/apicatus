@@ -141,13 +141,13 @@
                                     </tab-heading>
                                     <div class="row">
                                         <div class="col-lg-12">
-                                            <div ui-ace="{ onLoad : 'aceLoaded', mode: 'javascript' }" ng-model="aceModel"></div>
+                                            <div ui-ace="{ onLoad : 'aceLoaded', mode: 'javascript' }" ng-model="method.demo"></div>
                                         </div>
                                         <div class="col-lg-12">
                                             <div class="toolbar well well-sm">
                                                 <div class="btn-toolbar" role="toolbar">
                                                     <div class="btn-group">
-                                                        <button class="btn btn-primary" ng-click="probe(method, $index)"><i class="fa fa-play"></i></button>
+                                                        <button class="btn btn-primary" ng-click="demo(method.demo)"><i class="fa fa-play"></i></button>
                                                         <button class="btn btn-primary" ng-click="removeMethod($index, $index)"><i class="fa fa-circle"></i></button>
                                                     </div>
                                                 </div>
@@ -166,24 +166,29 @@
                                     <table class="table table-striped">
                                         <thead>
                                             <tr>
-                                                <th>Id</th>
-                                                <th>Method</th>
+                                                <th>#</th>
+                                                <th>Route</th>
+                                                <th>Query</th>
                                                 <th>Status</th>
                                                 <th>IP</th>
-                                                <th>Time</th>
+                                                <th>Date</th>
+                                                <th>Latency (ms)</th>
                                                 <!-- th ng-repeat="(key,value) in invoices.0">{{key}}</th -->
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr ng-repeat="invoice in invoices">
-                                                <td>{{invoice.id}}</td>
-                                                <td>{{invoice.amount}}</td>
-                                                <td>{{invoice.due}}</td>
-                                                <td>{{invoice.status}}</td>
-                                                <td>{{invoice.status}}</td>
+                                            <tr ng-repeat="log in method.logs">
+                                                <td>{{$index}}</td>
+                                                <td>{{method.URI}}</td>
+                                                <td>{{log.query || json}}</td>
+                                                <td><span class="label label-success">{{log.status}}</span></td>
+                                                <td>{{log.ip}}</td>
+                                                <td timeago="{{log.date}}"></td>
+                                                <td>{{log.time}}</td>
                                             </tr>
                                         </tbody>
                                     </table>
+                                    <pagination ng-model="method" total-items="method.logs.length" items-per-page="10" page="currentPage" max-size="10" on-select-page="setPage(page)"></pagination>
                                 </tab>
                                 <tab>
                                     <tab-heading>

@@ -17,5 +17,5 @@ angular.module( 'apicatus.application', [
 })
 
 .controller( 'ApplicationCtrl', function ApplicationController( $scope, $location, $stateParams, Restangular ) {
-
+    console.log("application controler SINGLE");
 });

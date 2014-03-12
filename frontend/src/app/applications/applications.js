@@ -139,9 +139,9 @@ angular.module( 'apicatus.applications', [
         });
     };
 })
-.controller( 'ApplicationCtrl', function ApplicationController( $scope, $location, $stateParams, $modal, Restangular ) {
-    $scope.applications = Restangular.one('digestors', $stateParams.id).get().then(function(digestor){
-        console.log("do I have apis?", $scope.apis);
+.controller( 'ApplicationCtrl', function ApplicationController( $scope, $location, $stateParams, $modal, Restangular, parseURL ) {
+    console.log("configuration", Restangular.configuration.baseUrl);
+    $scope.applications = Restangular.one('digestors', $stateParams.id).get().then(function(digestor) {
         $scope.api = digestor;
         Restangular.one('logs').get({digestor: digestor._id, limit: 10}).then(function(logs) {
             $scope.api.logs = logs;
@@ -152,12 +152,14 @@ angular.module( 'apicatus.applications', [
                     // Pair methods and logs
                     method.logs = _.filter(logs, {'method': method._id });
                     // Create simple demo to test the endpoint
+                    var serviceUrl = parseURL.parse(Restangular.configuration.baseUrl);
+                    console.log(serviceUrl);
                     var options = {
                         type: method.method.toUpperCase(),
-                        url: method.URI,
+                        url: serviceUrl.protocol + "://" + $scope.api.name + "." + serviceUrl.host + ":" + serviceUrl.port + method.URI,
                         data: {}
                     };
-                    method.demo = "$.ajax(" + JSON.stringify(options) + ");";
+                    method.demo = "$.ajax(" + JSON.stringify(options) + ")\n.then(function(r){\n\tconsole.log(r);\n});";
                 }
             }
             /*$scope.api.map(function(api) {

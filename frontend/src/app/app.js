@@ -16,12 +16,13 @@ angular.module( 'apicatus', [
     'ui.utils',
     'LocalStorageModule',
     'pascalprecht.translate',
-    'ui.ace'
+    'ui.ace',
+    'parseURL'
 ])
 
 .config( function myAppConfig ( $stateProvider, $urlRouterProvider, $translateProvider, RestangularProvider, localStorageServiceProvider ) {
     $urlRouterProvider.otherwise( '/main/home' );
-    RestangularProvider.setBaseUrl('http://localhost:8080');
+    RestangularProvider.setBaseUrl('http://miapi.com:8080');
     RestangularProvider.setRestangularFields({
         id: "_id"
     });

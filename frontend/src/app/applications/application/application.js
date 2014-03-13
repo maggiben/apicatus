@@ -8,14 +8,21 @@ angular.module( 'apicatus.application', [
 
 
 .config(function config( $stateProvider ) {
-    $stateProvider.state('main.applications.application', {
-        url: '/:id',
-        templateUrl: 'applications/application/application.tpl.html',
+    $stateProvider.state('main.application', {
+        url: '/application',
+        template: '<ui-view/>',
+        views: {
+            "main": {
+                controller: 'ApplicationCtrlX',
+                templateUrl: 'applications/application/application.tpl.html'
+            }
+        },
         data: { pageTitle: 'Resource editor' },
         authenticate: false
     });
+
 })
 
-.controller( 'ApplicationCtrl', function ApplicationController( $scope, $location, $stateParams, Restangular ) {
+.controller( 'ApplicationCtrlX', function ApplicationController( $scope, $location, $stateParams, Restangular ) {
     console.log("application controler SINGLE");
 });

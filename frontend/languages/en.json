@@ -20,9 +20,12 @@
     "ERROR": "Error",
     "ERROR_ON_PAGE": "An error has occured when loading data.",
     "PROBLEM_PERSISTS": "If the problem persists please contact your Account Executive.",
-    "APPLICATIONS.TITLE": "Applications",
-    "APPLICATIONS.NEWAPI.NEW": "New",
+    "SIDEBAR.APIS": "Apis",
+    "SIDEBAR.INSPECTOR": "Dashboard",
     "APPLICATIONS.NEWAPI.TITLE": "New API",
     "APPLICATIONS.NEWAPI.NAME": "API Name",
-    "APPLICATIONS.NEWAPI.DOMAIN": "API Domain"
+    "APPLICATIONS.NEWAPI.DOMAIN": "API Domain",
+    "APPLICATION.NEWENDPOINT.TITLE": "New Endpoint",
+    "APPLICATION.NEWENDPOINT.NAME": "Endpoint name"
+
 }

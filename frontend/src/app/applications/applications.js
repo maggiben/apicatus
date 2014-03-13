@@ -1,4 +1,5 @@
 /*jslint evil: true */
+/*jshint newcap: false */
 
 angular.module( 'apicatus.applications', [
     'd3Service',
@@ -139,11 +140,17 @@ angular.module( 'apicatus.applications', [
         });
     };
 })
-.controller( 'ApplicationCtrl', function ApplicationController( $scope, $location, $stateParams, $modal, Restangular, parseURL ) {
-    console.log("configuration", Restangular.configuration.baseUrl);
+.controller( 'ApplicationCtrl', function ApplicationController( $scope, $location, $stateParams, $modal, Restangular, parseURL, httpSettings, ngTableParams ) {
+    $scope.httpSettings = httpSettings.settings();
+
+
     $scope.applications = Restangular.one('digestors', $stateParams.id).get().then(function(digestor) {
         $scope.api = digestor;
-        Restangular.one('logs').get({digestor: digestor._id, limit: 10}).then(function(logs) {
+        if(!$scope.api.endpoints) {
+            $scope.api.endpoints = [];
+            return;
+        }
+        Restangular.one('logs').get({digestor: digestor._id, limit: 0}).then(function(logs) {
             $scope.api.logs = logs;
             for(var i = 0; i < $scope.api.endpoints.length; i++) {
                 var endpoint = $scope.api.endpoints[i];
@@ -151,17 +158,23 @@ angular.module( 'apicatus.applications', [
                     var method = endpoint.methods[j];
                     // Pair methods and logs
                     method.logs = _.filter(logs, {'method': method._id });
-                    // Create simple demo to test the endpoint
-                    var serviceUrl = parseURL.parse(Restangular.configuration.baseUrl);
-                    console.log(serviceUrl);
-                    var options = {
-                        type: method.method.toUpperCase(),
-                        url: serviceUrl.protocol + "://" + $scope.api.name + "." + serviceUrl.host + ":" + serviceUrl.port + method.URI,
-                        data: {}
-                    };
-                    method.demo = "$.ajax(" + JSON.stringify(options) + ")\n.then(function(r){\n\tconsole.log(r);\n});";
+
+                    $scope.createDemo(method);
                 }
             }
+
+            $scope.tableParams = new ngTableParams({
+                page: 1,            // show first page
+                count: 10           // count per page
+            }, {
+                total: $scope.api.logs.length, // length of data
+                getData: function($defer, params) {
+                    // use build-in angular filter
+                    var orderedData = params.sorting() ?
+                    $filter('orderBy')($scope.api.logs, params.orderBy()) : $scope.api.logs;
+                    $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
+                }
+            });
             /*$scope.api.map(function(api) {
                 var digestorLogs = _.filter($scope.logs, {'digestor': api._id });
                 if(digestorLogs.length <= 0) {
@@ -176,6 +189,12 @@ angular.module( 'apicatus.applications', [
             });*/
         });
     });
+
+    $scope.$watchCollection('api.endpoints', function(newVal, oldVal, scope) {
+        if(newVal === oldVal || newVal.length <= 0) {
+            return;
+        }
+    });
     $scope.currentPage = 1;
     $scope.setPage = function (pageNo) {
         $scope.currentPage = pageNo;
@@ -183,37 +202,102 @@ angular.module( 'apicatus.applications', [
     $scope.save = function(api) {
         $scope.api.put();
     };
-    $scope.addResource = function (api) {
-        console.log($scope.api.endpoints);
-        $scope.api.endpoints.push({
-            name: "Resource Group A",
-            methods: [
-                {
-                    "name": "Method A1",
-                    "synopsis": "Grabs information from the A1 data set",
-                    "method": "GET",
-                    "URI": "/a1/grab"
+    ////////////////////////////////////////////////////////////////////////////
+    // Endpoints [ Create, Read, Update, Delete ]                             //
+    ////////////////////////////////////////////////////////////////////////////
+    $scope.createEndpoint = function () {
+        // Please note that $modalInstance represents a modal window (instance) dependency.
+        // It is not the same as the $modal service used above.
+        var modalCtl = function ($scope, $modalInstance, endpoint) {
+            console.log("aqui hay controler");
+            $scope.endpoint = {
+                name: ""
+            };
+            $scope.ok = function() {
+                console.log("ok:", endpoint);
+            };
+            $scope.submit = function () {
+                console.log("ok:", endpoint);
+                $modalInstance.close($scope.endpoint);
+            };
+            $scope.cancel = function () {
+                $modalInstance.dismiss('cancel');
+            };
+        };
+        var modalInstance = $modal.open({
+            templateUrl: 'new_endpoint_modal.html',
+            controller: modalCtl,
+            windowClass: '',
+            resolve: {
+                endpoint: function () {
+                    return $scope.endpoint;
                 }
-            ]
+            }
         });
+        modalInstance.result.then(
+            function (endpoint) {
+                endpoint.methods = [];
+                console.log("modal ok: ", endpoint);
+                $scope.api.endpoints.push(endpoint);
+                $scope.api.put();
+                /*$scope.api.put().then(function(result) {
+                    $scope.api.endpoints.push(result);
+                }, function(error) {
+
+                });*/
+            },
+            function () {
+                console.info('Modal dismissed at: ' + new Date());
+        });
+    };
+
+    $scope.createEndpoint2 = function (api) {
+        var endpoint = {
+            name: "Resource group",
+            methods: []
+        };
+        $scope.api.endpoints.push(endpoint);
         $scope.api.put();
     };
-    $scope.addEndpoint = function(endpoint) {
-        console.log(endpoint.methods);
-        endpoint.methods.push({
+    $scope.updateEndpoint = function(endpoint, $index) {
+        $scope.api.put();
+    };
+    $scope.deleteEndpoint = function(endpoints, $index) {
+        endpoints.splice($index, 1);
+        $scope.api.put();
+    };
+    ////////////////////////////////////////////////////////////////////////////
+    // Methods [ Create, Read, Update, Delete ]                               //
+    ////////////////////////////////////////////////////////////////////////////
+    $scope.createMethod = function(endpoint) {
+        var method = {
             "name": "Method XX1",
             "synopsis": "Grabs information from the A1 data set",
             "method": "GET",
             "URI": "/myroute"
-        });
+        };
+        $scope.createDemo(method);
+        endpoint.methods.push(method);
         $scope.api.put();
     };
-    $scope.removeEndpoint = function(endpoint, $index) {
-        $scope.api.endpoints.splice($index, 1);
+    $scope.updateMethod = function(method, $index) {
+        console.log(method);
         $scope.api.put();
     };
-    $scope.saveMethod = function(method, $index) {
-        $scope.api.put();
+    $scope.deleteMethod = function(methods, $index) {
+        methods.splice($index, 1);
+    };
+
+    // API Demo
+    $scope.createDemo = function(method) {
+        // Create simple demo to test the endpoint
+        var serviceUrl = parseURL.parse(Restangular.configuration.baseUrl);
+        var options = {
+            type: method.method.toUpperCase(),
+            url: serviceUrl.protocol + "://" + $scope.api.name + "." + serviceUrl.host + ":" + serviceUrl.port + method.URI,
+            data: {}
+        };
+        method.demo = "$.ajax(" + JSON.stringify(options) + ")\n.then(function(r){\n\tconsole.log(r);\n});";
     };
     $scope.demo = function(demo) {
         var result = eval(demo);
@@ -225,9 +309,6 @@ angular.module( 'apicatus.applications', [
     $scope.aceLoaded = function(_editor) {
         console.log("ace loaded: ", _editor);
         window.ace = _editor;
-         // Editor part
-        //var _session = _editor.getSession();
-        //_session.setMode('ace/mode/javascript');
     };
 
     // The ui-ace option
@@ -243,8 +324,6 @@ angular.module( 'apicatus.applications', [
             };
         }
     };
-    // Initial code content...
-    $scope.aceModel = '$.ajax(' + "route" + ')';
 })
 // We already have a limitTo filter built-in to angular,
 // let's make a startFrom filter

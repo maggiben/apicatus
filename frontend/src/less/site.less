@@ -55,3 +55,48 @@ html, body {
         white-space: normal;
     }
 }
+
+
+textarea:focus, input[type="text"]:focus, input[type="password"]:focus, input[type="datetime"]:focus, input[type="datetime-local"]:focus, input[type="date"]:focus, input[type="month"]:focus, input[type="time"]:focus, input[type="week"]:focus, input[type="number"]:focus, input[type="email"]:focus, input[type="url"]:focus, input[type="search"]:focus, input[type="tel"]:focus, input[type="color"]:focus, .uneditable-input:focus {
+border-color: #2c8b7c;
+box-shadow: 0 1px 1px rgba(98, 124, 148, 0.15) inset, 0 0 8px #37ae9b;
+outline: 0 none;
+}
+
+/* MODALS */
+/* NAVBAR STYLES */
+@modal-header-background: #29343e;
+@navbar-menuitem-background: #1f1f1f;
+@navbar-menuitem-color: #fff;
+@modal-text-color: #627c94;
+@modal-header-color: #49c5b1;
+.modal-dialog {
+    .modal-content {
+        .modal-header {
+            background-color: @modal-header-background;
+            color: @modal-header-color;
+            text-transform: uppercase;
+            .modal-title {
+                font-weight: 200;
+            }
+            .close {
+                font-size: 30px;
+                font-weight: bold;
+                line-height: 1;
+                color: #000000;
+                opacity: 0.35;
+                text-shadow: none;
+                filter: alpha(opacity=20);
+            }
+            .close:hover,
+            .close:focus {
+                color: #f1f1f1;
+                filter: alpha(opacity=50);
+            }
+        }
+        .modal-footer {
+            padding: 10px 20px 10px;
+            background-color: #fafafa;
+        }
+    }
+}

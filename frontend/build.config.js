@@ -67,6 +67,7 @@ module.exports = {
       'lib/angular-bootstrap/ui-bootstrap-tpls.min.js',
       'lib/angular-ui-router/release/angular-ui-router.js',
       'lib/angular-ui-utils/ui-utils.js',
+      'lib/ng-table/ng-table.js',
       'lib/restangular/dist/restangular.js',
       'lib/angular-local-storage/angular-local-storage.js',
       'lib/momentjs/moment.js',

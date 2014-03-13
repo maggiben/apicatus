@@ -25,11 +25,11 @@
     <div class="collapse navbar-collapse navbar-ex1-collapse">
         <ul class="nav navbar-nav side-nav closed" ng-model="menu">
             <li class="close-menu"><button class="menu-close pull-right"><i class="fa fa-times"></i></button></li>
-            <li><a ui-sref="main.applications.list"><i class="fa fa-sitemap fg-red"></i> {{ 'SIDEBAR.apis' | translate }}</a></li>
-            <li><a ui-sref="main.applications.list"><i class="fa fa-sitemap fg-red"></i> {{ 'SIDEBAR.ispector' | translate }}</a></li>
+            <li><a ui-sref="main.applications.list"><i class="fa fa-sitemap"></i> {{ 'SIDEBAR.APIS' | translate }}</a></li>
+            <li><a ui-sref="main.applications.list"><i class="fa fa-dashboard"></i> {{ 'SIDEBAR.INSPECTOR' | translate }}</a></li>
             <li class="divider"></li>
-            <li class="secondary"><a href="#"><i class="icon-help"></i> {{ 'SIDEBAR.HELP' | translate }}</a></li>
-            <li class="secondary"><a href="#"><i class="icon-about"></i> {{ 'SIDEBAR.ABOUT' | translate }}</a></li>
+            <li class="secondary"><a href="#"><i class="fa fa-question-circle fa-fw"></i> {{ 'SIDEBAR.HELP' | translate }}</a></li>
+            <li class="secondary"><a href="#"><i class="fa fa-rss fa-fw"></i> {{ 'SIDEBAR.ABOUT' | translate }}</a></li>
         </ul>
 
         <!-- div class="navbar-range">

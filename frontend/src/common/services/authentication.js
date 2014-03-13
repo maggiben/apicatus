@@ -35,9 +35,6 @@ angular.module('AuthService', ['restangular'])
         node.appendChild(scriptTag);
     }
     function enterAuthentication(user, pass) {
-        // Create a script tag with d3 as the source
-        // and call our onScriptLoad callback when it
-        // has been loaded
         var defer = $q.defer();
         var code = [];
 
@@ -46,9 +43,6 @@ angular.module('AuthService', ['restangular'])
                 localStorageService.add('token', token.token);
                 Restangular.configuration.defaultHeaders.token = token.token;
                 isAuthenticated = true;
-                console.log("we have a token: ", token);
-                //globalAuthenticate(isAuthenticated, defer);
-                //return defer.promise;
         }
         Restangular.one('user').customPOST({username: user, password: pass}, 'signin').then(function (user) {
 
@@ -97,6 +91,16 @@ angular.module('AuthService', ['restangular'])
 
         return defer.promise;
     }
+    function checkAuthenticated() {
+        var token = localStorageService.get('token');
+        if(token) {
+            isAuthenticated = true;
+            return true;
+        } else {
+            isAuthenticated = false;
+            return false;
+        }
+    }
     return {
         authenticate: function(user, pass) {
             return enterAuthentication(user, pass);
@@ -105,7 +109,7 @@ angular.module('AuthService', ['restangular'])
             return leaveAuthentication();
         },
         isAuthenticated: function() {
-            return isAuthenticated; /*return d.promise;*/
+            return checkAuthenticated(); /*return d.promise;*/
         },
         saveState: function(state) {
             appState = state; // Save the app state before going into the login secuence

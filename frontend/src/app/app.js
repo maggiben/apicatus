@@ -5,8 +5,9 @@ angular.module( 'apicatus', [
     'apicatus.home',
     'apicatus.login',
     'apicatus.applications',
+    'apicatus.application',
+    'apicatus.settings',
     'apicatus.error',
-    //'apicatus.application',
     'AuthService',
     'timeago',
     'humanize',
@@ -17,7 +18,9 @@ angular.module( 'apicatus', [
     'LocalStorageModule',
     'pascalprecht.translate',
     'ui.ace',
-    'parseURL'
+    'ngTable',
+    'parseURL',
+    'httpSettings'
 ])
 
 .config( function myAppConfig ( $stateProvider, $urlRouterProvider, $translateProvider, RestangularProvider, localStorageServiceProvider ) {

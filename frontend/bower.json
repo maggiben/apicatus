@@ -14,7 +14,8 @@
     "angular-ui-ace": "~0.1.0",
     "angular-local-storage": "*",
     "angular-translate": "~2.0",
-    "angular-translate-loader-static-files": "~2.0"
+    "angular-translate-loader-static-files": "~2.0",
+    "ng-table": "~0.3.1"
   },
   "dependencies": {}
 }

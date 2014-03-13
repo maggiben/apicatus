@@ -3,7 +3,7 @@ angular.module('timeago', [])
     return {
         restrict:'A',
         link: function(scope, element, attrs) {
-            attrs.$observe("timeago", function(){
+            attrs.$observe("timeago", function() {
                 element.text(moment(attrs.timeago).fromNow());
             });
         }

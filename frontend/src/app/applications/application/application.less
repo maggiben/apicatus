@@ -22,14 +22,61 @@ application {
     accordion {
         .panel-heading {
             padding: 0;
-            background-image:linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-o-linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-moz-linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-webkit-linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-ms-linear-gradient(bottom, #f3f5f7 0%, #fcfdfd 100%);background-image:-webkit-gradient(linear, left bottom, left top, color-stop(0%, #f3f5f7), color-stop(100%, #fcfdfd));background-color:#f8f9fa;
+            cursor: default;
+            a {
+                &:hover, &:active, &:focus {
+                    cursor: pointer;
+                    text-decoration: none;
+                }
+            }
             span.method {
                 display: inline-block;
-                border-right: 1px solid red;
                 margin-right: 10px;
                 padding: 10px 20px;
-                &.get {
-                    background-color: #d00;
+                color: #fff;
+                font-weight: 100;
+                text-shadow: 1px 1px rgba(0,0,0,1);
+                &.GET {
+                    background-color: #0064cd;
+                    border-right-width: 5px;
+                    border-right-color: darken(#0064cd, 15%);
+                    border-right-style: solid;
+                }
+                &.POST {
+                    background-color: #46a546;
+                    border-right-width: 5px;
+                    border-right-color: darken(#46a546, 15%);
+                    border-right-style: solid;
+                }
+                &.DELETE {
+                    background-color: #BD2C00;
+                    border-right-width: 5px;
+                    border-right-color: darken(#BD2C00, 15%);
+                    border-right-style: solid;
+                }
+                &.PUT {
+                    background-color: #ff7d00;
+                    border-width: 2px;
+                    border-right: darken(#ff7d00, 15%);
+                    border-right-style: solid;
+                }
+                &.OPTIONS {
+                    background-color: #9C1ACA;
+                    border-width: 2px;
+                    border-right: darken(#9C1ACA, 15%);
+                    border-right-style: solid;
+                }
+                &.HEAD {
+                    background-color: #3BD9EC;
+                    border-width: 2px;
+                    border-right: darken(#3BD9EC, 15%);
+                    border-right-style: solid;
+                }
+                &.CONNECT {
+                    background-color: #A9304F;
+                    border-width: 2px;
+                    border-right: darken(#A9304F, 15%);
+                    border-right-style: solid;
                 }
             }
             span.trigger-collapse {
@@ -55,5 +102,8 @@ application {
     .input-group {
         /*margin-bottom: 10px;*/
     }
-    .ace_editor { height: 200px; }
+    .ace_editor {
+
+        height: 200px;
+    }
 }

@@ -1,42 +1,47 @@
 <application>
     <div class="row">
         <div class="col-md-12">
-            <div class="well well-sm">
-                <div class="btn-toolbar" role="toolbar">
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-default" ng-click="addResource()">
-                            <i class="fa fa-file-o"></i>
-                        </button>
-                        <button type="button" class="btn btn-default">
-                            <i class="fa fa-save"></i>
-                        </button>
-                        <button type="button" class="btn btn-default">
-                            <i class="fa fa-print"></i>
-                        </button>
-                        <button type="button" class="btn btn-default">
-                            <i class="fa fa-code"></i> Source
-                        </button>
+
+            <div class="btn-toolbar" role="toolbar">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default" ng-click="createEndpoint()">
+                        <i class="fa fa-file-o"></i> New
+                    </button>
+                    <button type="button" class="btn btn-default">
+                        <i class="fa fa-save"></i> Save
+                    </button>
+                    <div class="btn-group" ng-init="settings.application.orderBy='name'">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-sort-alpha-asc"></i> Sort <span class="fa fa-angle-down"></span></button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="" ng-click="settings.application.orderBy='name'"><i class="fa fa-fw" ng-class="settings.application.orderBy == 'name' ? 'fa-check-circle' : 'fa-circle-o'"></i> Name</a></li>
+                            <li><a href="" ng-click="settings.application.orderBy='messageCount'"><i class="fa fa-fw" ng-class="settings.application.orderBy == 'messageCount' ? 'fa-check-circle' : 'fa-circle-o'"></i> Activity</a></li>
+                            <li><a href="" ng-click="settings.application.orderBy='lastAccess'"><i class="fa fa-fw" ng-class="settings.application.orderBy == 'lastAccess' ? 'fa-check-circle' : 'fa-circle-o'"></i> Date</a></li>
+                            <li class="divider"></li>
+                            <li><a href="" ng-init="settings.application.showdisabled=true" ng-click="settings.application.showdisabled=!settings.application.showdisabled"><i class="fa fa-fw" ng-class="settings.application.showdisabled ? 'fa-check-square' : 'fa-square-o'"></i> Show disabled</a></li>
+                        </ul>
                     </div>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-info" ng-click="addResource()"><i class="fa fa-plus"></i></button>
-                        <button type="button" class="btn btn-info"><i class="fa fa-minus"></i></button>
-                        <button type="button" class="btn btn-info" ng-click="save()">Save</button>
+                    <div class="col-md-3 input-group pull-right">
+                        <input type="text" name="search" id="id_search" class="input-medium form-control" maxlength="200" placeholder="Search"  ng-init="settings.application.query=''" ng-model="query" name="query">
+                        <span class="input-group-btn">
+                            <button type="submit" class="btn btn-default" ><i class="fa fa-search"></i></button>
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="row" ng-repeat="endpoint in api.endpoints">
+    <div class="row" ng-repeat="endpoint in api.endpoints | filter: query | orderBy: settings.application.orderBy">
         <div class="col-md-12">
             <div class="row">
                 <div class="col-md-12">
                     <div class="page-header">
-                        <h1 ng-clickx="edit=!edit">
+                        <h1 ng-dblclick="edit=!edit" ng-blur="edit=!edit">
                             <i class="fa fa-sitemap heading"></i>
                             <input type="text" class="resource-name" ng-model="endpoint.name" ng-disabled="edit" ng-init="edit=true" required> <small>{{endpoint.synopsis}}</small>
                             <div class="btn-group btn-group-sm pull-right">
-                                <button type="button" class="btn btn-default" ng-click="addEndpoint(endpoint)"><i class="fa fa-plus"></i></button>
-                                <button type="button" class="btn btn-default fg-red" ng-click="removeEndpoint(endpoint, $index)"><i class="fa fa-times"></i></button>
+                                <button type="button" class="btn btn-default" ng-click="createMethod(endpoint)" tooltip="New method"><i class="fa fa-file-o"></i></button>
+                                <button type="button" class="btn btn-default" tooltip="expand all"><i class="fa fa-plus-square-o"></i></button>
+                                <button type="button" class="btn btn-default fg-red" ng-click="deleteEndpoint(api.endpoints, $index)" tooltip="Delete all methods"><i class="fa fa-trash-o"></i></button>
                             </div>
                         </h1>
                     </div>
@@ -45,7 +50,7 @@
             <accordion close-others="false">
                 <accordion-group class="panel" heading="{{entry.id}}" ng-repeat="method in endpoint.methods" is-open="isopen">
                     <accordion-heading ng-click="isOpen = !isOpen" class="clearfix" style="padding-top: 7.5px;">
-                        <span class="method get">{{method.method}}</span>
+                        <span class="method" ng-class="{true: method.method}[true]">{{method.method}}</span>
                         <span class="route">{{method.URI}}</span>
                         <span class="pull-right trigger-collapse"><i class="fa" ng-class="{'fa-chevron-up': isopen, 'fa-chevron-down': !isopen}"></i></span>
 
@@ -53,44 +58,48 @@
                     </accordion-heading>
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="input-group">
-                                <div class="input-group-btn">
-                                    <button type="button" class="btn btn-default dropdown-toggle">Action <span class="caret"></span></button>
-                                    <ul class="dropdown-menu" role="menu">
-                                        <li ng-repeat="choice in [1,2,3,4,5]">
-                                            <a>{{choice}}</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <input type="text" class="form-control" ng-model="method.URI">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row" >
-                        <div class="col-md-12">
                             <tabset>
                                 <tab>
                                     <tab-heading>
                                         <i class="fa fa-gears"></i> Setup
                                     </tab-heading>
-                                    <form name="form" class="form-horizontal" ng-submit="saveMethod(method, $index)">
+                                    <form name="form" class="form-horizontal" ng-submit="updateMethod(method, $index)">
+
                                         <div class="form-group">
-                                            <label for="inputEmail1" class="col-lg-2 control-label">Proxy</label>
+                                            <label for="route" class="col-sm-2 control-label">Route</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="route" placeholder="Route" ng-model="method.URI">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group" ng-class="{'has-error': form.name.$invalid}">
+                                            <label for="proxy" class="col-lg-2 control-label">Proxy</label>
                                             <div class="col-lg-10">
                                                 <div class="input-group">
                                                     <span class="input-group-addon">
                                                         <input type="checkbox" ng-model="method.proxy.enabled">
                                                     </span>
-                                                    <input type="url" class="form-control" ng-model="method.proxy.URI" value="{{entry.proxy.url}}" placeholder="proxy url (http / https)" ng-disabled="!method.proxy.enabled" ng-required="method.proxy.enabled">
+                                                    <input type="url" id="proxy" class="form-control" ng-model="method.proxy.URI" placeholder="proxy url (http / https)" ng-disabled="!method.proxy.enabled" ng-required="method.proxy.enabled">
                                                 </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="method" class="col-lg-2 control-label">Method</label>
+                                            <div class="col-lg-10">
+                                                <label class="label-select">
+                                                    <select class="form-control" id="method" ng-model="method.method" ng-options="methods.label as methods.label group by methods.group for methods in httpSettings.methods"></select>
+                                                </label>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="inputPassword1" class="col-lg-2 control-label">Content type</label>
                                             <div class="col-lg-10">
-                                                <input type="text" class="form-control" ng-model="method.produces" placeholder="application/json">
                                                 <label class="label-select">
-                                                    <select class="" ng-init="method.produces = httpSettings.contentTypes[method.produces].id" ng-model="method.produces" ng-options="contentTypes.id as contentTypes.label group by contentTypes.group for contentTypes in httpSettings.contentTypes"></select> <!-- ng-options="contentTypes.value as contentTypes.label group by contentTypes.group for contentTypes in httpSettings.contentTypes" -->
+                                                    <!-- select class="" ng-init="method.response.contentType = httpSettings.contentTypes[method.produces].id" ng-model="method.produces.contentType" ng-options="contentTypes.id as contentTypes.label group by contentTypes.group for contentTypes in httpSettings.contentTypes"></select -->
+                                                    <!-- select ui-select2="" style="width:340px" class="col-lg-2" ng-model="method.response.contentType" ng-options="contentTypes.label as contentTypes.label group by contentTypes.group for contentTypes in httpSettings.contentTypes"></select -->
+                                                    <select class="form-control" ng-model="method.response.contentType" ng-options="contentTypes.label as contentTypes.label group by contentTypes.group for contentTypes in httpSettings.contentTypes">
+                                                        <option></option>
+                                                    </select>
                                                 </label>
                                             </div>
                                         </div>
@@ -113,7 +122,7 @@
                                             <label for="inputPassword1" class="col-lg-2 control-label">Status Code</label>
                                             <div class="col-lg-10">
                                                 <label class="label-select">
-                                                    <select class="selectpicker" ng-model="method.response.statusCode" ng-options="status.id as status.label group by status.group for status in httpSettings.statuses"></select>
+                                                    <select class="form-control" ng-model="method.response.statusCode" ng-options="status.id as status.label group by status.group for status in httpSettings.statuses"></select>
                                                 </label>
                                             </div>
                                         </div>
@@ -127,10 +136,10 @@
                                         <div class="form-group">
                                             <div class="col-lg-offset-2 col-lg-10">
                                                 <div class="btn-group">
-                                                    <button type="submit" class="btn btn-default" ng-disabled="form.$pristine && !form.$valid"><i class="fa fa-save"></i></button>
+                                                    <button type="submit" class="btn btn-default" ng-disabled="form.$pristine && !form.$invalid"><i class="fa fa-save"></i></button>
                                                     <button class="btn btn-default" ng-click="removeMethod(method, $index)"><i class="fa fa-power-off"></i></button>
                                                 </div>
-                                                <button class="btn btn-danger pull-right" ng-click="removeMethod(method, $index)" tooltip="Remove"><i class="fa fa-trash-o"></i></button>
+                                                <button class="btn btn-danger pull-right" ng-click="deleteMethod(endpoint.methods, $index)" tooltip="Remove"><i class="fa fa-trash-o"></i></button>
                                             </div>
                                         </div>
                                     </form>
@@ -163,7 +172,7 @@
                                             <i class="fa fa-circle-o fa-stack-1x"></i>
                                         </span -->
                                     </tab-heading>
-                                    <table class="table table-striped">
+                                    <table class="table table-striped" ng-table="logTableParams">
                                         <thead>
                                             <tr>
                                                 <th>#</th>
@@ -194,9 +203,14 @@
                                     <tab-heading>
                                         <i class="fa fa-bar-chart-o"></i> Statistics
                                     </tab-heading>
-                                    <pre>method = {{method | json}}</pre>
+                                    <table ng-table class="table">
+                                    <tr ng-repeat="user in users">
+                                        <td data-title="'Name'">{{user.name}}</td>
+                                        <td data-title="'Age'">{{user.age}}</td>
+                                    </tr>
+                                    </table>
                                 </tab>
-
+                                <button class="btn btn-default pull-right" tooltip="Refresh"><i class="fa fa-refresh"></i></button>
                             </tabset>
                         </div>
                     </div>
@@ -217,5 +231,42 @@
     </div>
 </application>
 
+<script type="text/ng-template" id="new_endpoint_modal.html">
+    <form name="form" role="form" ng-model="endpoint" ng-submit="submit()">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cancel()"><i class="fa fa-power-off"></i></button>
+            <h4 class="modal-title">{{ 'APPLICATION.NEWENDPOINT.TITLE' | translate }}</h4>
+        </div>
+        <div class="modal-body">
+            <div class="form-group has-feedback">
+                <label for="name">{{ 'APPLICATION.NEWENDPOINT.NAME' | translate }}</label>
+                <input type="text" class="form-control" id="name" placeholder="{{ 'APPLICATION.NEWENDPOINT.NAME' | translate }}" name="name" required ng-required="true" ng-model="endpoint.name">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" ng-disabled="form.$invalid" >{{ 'OK' | translate }}</button>
+            <button type="button" class="btn btn-danger" ng-click="cancel()">{{ 'CANCEL' | translate }}</button>
+        </div>
+    </form>
+</script>
+
+<script type="text/ng-template" id="new_api_modal.html">
+    <form role="form" ng-model="method" ng-submit="submit()">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cancel()"><i class="fa fa-power-off"></i></button>
+            <h4 class="modal-title">{{ 'APPLICATION.NEWMETHOD.TITLE' | translate }}</h4>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="route">{{ 'APPLICATION.NEWMETHOD.ROUTE' | translate }}</label>
+                <input type="text" class="form-control" id="route" placeholder="{{ 'APPLICATION.NEWMETHOD.ROUTE' | translate }}" required ng-required="true" ng-model="method.route">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">{{ 'OK' | translate }}</button>
+            <button type="button" class="btn btn-danger" ng-click="cancel()">{{ 'CANCEL' | translate }}</button>
+        </div>
+    </form>
+</script>
 
 

@@ -78,6 +78,20 @@ angular.module( 'apicatus', [
             $scope.user = user;
         });
     }
+
+    $scope.$on('userLoggedIn', function(event, user){
+        $scope.user = user;
+    });
+
+    ///////////////////////////////////////////////////////////////////////////
+    // User settings
+    $scope.settings = localStorageService.get('settings') || {};
+    $scope.$watch('settings', function(newVal, oldVal){
+        console.log("settings changed: ", $scope.settings);
+        window.settings = $scope.settings;
+        localStorageService.add('settings', newVal);
+    }, true);
+
     $scope.account = {
         username: "Marty Macfly",
         email: "jwoods@ananke.com",
@@ -90,18 +104,10 @@ angular.module( 'apicatus', [
         city: "Buenos Aires",
         timezone: "AGT"
     };
-    // authenticate
-    //$scope.user = Restangular.one('user').customPOST({username: "admin", password: "admin"}, 'signin');
-    // Restangular returns promises
-    //$scope.baseApi = Restangular.one('user');
-    //$scope.baseApi.get().then(function(account) {
-        // returns a list of users
-    //    $scope.account = account;   // first Restangular obj in list: { id: 123 }
-    //});
-
+    $scope.getDate = function() {return new Date();};
     $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
         if ( angular.isDefined( toState.data.pageTitle ) ) {
-            $scope.pageTitle = toState.data.pageTitle ;
+            $scope.pageTitle = toState.data.pageTitle;
         }
     });
 });

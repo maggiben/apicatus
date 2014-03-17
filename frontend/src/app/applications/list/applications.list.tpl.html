@@ -1,19 +1,16 @@
-<applications ng-controller="ApplicationsCtrl">
+<applications ng-controller="ApplicationsCtrl" ng-init="settings.applications = settings.applications || {date: getDate(), showdisabled: false}">
     <div class="row">
         <div class="col-md-12 resource-group">
             <div class="btn-toolbar" role="toolbar">
                 <div class="btn-group">
                     <button type="button" class="btn btn-default" ng-click="newApi()">
-                        <i class="fa fa-plus"></i>
+                        <i class="icon-logo"></i> New API
                     </button>
                     <button type="button" class="btn btn-default">
                         <i class="fa fa-save"></i>
                     </button>
                     <button type="button" class="btn btn-default">
-                        <i class="fa fa-print"></i>
-                    </button>
-                    <button type="button" class="btn btn-default">
-                        <i class="fa fa-code"></i> Source
+                        <i class="fa fa-cloud-upload"></i> Import
                     </button>
                     <div class="btn-group">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-filter"></i> Sort <span class="fa fa-angle-down"></span></button>
@@ -22,7 +19,7 @@
                             <li><a href=""><i class="fa fa-fire fa-fw"></i> Activity</a></li>
                             <li><a href=""><i class="fa fa-calendar fa-fw"></i> Date</a></li>
                             <li class="divider"></li>
-                            <li><a href="" ng-init="settings.applications.showdisabled=true" ng-click="settings.applications.showdisabled=!settings.applications.showdisabled"><i class="fa fa-fw" ng-class="settings.applications.showdisabled ? 'fa-check-square' : 'fa-square-o'"></i> Show disabled</a></li>
+                            <li><a href="" ng-click="settings.applications.showdisabled=!settings.applications.showdisabled"><i class="fa fa-fw" ng-class="settings.applications.showdisabled ? 'fa-check-square' : 'fa-square-o'"></i> Show disabled</a></li>
                         </ul>
                     </div>
                 </div>
@@ -31,7 +28,7 @@
     <div class="row">
         <div class="col-md-12 resource-group">
             <div class="menu app-cards-row">
-                <div ng-repeat="api in apis" class="menu-category" ng-show="settings.applications.showdisabled || api.enabled">
+                <div ng-repeat="api in apis" ng-init="settings.applications[api._id] = {name: api.name}" class="menu-category" ng-show="settings.applications.showdisabled || api.enabled">
                     <div class="stock card" ng-init="flipped=false" ng-class="{flip: flipped, public: api.public}">
                         <div class="front">
                             <div class="stock-chart" ng-class="api.enabled ? 'enabled' : 'disabled'">
@@ -118,12 +115,14 @@
                                                     </div>
                                                 </div>
                                                 <div class="checkbox">
-                                                    <label for="enable">Enable</label>
-                                                    <input type="checkbox" id="enable" ng-model="api.enabled">
+                                                    <label>Enable
+                                                        <input type="checkbox" id="enable" ng-model="api.enabled">
+                                                    </label>
                                                 </div>
                                                 <div class="checkbox">
-                                                    <label for="enable">Public</label>
-                                                    <input type="checkbox" id="enable" ng-model="api.public">
+                                                    <label>Public
+                                                        <input type="checkbox" id="public" ng-model="api.public">
+                                                    </label>
                                                 </div>
 
 
@@ -155,7 +154,9 @@
 
     <div class="row">
         <div class="col-md-12 resource-group">
-            <foot><span class="label label-primary">{{apis.length}} APIS</span></foot>
+            <foot>
+                <pagination ng-model="method" total-items="method.logs.length" items-per-page="10" page="currentPage" max-size="10" on-select-page="setPage(page)"></pagination>
+            </foot>
         </div>
     </div>
 </applications>
@@ -163,8 +164,8 @@
 <script type="text/ng-template" id="new_api_modal.html">
     <form role="form" ng-model="api" ng-submit="submit()">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cancel()"><i class="fa fa-power-off"></i></button>
-            <h4 class="modal-title">{{ 'APPLICATIONS.NEWAPI.TITLE' | translate }}</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cancel()"><i class="icon-close"></i></button>
+            <h4 class="modal-title"><i class="icon-network"></i> {{ 'APPLICATIONS.NEWAPI.TITLE' | translate }}</h4>
         </div>
         <div class="modal-body">
             <div class="form-group">

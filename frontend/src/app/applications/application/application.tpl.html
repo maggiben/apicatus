@@ -1,42 +1,52 @@
-<application>
+<application ng-init="settings.application = settings.application || {code: false, date: getDate()}">
+    <!-- pre ng-init="settings.pepe = settings.pepe || {name: 'pepe', date: getDate()}">{{settings.pepe | json}}</pre -->
     <div class="row">
         <div class="col-md-12">
-
             <div class="btn-toolbar" role="toolbar">
                 <div class="btn-group">
                     <button type="button" class="btn btn-default" ng-click="createEndpoint()">
                         <i class="fa fa-file-o"></i> New
                     </button>
-                    <button type="button" class="btn btn-default">
-                        <i class="fa fa-save"></i> Save
+                    <button type="button" class="btn btn-default" ng-click="showHide=!showHide" ng-class="{active: showHide}">
+                        <i class="fa fa-code"></i> source
                     </button>
-                    <div class="btn-group" ng-init="settings.application.orderBy='name'">
+                    <div class="btn-group">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-sort-alpha-asc"></i> Sort <span class="fa fa-angle-down"></span></button>
                         <ul class="dropdown-menu" role="menu">
                             <li><a href="" ng-click="settings.application.orderBy='name'"><i class="fa fa-fw" ng-class="settings.application.orderBy == 'name' ? 'fa-check-circle' : 'fa-circle-o'"></i> Name</a></li>
                             <li><a href="" ng-click="settings.application.orderBy='messageCount'"><i class="fa fa-fw" ng-class="settings.application.orderBy == 'messageCount' ? 'fa-check-circle' : 'fa-circle-o'"></i> Activity</a></li>
                             <li><a href="" ng-click="settings.application.orderBy='lastAccess'"><i class="fa fa-fw" ng-class="settings.application.orderBy == 'lastAccess' ? 'fa-check-circle' : 'fa-circle-o'"></i> Date</a></li>
-                            <li class="divider"></li>
-                            <li><a href="" ng-init="settings.application.showdisabled=true" ng-click="settings.application.showdisabled=!settings.application.showdisabled"><i class="fa fa-fw" ng-class="settings.application.showdisabled ? 'fa-check-square' : 'fa-square-o'"></i> Show disabled</a></li>
                         </ul>
                     </div>
-                    <div class="col-md-3 input-group pull-right">
-                        <input type="text" name="search" id="id_search" class="input-medium form-control" maxlength="200" placeholder="Search"  ng-init="settings.application.query=''" ng-model="query" name="query">
-                        <span class="input-group-btn">
-                            <button type="submit" class="btn btn-default" ><i class="fa fa-search"></i></button>
-                        </span>
+                </div>
+                <div class="btn-group" ng-hide="!showHide">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default" ng-click="tabs[0].active = true">
+                            <i class="fa fa-save"></i> Save
+                        </button>
                     </div>
+                </div>
+                <div class="col-md-2 pull-right master-search">
+                    <input type="text" name="search" autocomplete="off" id="id_search" typeahead="endpoint.name for endpoint in api.endpoints | filter:$viewValue | limitTo:8" class="form-control" maxlength="200" placeholder="Search" ng-model="settings.application.query" name="query">
+                    <span class="icon input-group-btn">
+                        <i class=" fa fa-search"></i>
+                    </span>
                 </div>
             </div>
         </div>
     </div>
-    <div class="row" ng-repeat="endpoint in api.endpoints | filter: query | orderBy: settings.application.orderBy">
+    <div class="row source-editor" ui-hide="!showHide">
+        <div class="col-md-12">
+            <div ui-ace="{mode: 'json', theme:'monokai'}" ng-model="apiModel"></div>
+        </div>
+    </div>
+    <div class="row" ng-hide="showHide" ng-init="settings.application[endpoint._id] = settings.application[endpoint._id] || {}" ng-repeat="endpoint in api.endpoints | filter: settings.application.query | orderBy: settings.application.orderBy">
         <div class="col-md-12">
             <div class="row">
                 <div class="col-md-12">
                     <div class="page-header">
                         <h1 ng-dblclick="edit=!edit" ng-blur="edit=!edit">
-                            <i class="fa fa-sitemap heading"></i>
+                            <i class="icon-api heading"></i>
                             <input type="text" class="resource-name" ng-model="endpoint.name" ng-disabled="edit" ng-init="edit=true" required> <small>{{endpoint.synopsis}}</small>
                             <div class="btn-group btn-group-sm pull-right">
                                 <button type="button" class="btn btn-default" ng-click="createMethod(endpoint)" tooltip="New method"><i class="fa fa-file-o"></i></button>
@@ -47,18 +57,19 @@
                     </div>
                 </div>
             </div>
-            <accordion close-others="false">
-                <accordion-group class="panel" heading="{{entry.id}}" ng-repeat="method in endpoint.methods" is-open="isopen">
-                    <accordion-heading ng-click="isOpen = !isOpen" class="clearfix" style="padding-top: 7.5px;">
-                        <span class="method" ng-class="{true: method.method}[true]">{{method.method}}</span>
-                        <span class="route">{{method.URI}}</span>
-                        <span class="pull-right trigger-collapse"><i class="fa" ng-class="{'fa-chevron-up': isopen, 'fa-chevron-down': !isopen}"></i></span>
-
+            <accordion close-others="false" ng-init="settings.application[endpoint._id].methods = settings.application[endpoint._id].methods || {date: getDate()}">
+                <accordion-group class="panel" ng-init="settings.application[endpoint._id].methods[method._id] = settings.application[endpoint._id].methods[method._id] || {date: getDate()}" ng-class="{true: method.method}[true]" id="{{method._id}}" ng-repeat="method in endpoint.methods" is-open="settings.application[endpoint._id].methods[method._id].isOpened">
+                    <accordion-heading class="clearfix" style="padding-top: 7.5px;">
+                        <a href="" ng-click="settings.application[endpoint._id].methods[method._id].isOpened != settings.application[endpoint._id].methods[method._id].isOpened"> <!-- setOpened(endpoint, $index, isOpened) -->
+                            <span class="method" ng-class="{true: method.method}[true]">{{method.method}}</span>
+                            <span class="route">{{method.URI}}</span>
+                            <span class="pull-right trigger-collapse"><i class="fa" ng-class="{'fa-chevron-up': settings.application[endpoint._id].methods[method._id].isOpened, 'fa-chevron-down': !settings.application[endpoint._id].methods[method._id].isOpened}"></i></span>
+                        </a>
                         <!-- span><i class="pull-right fa" ng-class="{'fa-chevron-down': isopen, 'fa-chevron-right': !isopen}"></i></span -->
                     </accordion-heading>
                     <div class="row">
                         <div class="col-md-12">
-                            <tabset>
+                            <tabset ng-init="mytabs.debug.isActive=true" ng-model="mytabs">
                                 <tab>
                                     <tab-heading>
                                         <i class="fa fa-gears"></i> Setup
@@ -104,17 +115,35 @@
                                             </div>
                                         </div>
                                         <!-- CUSTOM HEADERS -->
-                                        <div class="form-group hidden">
-                                            <label for="inputPassword1" class="col-lg-2 control-label">Custom headers</label>
-                                            <div class="col-lg-3">
-                                                <input type="text" class="form-control">
-                                            </div>
-                                            <div class="col-lg-6">
-                                                <input type="text" class="form-control">
-                                            </div>
-                                            <div class="col-lg-1">
-                                                <button type="button" class="btn btn-menu" ng-click=""><i class="glyphicon glyphicon-plus"></i>
-                                                </button>
+                                        <div class="form-group">
+                                            <label for="inputPassword1" class="col-lg-2 control-label">headers</label>
+                                            <div class="col-lg-10">
+                                                <div class="row" ng-model="header">
+                                                    <div class="col-xs-4">
+                                                        <input type="text" class="form-control" placeholder="Key" ng-model="header.name">
+                                                    </div>
+                                                    <div class="col-xs-6">
+                                                        <input type="text" class="form-control" placeholder="Value" ng-model="header.value">
+                                                    </div>
+                                                    <div class="col-xs-2">
+                                                        <div class="btn-group pull-right">
+                                                            <button type="button" class="btn btn-default" ng-click="addHeader(method, header, $scope)"><i class="fa fa-plus"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row" ng-repeat="header in method.response.headers">
+                                                    <div class="col-xs-4">
+                                                        <input type="text" class="form-control" placeholder="Key" ng-model="header.name">
+                                                    </div>
+                                                    <div class="col-xs-6">
+                                                        <input type="text" class="form-control" placeholder="Value" ng-model="header.value">
+                                                    </div>
+                                                    <div class="col-xs-2">
+                                                        <div class="btn-group pull-right">
+                                                            <button type="button" class="btn btn-danger" ng-click="removeHeader(method, header, $index)"><i class="fa fa-trash-o"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <!-- Headers -->
@@ -130,7 +159,7 @@
                                         <div class="form-group">
                                             <label for="inputPassword1" class="col-lg-2 control-label">Response Body</label>
                                             <div class="col-lg-10">
-                                                <div ui-ace="{ onLoad : 'aceLoaded', mode: 'json', theme:'monokai'}" ng-model="method.response.message"></div>
+                                                <div ui-ace="{mode: 'json', theme:'monokai'}" ng-model="method.response.message"></div>
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -149,10 +178,14 @@
                                         <i class="fa fa-bolt"></i> Try
                                     </tab-heading>
                                     <div class="row">
-                                        <div class="col-lg-12">
-                                            <div ui-ace="{ onLoad : 'aceLoaded', mode: 'javascript', theme:'monokai' }" ng-model="method.demo"></div>
+
+                                        <div class="col-md-12">
+                                            <div ui-ace="{mode: 'json', theme:'monokai'}" ng-model="method.demo"></div>
                                         </div>
-                                        <div class="col-lg-12">
+                                        <div class="col-md-12">
+                                            <pre id="output">#</pre>
+                                        </div>
+                                        <div class="col-md-12">
                                             <div class="toolbar well well-sm">
                                                 <div class="btn-toolbar" role="toolbar">
                                                     <div class="btn-group">
@@ -162,53 +195,82 @@
                                                 </div>
                                             </div>
                                         </div>
+
                                     </div>
                                 </tab>
-                                <tab>
+                                <tab active="mytabs.debug.isActive" select="mytabs.debug.isActive = 'true'">
                                     <tab-heading>
                                         <i class="fa fa-puzzle-piece"></i> Debug
-                                        <!-- span class="fa-stack fa-lg">
-                                            <i class="fa fa-dot-circle-o fa-stack-1x fg-red"></i>
-                                            <i class="fa fa-circle-o fa-stack-1x"></i>
-                                        </span -->
                                     </tab-heading>
-                                    <table class="table table-striped" ng-table="logTableParams">
-                                        <thead>
-                                            <tr>
-                                                <th>#</th>
-                                                <th>Route</th>
-                                                <th>Query</th>
-                                                <th>Status</th>
-                                                <th>IP</th>
-                                                <th>Date</th>
-                                                <th>Latency (ms)</th>
-                                                <!-- th ng-repeat="(key,value) in invoices.0">{{key}}</th -->
-                                            </tr>
-                                        </thead>
+                                    <table class="table table-striped log-table" show-filter="false" ng-table="method.tableParams">
                                         <tbody>
-                                            <tr ng-repeat="log in method.logs">
-                                                <td>{{$index}}</td>
-                                                <td>{{method.URI}}</td>
-                                                <td>{{log.query || json}}</td>
-                                                <td><span class="label label-success">{{log.status}}</span></td>
-                                                <td>{{log.ip}}</td>
-                                                <td timeago="{{log.date}}"></td>
-                                                <td>{{log.time}}</td>
+                                            <tr ng-repeat="log in $data">
+                                                <td data-title="'Date'" sortable="'date'" timeago="{{log.date}}">{{log.date}}</td>
+                                                <td data-title="'Query'" sortable="'query'">{{log.query}}</td>
+                                                <td data-title="'IP'" sortable="'ip'" class="text-center">{{log.ip}}</td>
+                                                <td data-title="'Status'" sortable="'status'" class="text-center"><span class="label label-success">{{log.status}}</span></td>
+                                                <td data-title="'Latency (ms)'" sortable="'time'" class="text-right">{{log.time}}</td>
                                             </tr>
                                         </tbody>
                                     </table>
-                                    <pagination ng-model="method" total-items="method.logs.length" items-per-page="10" page="currentPage" max-size="10" on-select-page="setPage(page)"></pagination>
+                                    <!-- pagination ng-model="method" total-items="method.logs.length" items-per-page="10" page="currentPage" max-size="10" on-select-page="setPage(page)"></pagination -->
                                 </tab>
                                 <tab>
                                     <tab-heading>
                                         <i class="fa fa-bar-chart-o"></i> Statistics
                                     </tab-heading>
-                                    <table ng-table class="table">
-                                    <tr ng-repeat="user in users">
-                                        <td data-title="'Name'">{{user.name}}</td>
-                                        <td data-title="'Age'">{{user.age}}</td>
-                                    </tr>
-                                    </table>
+
+                                    <!-- AVAIL -->
+                                    <div class="row graph">
+                                        <div class="col-sm-3 legend">
+                                            <h2>APP SERVER AVAILABILITY</h2>
+                                            <span class="number" title="Updated about 14 seconds ago">100.0%</span>
+                                        </div>
+                                        <div class="col-sm-9 chart">
+                                            <div class="chart-container"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row graph">
+                                        <div class="col-sm-3 legend">
+                                            <h2>MEAN API RESPONSE TIME</h2>
+                                            <span class="number" title="Updated about 14 seconds ago">77ms</span>
+                                        </div>
+                                        <div class="col-sm-9 chart">
+                                            <div class="chart-container"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row graph">
+                                        <div class="col-sm-3 legend">
+                                            <h2>98TH PERC. WEB RESPONSE TIME</h2>
+                                            <span class="number" title="Updated about 14 seconds ago">304ms</span>
+                                        </div>
+                                        <div class="col-sm-9 chart">
+                                            <div class="chart-container"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row graph">
+                                        <div class="col-sm-3 legend">
+                                            <h2>FAILURE RATE</h2>
+                                            <span class="number" title="Updated about 14 seconds ago">0.012%</span>
+                                        </div>
+                                        <div class="col-sm-9 chart">
+                                            <div class="chart-container"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row graph">
+                                        <div class="col-sm-3 legend">
+                                            <h2>EXCEPTION PERCENTAGE</h2>
+                                            <span class="number" title="Updated about 14 seconds ago">1.035%</span>
+                                        </div>
+                                        <div class="col-sm-9 chart">
+                                            <div class="chart-container"></div>
+                                        </div>
+                                    </div>
+
                                 </tab>
                                 <button class="btn btn-default pull-right" tooltip="Refresh"><i class="fa fa-refresh"></i></button>
                             </tabset>
@@ -220,12 +282,12 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <div class="well well-sm" style="margin-top: 10px;">
+            <div class="footer-notes">
                 <span class="fa-stack fa-lg">
-                    <i class="fa fa-dot-circle-o fa-stack-1x fg-red"></i>
+                    <i class="fa fa-dot-circle-o fa-stack-1x fg-cyan"></i>
                     <i class="fa fa-circle-o fa-stack-1x"></i>
                 </span>
-                [API: {{api.name}}, Base URL: {{api.baseURL}}, Version: {{api.version}} ]
+                [ API: <strong>{{api.name}}</strong>, Base URL: <strong>http://{{api.name}}.apicatus.com</strong>, Version: <strong>{{api.version}}</strong> ]
             </div>
         </div>
     </div>

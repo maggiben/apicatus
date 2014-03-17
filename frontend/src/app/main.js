@@ -29,5 +29,4 @@ angular.module( 'apicatus.main', [
     });
 })
 .controller( 'MainCtrl', function MainController( $scope ) {
-
 });

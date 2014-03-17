@@ -38,7 +38,7 @@ angular.module( 'apicatus.applications', [
         url: '/:id',
         templateUrl: 'applications/application/application.tpl.html',
         controller: 'ApplicationCtrl',
-        data: { pageTitle: 'Resource editor' },
+        data: { pageTitle: 'Resource editor'},
         onEnter: function(){
           console.log("enter contacts.detail");
         }
@@ -140,12 +140,12 @@ angular.module( 'apicatus.applications', [
         });
     };
 })
-.controller( 'ApplicationCtrl', function ApplicationController( $scope, $location, $stateParams, $modal, Restangular, parseURL, httpSettings, ngTableParams ) {
+.controller( 'ApplicationCtrl', function ApplicationController( $scope, $location, $stateParams, $modal, $filter, Restangular, parseURL, httpSettings, ngTableParams ) {
     $scope.httpSettings = httpSettings.settings();
-
-
     $scope.applications = Restangular.one('digestors', $stateParams.id).get().then(function(digestor) {
         $scope.api = digestor;
+        $scope.apiModel = JSON.stringify(angular.copy($scope.api), null, 4);
+        // If empty fill out
         if(!$scope.api.endpoints) {
             $scope.api.endpoints = [];
             return;
@@ -158,23 +158,33 @@ angular.module( 'apicatus.applications', [
                     var method = endpoint.methods[j];
                     // Pair methods and logs
                     method.logs = _.filter(logs, {'method': method._id });
-
+                    method.tableParams = makeTableParmas(method.logs);
                     $scope.createDemo(method);
                 }
             }
 
-            $scope.tableParams = new ngTableParams({
-                page: 1,            // show first page
-                count: 10           // count per page
-            }, {
-                total: $scope.api.logs.length, // length of data
-                getData: function($defer, params) {
-                    // use build-in angular filter
-                    var orderedData = params.sorting() ?
-                    $filter('orderBy')($scope.api.logs, params.orderBy()) : $scope.api.logs;
-                    $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
-                }
-            });
+            function makeTableParmas(data) {
+                return new ngTableParams({
+                    page: 1,            // show first page
+                    count: 10,           // count per page
+                    sorting: {
+                        name: 'asc'     // initial sorting
+                    }
+                }, {
+                    counts: [], // hide page counts control
+                    total: $scope.api.logs.length, // length of data
+                    getData: function($defer, params) {
+                        // use build-in angular filter
+                        var orderedData = params.sorting() ? $filter('orderBy')(data , params.orderBy()) : data;
+                        orderedData = params.filter() ? $filter('filter')(orderedData, params.filter()) : orderedData;
+                        params.total(orderedData.length);
+                        orderedData.forEach(function(data, index) {
+                            //console.log(data.time);
+                        });
+                        $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
+                    }
+                });
+            }
             /*$scope.api.map(function(api) {
                 var digestorLogs = _.filter($scope.logs, {'digestor': api._id });
                 if(digestorLogs.length <= 0) {
@@ -201,6 +211,11 @@ angular.module( 'apicatus.applications', [
     };
     $scope.save = function(api) {
         $scope.api.put();
+    };
+    /////////////////////
+    // Settings Control
+    $scope.setOpened = function(endpoint, $index, isOpened) {
+        console.log(endpoint, $index, isOpened);
     };
     ////////////////////////////////////////////////////////////////////////////
     // Endpoints [ Create, Read, Update, Delete ]                             //
@@ -287,7 +302,30 @@ angular.module( 'apicatus.applications', [
     $scope.deleteMethod = function(methods, $index) {
         methods.splice($index, 1);
     };
+    $scope.header = {};
+    $scope.addHeader = function(method, header, scope) {
+        console.log("addHeader");
+        if(!method.response.headers) {
+            method.response.headers = [];
+        }
+        var indexes = method.response.headers.map(function(obj, index) {
+            if(obj.name == header.name) {
+                return index;
+            }
+        }).filter(isFinite)[0];
+        console.log("index", indexes);
+        if(_.findIndex(method.response.headers, {name: header.name}) >= 0) {
+            return false;
+        }
+        method.response.headers.push(angular.copy(header));
+        $scope.header = {};
+        $scope.api.put();
+    };
 
+    $scope.removeHeader = function(method, header, $index) {
+        _.uniq([{ 'x': 1 }, { 'x': 2 }, { 'x': 1 }], 'x');
+        method.response.headers.splice($index, 1);
+    };
     // API Demo
     $scope.createDemo = function(method) {
         // Create simple demo to test the endpoint
@@ -297,31 +335,28 @@ angular.module( 'apicatus.applications', [
             url: serviceUrl.protocol + "://" + $scope.api.name + "." + serviceUrl.host + ":" + serviceUrl.port + method.URI,
             data: {}
         };
-        method.demo = "$.ajax(" + JSON.stringify(options) + ")\n.then(function(r){\n\tconsole.log(r);\n});";
+        method.demo = "$.ajax(" + JSON.stringify(options) + ")\n.then(function(r){\n\tdocument.getElementById('output').innerText = r;\n});";
     };
     $scope.demo = function(demo) {
         var result = eval(demo);
     };
+
     // The modes
-    $scope.modes = ['Scheme', 'XML', 'Javascript'];
-    $scope.mode = $scope.modes[0];
-
-    $scope.aceLoaded = function(_editor) {
-        console.log("ace loaded: ", _editor);
-        window.ace = _editor;
-    };
-
-    // The ui-ace option
-    $scope.aceOption = {
-        mode: $scope.mode.toLowerCase(),
-        onLoad: function (_ace) {
-            console.log("ace loaded: ", _ace);
-            window.ace = _ace;
-            _ace.getSession().setMode('ace/mode/javascript');
-            // HACK to have the ace instance in the scope...
-            $scope.modeChanged = function () {
-                _ace.getSession().setMode('ace/mode/' + $scope.mode.toLowerCase());
-            };
+    $scope.editor = {
+        modes: ['Scheme', 'XML', 'Javascript'],
+        options: {
+            mode: 'json',
+            theme: 'monokai',
+            onLoad: function (_ace) {
+                console.log("ace loaded: ", _ace);
+                window.ace = _ace;
+                _ace.getSession().setMode('ace/mode/javascript');
+                _ace.getSession().setUseWorker(false);
+                // HACK to have the ace instance in the scope...
+                $scope.modeChanged = function () {
+                    _ace.getSession().setMode('ace/mode/' + $scope.mode.toLowerCase());
+                };
+            }
         }
     };
 })

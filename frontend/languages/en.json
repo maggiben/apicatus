@@ -22,6 +22,8 @@
     "PROBLEM_PERSISTS": "If the problem persists please contact your Account Executive.",
     "SIDEBAR.APIS": "Apis",
     "SIDEBAR.INSPECTOR": "Dashboard",
+    "SIDEBAR.HELP": "Help",
+    "SIDEBAR.ABOUT": "About",
     "APPLICATIONS.NEWAPI.TITLE": "New API",
     "APPLICATIONS.NEWAPI.NAME": "API Name",
     "APPLICATIONS.NEWAPI.DOMAIN": "API Domain",

@@ -119,6 +119,9 @@ charts.bars = function module() {
         gap = _x;
         return this;
     };
+    exports.axis = function(_xAxis, _yAxis) {
+
+    };
     exports.ease = function(_x) {
         if (!arguments.length) {
             return ease;

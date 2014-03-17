@@ -11,7 +11,7 @@
     line-height: 2.1428571435;
     color: #f1f1f1;
     background-color: #eeeeee;
-    background-image: url('http://localhost:8000/images/header-bg.jpg');
+    background-image: url('https://farm4.staticflickr.com/3806/9538307478_c86a37f389_c_d.jpg');
     background-size: cover;
 
     h1 {
@@ -34,12 +34,13 @@
       padding: 14px 24px;
       border-radius: 2px;
       color:#FFF;
-      background:#469acc;
+      background-color: @brand-primary;
       text-align:center;
       font-size:1.3em;
       border: none;
       &:hover {
-        background:#1e70a1; text-decoration:none
+        background: darken(@brand-primary, 10%);
+        text-decoration: none;
       }
     }
   }

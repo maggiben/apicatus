@@ -56,6 +56,9 @@ angular.module( 'apicatus', [
             case 404:
                 $state.transitionTo("main.error.404", {data: "response.data"});
                 break;
+            case 500:
+                $state.transitionTo("main.error.500", {data: "response.data"});
+                break;
         }
         return response;
     });
@@ -104,6 +107,14 @@ angular.module( 'apicatus', [
         city: "Buenos Aires",
         timezone: "AGT"
     };
+    // authenticate
+    //$scope.user = Restangular.one('user').customPOST({username: "admin", password: "admin"}, 'signin');
+    // Restangular returns promises
+    //$scope.baseApi = Restangular.one('user');
+    //$scope.baseApi.get().then(function(account) {
+        // returns a list of users
+    //    $scope.account = account;   // first Restangular obj in list: { id: 123 }
+    //});
     $scope.getDate = function() {return new Date();};
     $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
         if ( angular.isDefined( toState.data.pageTitle ) ) {

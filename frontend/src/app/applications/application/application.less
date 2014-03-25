@@ -11,6 +11,7 @@ application {
     .page-header {
         padding: 0;
         margin: 0px 0 15px;
+        margin: 20px 0 20px;
         border-bottom-style: dotted;
         h1 {
             margin: 0.25em 0;
@@ -168,6 +169,13 @@ application {
             margin-bottom: 10px;
         }
     }
+    .input-group {
+        /*margin-bottom: 10px;*/
+    }
+    .ace_editor {
+
+        height: 200px;
+    }
 
     /* footer notes */
     .footer-notes {
@@ -211,7 +219,31 @@ application {
             }
         }
     }
-
+    world-map {
+        display: block;
+        width: 100%;
+        height: 320px;
+        background-color: transparent;
+        .country {
+            fill: @brand-primary;
+            &:hover {
+                stroke: darken(@brand-primary, 10%);
+                stroke-width: 0.5px;
+                fill: lighten(@brand-primary, 10%)
+            }
+        }
+        .point {
+            fill: @gray;
+        }
+        .text {
+            fill: @gray;
+        }
+        .night {
+            stroke: steelblue;
+            fill: steelblue;
+            fill-opacity: .3;
+        }
+    }
     /* LOG TABLE */
     table.log-table {
         th {
@@ -280,6 +312,19 @@ application {
                     box-shadow: none;
                     opacity: 1;
                     color: #fff;
+                }
+            }
+        }
+    }
+    /* LOG TABLE */
+     table.log-table {
+        th {
+            &.sortable {
+                font-weight: 100;
+                &.sort-desc, &.sort-asc {
+                    background-color: @brand-primary;
+                    color: #fff;
+                    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
                 }
             }
         }

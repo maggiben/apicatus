@@ -46,7 +46,6 @@ html, body {
     }
     .page-wrapper {
         padding-top: @navbar-height + 10;
-        overflow-x: hidden;
     }
 
     .messages-dropdown .dropdown-menu {
@@ -120,8 +119,6 @@ outline: 0 none;
         position: absolute;
         font-size: 1em;
         right: 16px;
-        padding: 7px;
-        opacity: 0.35;
     }
     input {
         position: absolute;
@@ -137,6 +134,19 @@ outline: 0 none;
             & ~ .icon {
                 color: @brand-primary;
                 opacity: 1;
+            }
+        }
+    }
+}
+
+/* TABS */
+.nav-tabs {
+    li {
+        a {
+            cursor: pointer;
+            color: lighten(@gray, 20%);
+            &:hover {
+                color: @gray;
             }
         }
     }

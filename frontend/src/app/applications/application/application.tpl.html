@@ -9,6 +9,8 @@
                     </button>
                     <button type="button" class="btn btn-default" ng-click="showHide=!showHide" ng-class="{active: showHide}">
                         <i class="fa fa-code"></i> source
+                    <button type="button" class="btn btn-default" ng-click="tabs[0].active = true">
+                        <i class="fa fa-save"></i> Save
                     </button>
                     <div class="btn-group">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-sort-alpha-asc"></i> Sort <span class="fa fa-angle-down"></span></button>
@@ -28,6 +30,8 @@
                 </div>
                 <div class="col-md-2 pull-right master-search">
                     <input type="text" name="search" autocomplete="off" id="id_search" typeahead="endpoint.name for endpoint in api.endpoints | filter:$viewValue | limitTo:8" class="form-control" maxlength="200" placeholder="Search" ng-model="settings.application.query" name="query">
+                <div class="col-md-2 input-group pull-right master-search">
+                    <input type="text" name="search" id="id_search" typeahead="endpoint.name for endpoint in api.endpoints | filter:$viewValue | limitTo:8" class="form-control" maxlength="200" placeholder="Search" ng-model="settings.application.query" name="query">
                     <span class="icon input-group-btn">
                         <i class=" fa fa-search"></i>
                     </span>
@@ -41,6 +45,7 @@
         </div>
     </div>
     <div class="row" ng-hide="showHide" ng-init="settings.application[endpoint._id] = settings.application[endpoint._id] || {}" ng-repeat="endpoint in api.endpoints | filter: settings.application.query | orderBy: settings.application.orderBy">
+    <div class="row" ng-init="settings.application[endpoint._id] = settings.application[endpoint._id] || {}" ng-repeat="endpoint in api.endpoints | filter: settings.application.query | orderBy: settings.application.orderBy">
         <div class="col-md-12">
             <div class="row">
                 <div class="col-md-12">
@@ -63,13 +68,15 @@
                         <a href="" ng-click="settings.application[endpoint._id].methods[method._id].isOpened != settings.application[endpoint._id].methods[method._id].isOpened"> <!-- setOpened(endpoint, $index, isOpened) -->
                             <span class="method" ng-class="{true: method.method}[true]">{{method.method}}</span>
                             <span class="route">{{method.URI}}</span>
+                            <span class="route">{{method.URI}} {{settings.application[method._id] | json}}</span>
                             <span class="pull-right trigger-collapse"><i class="fa" ng-class="{'fa-chevron-up': settings.application[endpoint._id].methods[method._id].isOpened, 'fa-chevron-down': !settings.application[endpoint._id].methods[method._id].isOpened}"></i></span>
                         </a>
                         <!-- span><i class="pull-right fa" ng-class="{'fa-chevron-down': isopen, 'fa-chevron-right': !isopen}"></i></span -->
                     </accordion-heading>
                     <div class="row">
                         <div class="col-md-12">
-                            <tabset ng-init="mytabs.debug.isActive=true" ng-model="mytabs">
+                            <tabset ng-init="mytabs.locations.isActive=true" ng-model="mytabs">
+                            <tabset>
                                 <tab>
                                     <tab-heading>
                                         <i class="fa fa-gears"></i> Setup
@@ -120,10 +127,11 @@
                                             <div class="col-lg-10">
                                                 <div class="row" ng-model="header">
                                                     <div class="col-xs-4">
-                                                        <input type="text" class="form-control" placeholder="Key" ng-model="header.name">
+                                                        <input type="text" class="form-control" placeholder="Key" ng-model="header.name" name="headerName" required>
+                                                        <span class="help-block" ng-show="form.headerName.$error.required">Required</span>
                                                     </div>
                                                     <div class="col-xs-6">
-                                                        <input type="text" class="form-control" placeholder="Value" ng-model="header.value">
+                                                        <input type="text" class="form-control" placeholder="Value" ng-model="header.value" required>
                                                     </div>
                                                     <div class="col-xs-2">
                                                         <div class="btn-group pull-right">
@@ -144,6 +152,17 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                        <div class="form-group hidden">
+                                            <label for="inputPassword1" class="col-lg-2 control-label">Custom headers</label>
+                                            <div class="col-lg-3">
+                                                <input type="text" class="form-control">
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <input type="text" class="form-control">
+                                            </div>
+                                            <div class="col-lg-1">
+                                                <button type="button" class="btn btn-menu" ng-click=""><i class="glyphicon glyphicon-plus"></i>
+                                                </button>
                                             </div>
                                         </div>
                                         <!-- Headers -->
@@ -160,6 +179,7 @@
                                             <label for="inputPassword1" class="col-lg-2 control-label">Response Body</label>
                                             <div class="col-lg-10">
                                                 <div ui-ace="{mode: 'json', theme:'monokai'}" ng-model="method.response.message"></div>
+                                                <div ui-ace="{ onLoad : 'aceLoaded', mode: 'json', theme:'monokai'}" ng-model="method.response.message"></div>
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -186,6 +206,10 @@
                                             <pre id="output">#</pre>
                                         </div>
                                         <div class="col-md-12">
+                                        <div class="col-lg-12">
+                                            <div ui-ace="{ onLoad : 'aceLoaded', mode: 'javascript', theme:'monokai' }" ng-model="method.demo"></div>
+                                        </div>
+                                        <div class="col-lg-12">
                                             <div class="toolbar well well-sm">
                                                 <div class="btn-toolbar" role="toolbar">
                                                     <div class="btn-group">
@@ -199,6 +223,9 @@
                                     </div>
                                 </tab>
                                 <tab active="mytabs.debug.isActive" select="mytabs.debug.isActive = 'true'">
+                                    </div>
+                                </tab>
+                                <tab>
                                     <tab-heading>
                                         <i class="fa fa-puzzle-piece"></i> Debug
                                     </tab-heading>
@@ -210,6 +237,9 @@
                                                 <td data-title="'IP'" sortable="'ip'" class="text-center">{{log.ip}}</td>
                                                 <td data-title="'Status'" sortable="'status'" class="text-center"><span class="label label-success">{{log.status}}</span></td>
                                                 <td data-title="'Latency (ms)'" sortable="'time'" class="text-right">{{log.time}}</td>
+                                                <td data-title="'IP'" sortable="'ip'">{{log.ip}}</td>
+                                                <td data-title="'Status'" sortable="'status'"><span class="label label-success">{{log.status}}</span></td>
+                                                <td data-title="'Latency (ms)'" sortable="'time'">{{log.time}}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -270,7 +300,12 @@
                                             <div class="chart-container"></div>
                                         </div>
                                     </div>
-
+                                </tab>
+                                <tab active="mytabs.locations.isActive">
+                                    <tab-heading>
+                                        <i class="fa fa-globe"></i> Locations
+                                    </tab-heading>
+                                    <world-map data="[1,2,3,4,5,6]"></world-map>
                                 </tab>
                                 <button class="btn btn-default pull-right" tooltip="Refresh"><i class="fa fa-refresh"></i></button>
                             </tabset>

@@ -236,7 +236,16 @@ nav {
                 }
             }
             /* Bootstrap Default Overrides - Customized Dropdowns for the Side Nav */
-
+            .open {
+                background-color: #111;
+                    a {
+                        background-color: #000;
+                        border: none;
+                    &:hover {
+                        background-color: #2f2f2f;
+                    }
+                }
+            }
             &>li.dropdown>ul.dropdown-menu {
                 position: relative;
                 min-width: @side-nav-width;
@@ -246,11 +255,11 @@ nav {
                 border-radius: 0;
                 background-color: transparent;
                 box-shadow: none;
-                box-shadow: none;
             }
             &>li.dropdown>ul.dropdown-menu>li>a {
                 color: #999999;
-                padding: 10px 15px 10px 25px;
+                line-height: 30px;
+                padding: 10px 15px 10px 50px;
                 &:hover,active,focus {
                     color: #fff;
                     background-color: #080808;

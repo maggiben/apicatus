@@ -2,7 +2,8 @@
 /*jshint newcap: false */
 
 angular.module( 'apicatus.applications', [
-    'd3Service',
+    'D3Service',
+    'worldMap',
     'budgetDonut',
     'barChart',
     'lineChart'
@@ -304,6 +305,7 @@ angular.module( 'apicatus.applications', [
     };
     $scope.header = {};
     $scope.addHeader = function(method, header, scope) {
+        console.log("addHeader", header);
         console.log("addHeader");
         if(!method.response.headers) {
             method.response.headers = [];
@@ -314,12 +316,12 @@ angular.module( 'apicatus.applications', [
             }
         }).filter(isFinite)[0];
         console.log("index", indexes);
-        if(_.findIndex(method.response.headers, {name: header.name}) >= 0) {
+        if(angular.equals({}, header) || _.findIndex(method.response.headers, {name: header.name}) >= 0) {
             return false;
         }
         method.response.headers.push(angular.copy(header));
         $scope.header = {};
-        $scope.api.put();
+        //$scope.api.put();*/
     };
 
     $scope.removeHeader = function(method, header, $index) {
@@ -335,12 +337,11 @@ angular.module( 'apicatus.applications', [
             url: serviceUrl.protocol + "://" + $scope.api.name + "." + serviceUrl.host + ":" + serviceUrl.port + method.URI,
             data: {}
         };
-        method.demo = "$.ajax(" + JSON.stringify(options) + ")\n.then(function(r){\n\tdocument.getElementById('output').innerText = r;\n});";
+        method.demo = "$.ajax(" + JSON.stringify(options) + ")\n.then(function(r){\n\tconsole.log(r);\n});";
     };
     $scope.demo = function(demo) {
         var result = eval(demo);
     };
-
     // The modes
     $scope.editor = {
         modes: ['Scheme', 'XML', 'Javascript'],
